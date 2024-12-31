@@ -1,9 +1,9 @@
-import Image from "next/image";
+import Login from "@/components/containers/auth/login";
 
 export default function Home() {
   return (
     <div>
-      <h1>Home</h1>
+      <Login/>
     </div>
   );
 }
