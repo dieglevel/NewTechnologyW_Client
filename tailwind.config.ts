@@ -49,13 +49,46 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+
+			//Custom 
+			icon: {
+				DEFAULT: "#000000",
+				active: "#FFFFFF",
+				inactive: "#D9D9D9",
+				second: "#575757",
+			},
+			text: {
+				DEFAULT: "#0C0C0C",
+				second: "#D9D9D9",
+				seen: "#343434",
+			},
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+
+		// Custom
+		backgroundColor: {
+			DEFAULT: "#F8F8F8",
+			icon: {
+				active: "#0074E0",
+				inactive: "#0084FF",
+			},
+			second: "#F9F9F9",
+			body: "#FFFFFF",
+			"chat-me": "#DBEBFF",
+			third: "#D9D9D9",
+			reply: "#ADD2FF",
+			sidebar: "#0084FF",
+		},
+
+		// Custom
+		borderColor: {
+			DEFAULT: "#D9D9D9",
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
