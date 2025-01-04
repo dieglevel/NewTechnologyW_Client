@@ -1,5 +1,4 @@
-import ArrowBack from "@/assets/svgs/arrow-back";
-import PhoneIcon from "@/assets/svgs/phone";
+import { ArrowBack, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import Link from "next/link";
@@ -26,8 +25,7 @@ const ForgotPassword = () => {
 							startContent={
 								<div className="flex flex-row gap-4">
 									<PhoneIcon
-										width={20}
-										height={20}
+										className="size-5"
 									/>
 									<select
 										name=""

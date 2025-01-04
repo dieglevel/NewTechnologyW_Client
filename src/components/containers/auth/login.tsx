@@ -1,5 +1,4 @@
-import LockIcon from "@/assets/svgs/lock";
-import PhoneIcon from "@/assets/svgs/phone";
+import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -25,10 +24,7 @@ const Login = () => {
 						<Input
 							startContent={
 								<div className="flex flex-row gap-4">
-									<PhoneIcon
-										width={20}
-										height={20}
-									/>
+									<PhoneIcon className="text-icon size-5" />
 									<select
 										name=""
 										id=""
@@ -45,12 +41,7 @@ const Login = () => {
 					</div>
 					<div className="flex flex-row items-center justify-center gap-2 w-full">
 						<Input
-							startContent={
-								<LockIcon
-									width={20}
-									height={20}
-								/>
-							}
+							startContent={<LockIcon className="size-5" />}
 							placeholder="Mật khẩu"
 							size="sm"
 							variant="underlined"
