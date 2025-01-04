@@ -1,9 +1,9 @@
 import Login from "@/components/containers/auth/login";
 
 export default function Home() {
-  return (
-    <div>
-      <Login/>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Hello</h1>
+		</div>
+	);
 }
