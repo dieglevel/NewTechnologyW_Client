@@ -14,4 +14,3 @@ export const ArrowBack = (props: SVGProps<SVGSVGElement>) => (
 		/>
 	</svg>
 );
-
