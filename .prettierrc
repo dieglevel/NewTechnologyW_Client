@@ -18,5 +18,6 @@
 	"tabWidth": 5,
 	"useTabs": true,
 	"embeddedLanguageFormatting": "auto",
-	"cursorOffset": -1
-   }
+	"cursorOffset": -1,
+	"plugins": ["prettier-plugin-tailwindcss"]
+}
