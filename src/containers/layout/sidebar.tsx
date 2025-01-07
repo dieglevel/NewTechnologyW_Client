@@ -2,11 +2,8 @@ import { avatar } from "@/assets/images";
 import { ChatIcon, CloudIcon, ContactIcon, SettingIcon } from "@/assets/svgs";
 import Image from "next/image";
 
-
 // Tổng hợp: Chơi combo thì phải theo: flex, item-center, justity-center
-// Chưa biết: hug content, full content của thẻ cha chứa nó -> trong phần layout của figma có 
-
-
+// Chưa biết: hug content, full content của thẻ cha chứa nó -> trong phần layout của figma có
 
 export const SideBar = () => {
 	return (
@@ -35,7 +32,7 @@ export const SideBar = () => {
 				</div>
 
 				{/*                         item-center   w-fit h-fit                                  rounded-md         */}
-				<div className="flex justify-center rounded-[4px] p-1 hover:bg-icon-active">
+				<div className="flex h-fit w-fit justify-center rounded-[4px] p-1 hover:bg-icon-active">
 					<ChatIcon className="size-8 stroke-[3px] text-icon-active" />
 				</div>
 				{/*                         item-center   w-fit h-fit                                  rounded-md         */}
