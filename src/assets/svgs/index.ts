@@ -5,3 +5,4 @@ export * from "./setting";
 export * from "./arrow-back";
 export * from "./phone";
 export * from "./lock";
+export * from "./search"

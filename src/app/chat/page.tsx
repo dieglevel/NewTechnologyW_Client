@@ -3,10 +3,10 @@ import { ChatView } from "@/components/containers/list-chat";
 
 const ChatPage = () => {
 	return (
-		<>
-			<SideBar />
+		<div className="flex">
+			<SideBar  />
 			<ChatView />
-		</>
+		</div>
 	);
 };
 
