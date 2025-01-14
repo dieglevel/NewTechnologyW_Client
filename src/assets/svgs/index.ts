@@ -6,3 +6,4 @@ export * from "./arrow-back";
 export * from "./phone";
 export * from "./lock";
 export * from "./search"
+export * from "./calendar";
