@@ -7,3 +7,6 @@ export * from "./phone";
 export * from "./lock";
 export * from "./search"
 export * from "./calendar";
+
+export * from "./add-friend";
+export * from "./add-group";

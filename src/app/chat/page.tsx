@@ -3,8 +3,8 @@ import { ChatView } from "@/components/containers/list-chat";
 
 const ChatPage = () => {
 	return (
-		<div className="flex">
-			<SideBar  />
+		<div className="flex h-full w-full flex-row">
+			<SideBar />
 			<ChatView />
 		</div>
 	);
