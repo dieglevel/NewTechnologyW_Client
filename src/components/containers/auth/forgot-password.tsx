@@ -47,8 +47,8 @@ const ForgotPassword = () => {
 					</Button>
 					<div className="flex w-full flex-row justify-start">
 						<Link
-							className="justify-start items-center flex flex-row w-full"
-							href="/login"
+							className="flex w-full flex-row items-center justify-start"
+							href="#"
 						>
 							<ArrowBack
 								width={16}
