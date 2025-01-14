@@ -1,6 +1,5 @@
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import React from "react";
@@ -20,7 +19,7 @@ const Login = () => {
 					<span className="text-md font-semibold">Đăng nhập với mật khẩu</span>
 					<hr className="mt-2 flex w-128 border-gray-300" />
 				</div>
-				<div className="flex w-full flex-col items-center justify-center gap-6 p-20">
+				<div className="flex w-full flex-col items-center justify-center gap-8 p-20">
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
 							startContent={
@@ -59,12 +58,6 @@ const Login = () => {
 						className="text-md text-black"
 					>
 						Quên mật khẩu
-					</Link>
-					<Link
-						href="/register"
-						className="text-md text-primary"
-					>
-						Bạn chưa có tài khoản? Đăng ký ngay
 					</Link>
 					<Link
 						href="#"
