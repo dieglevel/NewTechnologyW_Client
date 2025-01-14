@@ -1,5 +1,6 @@
+import { Image } from "@nextui-org/image";
 const ChatItem = () => {
-	return <div>Image</div>;
+	return <div></div>;
 };
 
 export default ChatItem;
