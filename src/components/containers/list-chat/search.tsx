@@ -1,20 +1,34 @@
-'use client'
-import { SearchIcon } from "@/assets/svgs";
-
+"use client";
+import { AddFriendIcon, AddGroupIcon, SearchIcon } from "@/assets/svgs";
+import { Input } from "@nextui-org/input";
+import { useRef } from "react";
 export const SearchComponent = () => {
-    const searchEvent=()=>{
-        console.log("searching")
-        return
-    }
-    return ( 
-        <div  className="flex h-11 bg-[#9b4b4b] justify-center items-center p-2 rounded ">
-            <button onClick={searchEvent}  className="flex justify-center items-center h-12 w-12 rounded-full ">
-                <SearchIcon  className="relative h-6 w-6 stroke-1 hover:cursor-pointer hover:opacity-60 top-1"/>
-            </button>
-            <input type="text" placeholder="Tìm kiếm" className="w-[200px h-5 border-2 bg- border-gray-300 rounded-md p-2
-                outline-none border-none
-            " />
-        </div>
-     );
-}
- 
+	const searchBtn = useRef<HTMLInputElement>(null);
+
+	const searchEvent = () => {
+		console.log("search");
+		searchBtn.current?.focus();
+	};
+	return (
+		<div className="flex h-12 items-center justify-center gap-2 rounded bg-[#f8f8f8] p-2">
+			<Input
+				ref={searchBtn}
+				labelPlacement="outside"
+				placeholder="Tìm kiếm"
+				startContent={
+					<SearchIcon
+						onClick={searchEvent}
+						className="size-8 stroke-1 hover:cursor-pointer hover:opacity-60"
+					/>
+				}
+				className="rounded-md"
+			/>
+			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-white hover:cursor-pointer hover:bg-[#ccc]">
+				<AddFriendIcon className="size-5 stroke-1" />
+			</div>
+			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-white hover:cursor-pointer hover:bg-[#ccc]">
+				<AddGroupIcon className="size-5 stroke-1" />
+			</div>
+		</div>
+	);
+};
