@@ -2,6 +2,7 @@
 import { AddFriendIcon, AddGroupIcon, SearchIcon } from "@/assets/svgs";
 import { Input } from "@nextui-org/input";
 import { useRef } from "react";
+
 export const SearchComponent = () => {
 	const searchBtn = useRef<HTMLInputElement>(null);
 

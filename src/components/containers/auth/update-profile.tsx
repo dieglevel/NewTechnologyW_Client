@@ -1,10 +1,9 @@
 import { avatarDefault } from "@/assets/images";
-import { CalendarIcon, LockIcon, PhoneIcon } from "@/assets/svgs";
+import { CalendarIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Radio, RadioGroup } from "@nextui-org/radio";
 import Image from "next/image";
-import React from "react";
 
 const UpdateProfile = () => {
 	return (
