@@ -1,9 +1,7 @@
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
-import React from "react";
 
 const Login = () => {
 	return (

@@ -1,10 +1,7 @@
 "use client";
 
-import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
 import { InputOtp } from "@nextui-org/input-otp";
-import { Link } from "@nextui-org/link";
 
 const OTP = () => {
 	const goPassword = () => {
