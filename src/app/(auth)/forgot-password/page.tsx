@@ -1,12 +1,13 @@
-import ForgotPassword from "@/components/containers/auth/forgot-password";
+
+import { ForgotPassword } from "@/containers/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Khôi phục mật khẩu Zalo",
 };
 
-const ForgotPasswordPage = () => {
+const Page = () => {
 	return <ForgotPassword />;
 };
 
-export default ForgotPasswordPage;
+export default Page;

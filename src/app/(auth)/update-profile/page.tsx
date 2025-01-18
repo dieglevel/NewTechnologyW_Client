@@ -1,11 +1,11 @@
-import UpdateProfile from "@/components/containers/auth/update-profile";
+import { UpdateProfile } from "@/containers/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Cập nhật thông tin cá nhân",
 };
-const UpdateProfilePage = () => {
+const Page = () => {
 	return <UpdateProfile />;
 };
 
-export default UpdateProfilePage;
+export default Page;

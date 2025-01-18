@@ -1,5 +1,3 @@
-const ChatItem = () => {
+export const ChatItem = () => {
 	return <div></div>;
 };
-
-export default ChatItem;

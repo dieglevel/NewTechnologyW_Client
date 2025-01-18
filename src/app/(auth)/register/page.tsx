@@ -1,12 +1,13 @@
-import Register from "@/components/containers/auth/register";
+
+import { Register } from "@/containers/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Đăng ký tài khoản Zalo",
 };
 
-const RegisterPage = () => {
+const Page = () => {
 	return <Register />;
 };
 
-export default RegisterPage;
+export default Page;

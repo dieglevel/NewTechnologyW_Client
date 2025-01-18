@@ -1,5 +1,6 @@
-import { SideBar } from "@/components/containers/layout";
-import { ChatView } from "@/components/containers/list-chat";
+import { SideBar } from "@/containers/layout";
+import { ChatView } from "@/containers/list-chat";
+
 
 const ChatPage = () => {
 	return (

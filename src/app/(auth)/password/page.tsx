@@ -1,11 +1,12 @@
-import Password from "@/components/containers/auth/password";
+
+import { Password } from "@/containers/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Cập nhật mật khẩu Zalo",
 };
-const PasswordPage = () => {
+const Page = () => {
 	return <Password />;
 };
 
-export default PasswordPage;
+export default Page;

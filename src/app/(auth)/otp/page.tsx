@@ -1,11 +1,12 @@
-import OTP from "@/components/containers/auth/otp";
+
+import { OTP } from "@/containers/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Nhập mã OTP",
 };
-const OTPPage = () => {
+const Page = () => {
 	return <OTP />;
 };
 
-export default OTPPage;
+export default Page;
