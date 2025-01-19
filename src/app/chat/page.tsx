@@ -1,5 +1,7 @@
-import { SideBar } from "@/containers/layout";
-import { ChatView } from "@/containers/list-chat";
+
+import { SideBar } from "@/containers/chat";
+import { ChatView } from "@/components/list-chat";
+
 
 
 const ChatPage = () => {
@@ -8,7 +10,7 @@ const ChatPage = () => {
 			<SideBar />
 			<ChatView />
 		</div>
-	);
+	);	
 };
 
 export default ChatPage;
