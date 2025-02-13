@@ -1,6 +1,5 @@
 
-import { SideBar } from "@/containers/chat";
-import { ChatView } from "@/components/list-chat";
+import { BodyView, ChatView, SideBar } from "@/containers/chat";
 
 
 
@@ -9,6 +8,7 @@ const ChatPage = () => {
 		<div className="flex h-full w-full flex-row">
 			<SideBar />
 			<ChatView />
+			<BodyView />
 		</div>
 	);	
 };

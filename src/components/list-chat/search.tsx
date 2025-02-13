@@ -11,7 +11,7 @@ export const SearchComponent = () => {
 		searchBtn.current?.focus();
 	};
 	return (
-		<div className="flex h-12 items-center justify-center gap-2 rounded bg-[#f8f8f8] p-2">
+		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-center gap-2 rounded border-b-1 bg-second p-2 py-2">
 			<Input
 				ref={searchBtn}
 				labelPlacement="outside"
@@ -19,15 +19,14 @@ export const SearchComponent = () => {
 				startContent={
 					<SearchIcon
 						onClick={searchEvent}
-						className="size-8 stroke-1 hover:cursor-pointer hover:opacity-60"
+						className="size-8 stroke-1"
 					/>
 				}
-				className="rounded-md"
 			/>
-			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-white hover:cursor-pointer hover:bg-[#ccc]">
+			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-second hover:cursor-pointer hover:bg-[#ccc]">
 				<AddFriendIcon className="size-5 stroke-1" />
 			</div>
-			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-white hover:cursor-pointer hover:bg-[#ccc]">
+			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-second hover:cursor-pointer hover:bg-[#ccc]">
 				<AddGroupIcon className="size-5 stroke-1" />
 			</div>
 		</div>
