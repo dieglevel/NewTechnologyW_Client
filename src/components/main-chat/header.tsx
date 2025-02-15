@@ -13,6 +13,7 @@ export const HeaderChat = ({ colunmRight, onClickColumnRight, imageUrl }: Props)
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-between border-b-1 bg-body px-2">
 			<div className="flex flex-row items-center gap-3">
 				<Image
+				priority
 					src={imageUrl}
 					width={50}
 					height={50}
@@ -29,7 +30,7 @@ export const HeaderChat = ({ colunmRight, onClickColumnRight, imageUrl }: Props)
 			</div>
 			<div className="flex flex-row gap-2">
 				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-[#ccc]">
-					<SearchIcon className="size-5 stroke-1" />
+					<SearchIcon className="size-5 stroke-1 stroke-icon-second" />
 				</div>
 				<div
 					className={
@@ -38,7 +39,7 @@ export const HeaderChat = ({ colunmRight, onClickColumnRight, imageUrl }: Props)
 					}
 					onClick={onClickColumnRight}
 				>
-					<ColumnIcon className={colunmRight ? "stroke-icon-active" : " " + ` size-5 stroke-1`} />
+					<ColumnIcon className={colunmRight ? "stroke-icon-active" : "stroke-icon-second " + ` size-5 stroke-1`} />
 				</div>
 			</div>
 		</div>

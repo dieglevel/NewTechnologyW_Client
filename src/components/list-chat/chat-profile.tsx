@@ -33,6 +33,7 @@ export const ChatProfile: React.FC<Props> = ({
 		>
 			<div className="flex items-center rounded-full">
 				<Image
+					priority
 					src={imageUrl}
 					width={50}
 					height={50}

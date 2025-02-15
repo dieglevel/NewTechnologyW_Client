@@ -12,6 +12,7 @@ export const SideBar = () => {
 			<div className="flex flex-col items-center justify-center gap-4">
 				<div className="h-[52px] w-[52px]">
 					<Image
+					priority
 						src={avatar}
 						alt="Avatar"
 						className="h-[52px] w-[52px] rounded-full"
