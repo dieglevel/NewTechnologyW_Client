@@ -17,7 +17,7 @@ export * from "./user";
 export * from "./emoji";
 export * from "./file";
 export * from "./image";
+export * from "./pin";
 export * from "./send";
 export * from "./sticker";
 export * from "./user-chat";
-

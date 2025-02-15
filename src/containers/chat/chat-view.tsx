@@ -1,9 +1,31 @@
+"use client"
+
 import { ChatProfile } from "@/components/list-chat/chat-profile";
+import { useEffect, useRef } from "react";
 import { SearchComponent } from "../../components/list-chat/search";
 
 export const ChatView = () => {
+	const divRef = useRef<HTMLDivElement>(null);
+	// hide chat when window has been resized
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth > 1024) {
+				divRef.current?.classList.remove("hidden");
+			} else {
+				divRef.current?.classList.add("hidden");
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+		handleResize();
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+
 	return (
-		<div className="flex h-lvh min-w-28 w-96 flex-col flex-wrap gap-2 border-r-1 border-border bg-white">
+		<div ref={divRef} className="flex h-lvh max-w-80 flex-col flex-wrap gap-2 border-r-1 border-border bg-white ">
 			<SearchComponent />
 			<div className="flex flex-col gap-1">
 				{

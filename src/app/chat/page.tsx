@@ -1,7 +1,4 @@
-
-import { BodyView, ChatView, SideBar } from "@/containers/chat";
-
-
+import { BodyView, ChatView, OptionView, SideBar } from "@/containers/chat";
 
 const ChatPage = () => {
 	return (
@@ -9,8 +6,9 @@ const ChatPage = () => {
 			<SideBar />
 			<ChatView />
 			<BodyView />
+			<OptionView />
 		</div>
-	);	
+	);
 };
 
 export default ChatPage;
