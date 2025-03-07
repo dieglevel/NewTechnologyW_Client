@@ -7,7 +7,7 @@ import { BaseResponse, Test } from "@/types";
 import { useEffect } from "react";
 
 const ChatPage = () => {
-	const socket = useSocket("localhost:3000");
+	const socket = useSocket(`${process.env.SOCKET_DOMAIN}:${process.env.SOCKET_PORT}`);
 
 	useEffect(() => {
 		socket.onEvent<BaseResponse<Test>>(SOCKET_ON.CONNECT, (response) => {
