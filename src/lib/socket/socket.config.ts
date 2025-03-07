@@ -1,46 +1,51 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const useSocket = (url: string) => {
-  const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [socket, setSocket] = useState<Socket | null>(null);
+interface SocketConfig {
+	url: string;
+	token: string;
+}
 
-  useEffect(() => {
-    const socketInstance = io(url);
-    setSocket(socketInstance);
+const useSocket = ({ url, token }: SocketConfig) => {
+	const [isConnected, setIsConnected] = useState<boolean>(false);
+	const [socket, setSocket] = useState<Socket | null>(null);
 
-    socketInstance.on("connect", () => {
-      setIsConnected(true);
-      console.log("Socket.IO connected");
-    });
+	useEffect(() => {
+		const socketInstance = io(url, { extraHeaders: { token: `${token}` } });
+		setSocket(socketInstance);
 
-    socketInstance.on("disconnect", () => {
-      setIsConnected(false);
-      console.log("Socket.IO disconnected");
-    });
+		socketInstance.on("connect", () => {
+			setIsConnected(true);
+			console.log("Socket.IO connected");
+		});
 
-    return () => {
-      socketInstance.disconnect();
-    };
-  }, [url]);
+		socketInstance.on("disconnect", () => {
+			setIsConnected(false);
+			console.log("Socket.IO disconnected");
+		});
 
-  const emitEvent = <T>(event: string, data?: T) => {
-    if (socket) {
-      socket.emit(event, data);
-    } else {
-      console.warn("Socket.IO is not connected");
-    }
-  };
+		return () => {
+			socketInstance.disconnect();
+		};
+	}, [url]);
 
-  const onEvent = <T>(event: string, callback: (data: T) => void) => {
-    if (socket) {
-      socket.on(event, callback);
-    } else {
-      console.warn("Socket.IO is not connected");
-    }
-  };
+	const emitEvent = <T>(event: string, data?: T) => {
+		if (socket) {
+			socket.emit(event, data);
+		} else {
+			console.warn("Socket.IO is not connected");
+		}
+	};
 
-  return { isConnected, emitEvent, onEvent };
+	const onEvent = <T>(event: string, callback: (data: T) => void) => {
+		if (socket) {
+			socket.on(event, callback);
+		} else {
+			console.warn("Socket.IO is not connected");
+		}
+	};
+
+	return { isConnected, emitEvent, onEvent };
 };
 
 export default useSocket;
