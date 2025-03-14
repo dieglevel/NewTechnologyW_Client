@@ -1,9 +1,24 @@
+"use client"
+
+import { loginApi } from "@/api/auth";
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
+import { useEffect, useState } from "react";
 
 export const Login = () => {
+	const [identifier, setIdentifier] = useState<string>("admin@gmail.com");
+	const [password, setPassword] = useState<string>("admin");
+
+	useEffect(() => {
+
+	}, []);
+
+	const handleLogin = async () => {
+		await loginApi(identifier, password);
+	}
+
 	return (
 		<div className="flex h-screen flex-col items-center gap-6 pt-14">
 			<div className="flex flex-col items-center gap-6">
@@ -21,6 +36,8 @@ export const Login = () => {
 				<div className="flex w-full flex-col items-center justify-center gap-6 p-20">
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
+						value={identifier}
+						onChange={(e) => setIdentifier(e.target.value)}
 							startContent={
 								<div className="flex flex-row gap-4">
 									<PhoneIcon className="size-5 text-icon" />
@@ -40,6 +57,9 @@ export const Login = () => {
 					</div>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
+						type="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
 							startContent={<LockIcon className="size-5" />}
 							placeholder="Mật khẩu"
 							size="sm"
@@ -49,6 +69,7 @@ export const Login = () => {
 					<Button
 						size="md"
 						className="w-full bg-primary text-white"
+							onPress={handleLogin}
 					>
 						Đăng nhập
 					</Button>
