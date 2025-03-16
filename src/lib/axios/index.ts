@@ -1,4 +1,14 @@
+import { getIpDeviceApi } from "@/api/ip-device";
 import axios from "axios";
+import { LocalStorageKey } from "../local-storage";
+
+export interface ErrorResponse {
+	error: string;
+	message: string;
+	statusCode: number;
+	timestamp: Date;
+	path: string;
+}
 
 export const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API,
@@ -6,40 +16,52 @@ export const api = axios.create({
 	headers: { "Content-Type": "application/json" },
 });
 
-export const setAccessToken = (token: string | null) => {
-	api.defaults.headers.common["Authorization"] = `${token}`;
-};
-
+// Interceptor trước khi gửi request
 api.interceptors.request.use(
-	(config) => {
-		const token = api.defaults.headers.common["Authorization"];
-		if (token) {
-			config.headers["Authorization"] = token;
+	async (config) => {
+		// Kiểm tra nếu headers đã có token và id-device thì không làm gì thêm
+		if (config.headers["Authorization"] && config.headers["ip-device"]) {
+			return config;
 		}
+
+		// Lấy token và idDevice từ localStorage
+		let token = localStorage.getItem(LocalStorageKey.TOKEN);
+		let idDevice = localStorage.getItem(LocalStorageKey.IP_DEVICE);
+
+		// Nếu chưa có idDevice, gọi API để lấy và lưu lại
+		if (!idDevice) {
+			idDevice = await getIpDeviceApi();
+			localStorage.setItem(LocalStorageKey.IP_DEVICE, idDevice ?? "");
+		}
+
+		// Nếu có token, gán cả token và idDevice vào headers
+		if (token) {
+			config.headers["Authorization"] = `Bearer ${token}`;
+		}
+
+		config.headers["ip-device"] = idDevice;
+
 		return config;
 	},
-	(error) => {
-		if (error.response?.status === 401) {
-			console.log("\x1b[41m Axios\x1b[0m \x1b[31m \x1b[0m");
-		}
-		if (axios.isAxiosError(error)) {
-		}
-		console.log("Error in request interceptor", error);
-		console.error("Error URL:", error.config?.url);
-		console.log("Request Method:", error.config?.method);
-		return Promise.reject(error);
-	},
+	(error) => Promise.reject(error)
 );
 
+// Interceptor xử lý lỗi
 api.interceptors.response.use(
-	(response) => response, // Trả về response nếu thành công
+	(response) => response,
 	(error) => {
-		if (axios.isAxiosError(error)) {
-			console.log("\x1b[41m Axios \x1b[0m \x1b[31m \x1b[0m", error.config?.url);
-			console.error("Error in response interceptor", error);
-		} else {
-			console.log("Unknown Error:", error);
+		if (!error.response) {
+			return Promise.reject({ message: "Network error or server not responding" });
 		}
-		return Promise.reject(error); // Trả về lỗi để xử lý thêm nếu cần
+
+		const errorResponse: ErrorResponse = error.response.data;
+
+		if (errorResponse.statusCode === 401) {
+			console.warn("Unauthorized, redirecting...");
+			localStorage.removeItem(LocalStorageKey.TOKEN);
+			window.location.href = "/login";
+		}
+
+		return Promise.reject(errorResponse);
 	},
 );

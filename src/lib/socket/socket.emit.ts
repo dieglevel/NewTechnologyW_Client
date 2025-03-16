@@ -1,4 +1,4 @@
 export enum SOCKET_EMIT {
-   connectServer = "connectServer",
-   myListRoom = "myListRoom",
+   MY_LIST_TROOM = "C_myListRoom",
+   CONNECT_SERVER = "connectServer",
 }

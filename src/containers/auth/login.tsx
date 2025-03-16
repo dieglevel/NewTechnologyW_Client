@@ -1,23 +1,40 @@
-"use client"
+"use client";
 
 import { loginApi } from "@/api/auth";
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
+import { ErrorResponse } from "@/lib/axios";
+import { LocalStorageKey } from "@/lib/local-storage";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const Login = () => {
 	const [identifier, setIdentifier] = useState<string>("admin@gmail.com");
 	const [password, setPassword] = useState<string>("admin");
+	const router = useRouter();
 
 	useEffect(() => {
-
+		handleCheckPage();
 	}, []);
 
+	const handleCheckPage = async () => {
+		const token = localStorage.getItem(LocalStorageKey.TOKEN);
+		if (token) {
+			window.location.href = "/chat";
+		}
+	};
+
 	const handleLogin = async () => {
-		await loginApi(identifier, password);
-	}
+		try {
+			await loginApi(identifier, password);
+			router.push("/chat");
+		} catch (e) {
+			const error = e as ErrorResponse;
+			console.log(error);
+		}
+	};
 
 	return (
 		<div className="flex h-screen flex-col items-center gap-6 pt-14">
@@ -36,8 +53,8 @@ export const Login = () => {
 				<div className="flex w-full flex-col items-center justify-center gap-6 p-20">
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
-						value={identifier}
-						onChange={(e) => setIdentifier(e.target.value)}
+							value={identifier}
+							onChange={(e) => setIdentifier(e.target.value)}
 							startContent={
 								<div className="flex flex-row gap-4">
 									<PhoneIcon className="size-5 text-icon" />
@@ -57,7 +74,7 @@ export const Login = () => {
 					</div>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
-						type="password"
+							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							startContent={<LockIcon className="size-5" />}
@@ -69,7 +86,7 @@ export const Login = () => {
 					<Button
 						size="md"
 						className="w-full bg-primary text-white"
-							onPress={handleLogin}
+						onPress={handleLogin}
 					>
 						Đăng nhập
 					</Button>

@@ -1,5 +1,5 @@
 import { LocalStorageKey } from "@/lib/local-storage";
-import { SOCKET_ON } from "@/lib/socket";
+import { SOCKET_EMIT, SOCKET_ON } from "@/lib/socket";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -12,11 +12,17 @@ const useSocket = () => {
 	useEffect(() => {
 		const socketInstance = io(URL ? URL : "", { extraHeaders: { token: `${token}` } });
 
-		socketInstance.on(SOCKET_ON.CONNECT_SERVER, () => {
-			console.log("Connected to server");
-		});
+		setSocket(socketInstance);
 
-		socketInstance.on(SOCKET_ON.MY_LIST_TROOM, (data: any) => {
+		socketInstance.emit(SOCKET_EMIT.CONNECT_SERVER);
+
+		socketInstance.on(SOCKET_ON.CONNECT_SERVER, (data) => {
+			console.log(data);
+		});
+		
+		socketInstance.emit(SOCKET_EMIT.MY_LIST_TROOM);
+		
+		socketInstance.on(SOCKET_ON.MY_LIST_TROOM, (data) => {
 			console.log(data);
 		});
 
