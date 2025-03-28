@@ -4,37 +4,24 @@ import { loginApi } from "@/api/auth";
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
 import { ErrorResponse } from "@/lib/axios";
 import { LocalStorageKey } from "@/lib/local-storage";
+import { addToast } from "@heroui/toast";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { handleCheckPage, handleLogin } from "./handle";
 
 export const Login = () => {
 	const [identifier, setIdentifier] = useState<string>("admin@gmail.com");
 	const [password, setPassword] = useState<string>("admin");
 	const router = useRouter();
 
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
 	useEffect(() => {
 		handleCheckPage();
 	}, []);
-
-	const handleCheckPage = async () => {
-		const token = localStorage.getItem(LocalStorageKey.TOKEN);
-		if (token) {
-			window.location.href = "/chat";
-		}
-	};
-
-	const handleLogin = async () => {
-		try {
-			await loginApi(identifier, password);
-			router.push("/chat");
-		} catch (e) {
-			const error = e as ErrorResponse;
-			console.log(error);
-		}
-	};
 
 	return (
 		<div className="flex h-screen flex-col items-center gap-6 pt-14">
@@ -53,6 +40,7 @@ export const Login = () => {
 				<div className="flex w-full flex-col items-center justify-center gap-6 p-20">
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
+							isDisabled={isLoading}
 							value={identifier}
 							onChange={(e) => setIdentifier(e.target.value)}
 							startContent={
@@ -74,6 +62,7 @@ export const Login = () => {
 					</div>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
+							isDisabled={isLoading}
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
@@ -84,9 +73,13 @@ export const Login = () => {
 						/>
 					</div>
 					<Button
+						isDisabled={isLoading}
+						isLoading={isLoading}
 						size="md"
 						className="w-full bg-primary text-white"
-						onPress={handleLogin}
+						onPress={async () => {
+							handleLogin(setIsLoading, identifier, password, router);
+						}}
 					>
 						Đăng nhập
 					</Button>

@@ -1,6 +1,7 @@
 import { getIpDeviceApi } from "@/api/ip-device";
 import axios from "axios";
 import { LocalStorageKey } from "../local-storage";
+import { addToast } from "@heroui/toast";
 
 export interface ErrorResponse {
 	error: string;
@@ -12,7 +13,8 @@ export interface ErrorResponse {
 
 export const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API,
-	timeout: 5000,
+	timeout: 60000,
+	timeoutErrorMessage: "Thời gian chờ kết nối quá lâu",
 	headers: { "Content-Type": "application/json" },
 });
 
@@ -51,13 +53,17 @@ api.interceptors.response.use(
 	(response) => response,
 	(error) => {
 		if (!error.response) {
-			return Promise.reject({ message: "Network error or server not responding" });
+			return Promise.reject(error);
 		}
 
 		const errorResponse: ErrorResponse = error.response.data;
 
 		if (errorResponse.statusCode === 401) {
-			console.warn("Unauthorized, redirecting...");
+			addToast({
+				title: "Phiên đăng nhập đã hết hạn",
+				description: "Vui lòng đăng nhập lại",
+				color: "danger",
+			})
 			localStorage.removeItem(LocalStorageKey.TOKEN);
 			window.location.href = "/login";
 		}

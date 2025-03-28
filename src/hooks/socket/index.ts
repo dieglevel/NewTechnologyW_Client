@@ -20,9 +20,9 @@ const useSocket = () => {
 			console.log(data);
 		});
 		
-		socketInstance.emit(SOCKET_EMIT.MY_LIST_TROOM);
+		socketInstance.emit(SOCKET_EMIT.MY_LIST_ROOM);
 		
-		socketInstance.on(SOCKET_ON.MY_LIST_TROOM, (data) => {
+		socketInstance.on(SOCKET_ON.MY_LIST_ROOM, (data) => {
 			console.log(data);
 		});
 

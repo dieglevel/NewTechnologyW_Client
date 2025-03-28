@@ -1,3 +1,4 @@
+import { heroui } from "@heroui/theme";
 import { nextui } from "@nextui-org/theme";
 import type { Config } from "tailwindcss";
 
@@ -9,6 +10,7 @@ export default {
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/containers/**/*.{js,ts,jsx,tsx,mdx}",
 		"./node_modules/@nextui-org/theme/dist/components/(button|image|input|input-otp|link|radio|ripple|spinner|form).js",
+		"./node_modules/@heroui/theme/dist/components/(toast|spinner).js",
 	],
 	theme: {
 		extend: {
@@ -105,5 +107,18 @@ export default {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate"), nextui()],
+	plugins: [
+		require("tailwindcss-animate"),
+		nextui(),
+		heroui({
+			themes: {
+				light: {
+					colors: {
+						danger: "#FF4D4F",
+					},
+				},
+				dark: {},
+			},
+		}),
+	],
 } satisfies Config;

@@ -1,5 +1,5 @@
 
-import { Login } from "@/containers/auth";
+import { Login } from "@/containers/auth/login";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
