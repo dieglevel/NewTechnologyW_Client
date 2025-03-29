@@ -1,12 +1,12 @@
 import { EmojiIcon, FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@nextui-org/input";
-import Sticker from "./sticker";
+import { StickerForm } from "@/containers/chat/main/components/footer/components";
 
 export const FooterChat = () => {
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
 			<div className="flex gap-4 px-2 py-2">
-					<Sticker />
+				<StickerForm />
 				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background">
 					<ImageIcon className="size-6 stroke-icon-second" />
 				</div>

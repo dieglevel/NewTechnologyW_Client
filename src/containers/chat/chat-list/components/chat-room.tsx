@@ -16,7 +16,7 @@ interface Props {
 	onClick?: () => void;
 }
 
-export const ChatProfile: React.FC<Props> = ({
+export const ChatRoom = ({
 	type,
 	userName,
 	message,
@@ -25,7 +25,7 @@ export const ChatProfile: React.FC<Props> = ({
 	isPin,
 	isSeen,
 	onClick,
-}) => {
+}: Props) => {
 	return (
 		<div
 			className="flex cursor-pointer flex-row items-center gap-3 px-3 py-3 transition-all hover:bg-background"

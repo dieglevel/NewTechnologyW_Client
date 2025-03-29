@@ -1,6 +1,6 @@
 "use client";
 
-import { BodyChat, FooterChat, HeaderChat } from "@/components/main-chat";
+import { BodyChat, FooterChat, HeaderChat } from "@/containers/chat/main/components";
 import { useState } from "react";
 
 export const BodyView = () => {

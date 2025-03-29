@@ -2,7 +2,7 @@ import Image from "next/image";
 
 interface Props {}
 
-export const Message: React.FC<Props> = () => {
+export const Message = ({}: Props) => {
 	return (
 		<div className="flex items-start space-x-2">
 			<Image

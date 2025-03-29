@@ -4,7 +4,6 @@ import Image from "next/image";
 interface Props {
 	colunmRight: boolean;
 	onClickColumnRight: () => void;
-
 	imageUrl: string;
 }
 

@@ -1,31 +1,26 @@
 "use client";
 
 import { SearchIcon, StickerIcon } from "@/assets/svgs";
-import { useIndexedDB } from "@/hooks/indexed-db";
 import GiphyApi from "@/lib/giphy";
 import { Input } from "@nextui-org/input";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 enum ListTabs {
-	STICKER = "STICKER",
-	EMOJI = "EMOJI",
-	GIF = "GIF",
+	Sticker = "Sticker",
+	Emoji = "Emoji",
+	Gif = "Gif",
 }
 
-const Sticker = () => {
+export const StickerForm = () => {
 	const [isHidden, setIsHidden] = useState<boolean>(true);
-	const [selectType, setSelectType] = useState<ListTabs>(ListTabs.STICKER);
+	const [selectType, setSelectType] = useState<ListTabs>(ListTabs.Sticker);
 	const ref = useRef<HTMLDivElement>(null);
 	const refIcon = useRef<HTMLDivElement>(null);
 
 	const [data, setData] = useState<any[]>([]);
 
-	const { addItem, getAllItems, getItemById, updateItem } = useIndexedDB<{ data: string; id: string }>({
-		databaseName: "sticker",
-		storeName: "sticker",
-		databaseVersion: 1,
-	});
+
 
 	useEffect(() => {
 		if (ref) {
@@ -108,5 +103,3 @@ const Sticker = () => {
 		</div>
 	);
 };
-
-export default Sticker;

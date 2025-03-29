@@ -1,42 +1,19 @@
 import type { NextConfig } from "next";
+import path from "path";
 
-const nextConfig: NextConfig = {
+const nextConfig: NextConfig = {	
 	images: {
 		remotePatterns: [
 		  {
-			 protocol: 'https',
-			 hostname: 'i.pinimg.com',
-			 port: '', // Bỏ trống nếu không dùng cổng đặc biệt
-			 pathname: '/**', // Định nghĩa đường dẫn con (wildcard)
+			 protocol: "https",
+			 hostname: "i.pinimg.com",
+			 pathname: "/**",
 		  },
 		  {
-			 protocol: 'https',
-			 hostname: 'media0.giphy.com',
-			 port: '',
-			 pathname: '/**',
+			 protocol: "https",
+			 hostname: "*.giphy.com",
+			 pathname: "/**",
 		  },
-		  {
-			protocol: 'https',
-			hostname: 'media1.giphy.com',
-			port: '',
-			pathname: '/**',
-		 },		  {
-			protocol: 'https',
-			hostname: 'media2.giphy.com',
-			port: '',
-			pathname: '/**',
-		 },		  {
-			protocol: 'https',
-			hostname: 'media3.giphy.com',
-			port: '',
-			pathname: '/**',
-		 },		  {
-			protocol: 'https',
-			hostname: 'media4.giphy.com',
-			port: '',
-			pathname: '/**',
-		 },
-		 
 		],
 	 },
 };

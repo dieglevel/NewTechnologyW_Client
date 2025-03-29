@@ -1,4 +1,4 @@
-export enum SOCKET_ON {
-   MY_LIST_ROOM = "S_myListRoom",
-   CONNECT_SERVER = "connectServer",
+export enum SocketOnType {
+   myListRoom = "S_myListRoom",
+   connectServer = "connectServer",
 }
