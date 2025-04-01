@@ -1,2 +1,2 @@
-export * from "./auth";
-export * from "./account";
+export * from "./auth.interface";
+export * from "./detail-information.interface";

@@ -59,11 +59,11 @@ api.interceptors.response.use(
 		const errorResponse: ErrorResponse = error.response.data;
 
 		if (errorResponse.statusCode === 401) {
-			addToast({
-				title: "Phiên đăng nhập đã hết hạn",
-				description: "Vui lòng đăng nhập lại",
-				color: "danger",
-			})
+			// addToast({
+			// 	title: "Phiên đăng nhập đã hết hạn",
+			// 	description: "Vui lòng đăng nhập lại",
+			// 	color: "danger",
+			// })
 			localStorage.removeItem(LocalStorageKey.TOKEN);
 			window.location.href = "/login";
 		}

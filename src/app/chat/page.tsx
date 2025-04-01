@@ -3,26 +3,43 @@
 import { getAccountApi } from "@/api/auth";
 import { BodyView, ChatList, OptionView, Sidebar } from "@/containers/chat";
 import useSocket from "@/hooks/socket";
-import { useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
+import Loading from "../loading";
 
 const ChatPage = () => {
 	const { socket } = useSocket();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		if ("serviceWorker" in navigator) {
+		  navigator.serviceWorker.register("/service-worker.ts")
+			 .then((reg) => console.log("Service Worker registered!", reg))
+			 .catch((err) => console.log("Service Worker registration failed", err));
+		}
+	 }, []);
 
 	useEffect(() => {
 		const fetch = async () => {
 			const data = await getAccountApi();
+
+			if (data) {
+				setIsLoading(false);
+			}
 		};
 
 		fetch();
 	}, []);
-
 	return (
-		<div className="flex h-full w-full flex-row min-w-[650px]">
-			<Sidebar />
-			<ChatList />
-			<BodyView />
-			<OptionView />
-		</div>
+		<>
+			{isLoading ? (
+			<Loading />) :
+			<div className="flex h-full w-full min-w-[650px] flex-row">
+				<Sidebar />
+				<ChatList />
+				<BodyView />
+				<OptionView />
+			</div>}
+		</>
 	);
 };
 
