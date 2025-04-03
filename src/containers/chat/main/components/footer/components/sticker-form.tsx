@@ -88,6 +88,7 @@ export const StickerForm = () => {
 				<div className="flex max-h-[400px] w-full flex-wrap items-center justify-center gap-2 overflow-y-auto p-2">
 					{data.map((item) => (
 						<Image
+							priority
 							className="cursor-pointer p-3 hover:bg-third"
 							alt="sticker"
 							key={item.id}

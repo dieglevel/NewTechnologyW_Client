@@ -25,7 +25,7 @@ export const deleteDetailInformation = createAsyncThunk("idb/deleteDetailInforma
 });
 
 interface IDBState {
-  detailInformation: IDetailInformation|null;
+  detailInformation: IDetailInformation | null;
   loading: boolean;
 }
 

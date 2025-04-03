@@ -10,7 +10,7 @@ export default {
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/containers/**/*.{js,ts,jsx,tsx,mdx}",
 		"./node_modules/@nextui-org/theme/dist/components/(button|image|input|input-otp|link|radio|ripple|spinner|form).js",
-		"./node_modules/@heroui/theme/dist/components/(toast|spinner).js",
+		"./node_modules/@heroui/theme/dist/components/(modal|toast|spinner).js",
 	],
 	theme: {
 		extend: {

@@ -3,7 +3,7 @@
 import { getAccountApi } from "@/api/auth";
 import { BodyView, ChatList, OptionView, Sidebar } from "@/containers/chat";
 import useSocket from "@/hooks/socket";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Loading from "../loading";
 
 const ChatPage = () => {
@@ -13,9 +13,9 @@ const ChatPage = () => {
 	useEffect(() => {
 		const fetch = async () => {
 			const data = await getAccountApi();
+
 			if (data) {
 				setIsLoading(false);
-				socket;
 			}
 		};
 
@@ -24,15 +24,13 @@ const ChatPage = () => {
 	return (
 		<>
 			{isLoading ? (
-				<Loading />
-			) : (
-				<div className="flex h-full w-full min-w-[650px] flex-row">
-					<Sidebar />
-					<ChatList />
-					<BodyView />
-					<OptionView />
-				</div>
-			)}
+			<Loading />) :
+			<div className="flex h-full w-full min-w-[650px] flex-row">
+				<Sidebar />
+				<ChatList />
+				<BodyView />
+				<OptionView />
+			</div>}
 		</>
 	);
 };

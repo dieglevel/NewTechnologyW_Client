@@ -21,7 +21,6 @@ export const getAccountApi = async () => {
 			detailInformation: IDetailInformation;
 		}>>("/auth/my-account");
 
-		console.log(response.data.data.detailInformation)
 		return response.data;
 	} catch (e) {
 		throw e as ErrorResponse;
