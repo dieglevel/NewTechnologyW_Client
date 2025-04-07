@@ -1,8 +1,8 @@
 "use client";
 
 import { LockIcon } from "@/assets/svgs";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 
 export const Password = () => {
 	const goUpdateProfile = () => {

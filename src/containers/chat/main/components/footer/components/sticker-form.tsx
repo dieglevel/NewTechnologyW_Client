@@ -2,7 +2,7 @@
 
 import { SearchIcon, StickerIcon } from "@/assets/svgs";
 import GiphyApi from "@/lib/giphy";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -92,6 +92,7 @@ export const StickerForm = () => {
 							className="cursor-pointer p-3 hover:bg-third"
 							alt="sticker"
 							key={item.id}
+							unoptimized
 							src={item.images.fixed_width.url}
 							width={120}
 							height={120}

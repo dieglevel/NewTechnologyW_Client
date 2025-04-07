@@ -1,5 +1,5 @@
 import { EmojiIcon, FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import { StickerForm } from "@/containers/chat/main/components/footer/components";
 
 export const FooterChat = () => {

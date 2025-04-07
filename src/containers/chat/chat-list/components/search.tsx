@@ -1,7 +1,7 @@
 "use client";
 
 import { AddFriendIcon, AddGroupIcon, SearchIcon } from "@/assets/svgs";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 
 export const SearchComponent = () => {
 	return (

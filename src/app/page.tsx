@@ -3,10 +3,7 @@
 import { LocalStorageKey } from "@/lib/local-storage";
 import { useEffect } from "react";
 
-
-
 export default function Home() {
-	
 	useEffect(() => {
 		// Check if the user is logged in by checking the token in localStorage
 		const token = localStorage.getItem(LocalStorageKey.TOKEN);
@@ -19,7 +16,5 @@ export default function Home() {
 		}
 	}, []);
 
-	return (
-		<></>
-	);
+	return <></>;
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { InputOtp } from "@nextui-org/input-otp";
+import { Button } from "@heroui/button";
+import { InputOtp } from "@heroui/input-otp";
 
 export const OTP = () => {
 	const goPassword = () => {

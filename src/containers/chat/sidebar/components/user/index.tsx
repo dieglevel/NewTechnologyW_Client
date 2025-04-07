@@ -1,6 +1,7 @@
 import { avatarDefault } from "@/assets/images";
 import { AppDispatch, RootState } from "@/redux/store";
 import { fetchDetailInformation } from "@/redux/store/models/detail-information-slice";
+import { useDisclosure } from "@heroui/modal";
 import Image from "next/image";
 import { use, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +17,7 @@ export const User = () => {
 		console.log("detailInformation", detailInformation);
 	}, [detailInformation]);
 
+	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
 	return (
 		<>
@@ -26,14 +28,14 @@ export const User = () => {
 				className="rounded-full cursor-pointer"
 				width={40}
 				height={40}
-				
+				onClick={onOpen}
 			></Image>
 
 			<InformationModal
-				// isOpen={isOpen}
-				// onClose={onClose}
-				// onOpen={onOpen}
-				// onOpenChange={onOpenChange}
+				isOpen={isOpen}
+				onClose={onClose}
+				onOpen={onOpen}
+				onOpenChange={onOpenChange}
 			></InformationModal>
 		</>
 	);

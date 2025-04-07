@@ -28,6 +28,7 @@ const useSocket = () => {
 	const connectDetailInformation = (socketInstance: Socket) => {
 		// Detail information
 		socketInstance?.on(SocketOnType.getDetailInformation, (data: IDetailInformation) => {
+			console.log("Catching Detail Infomation: ", data)
 			dispatch(addDetailInformation(data));
 		});
 

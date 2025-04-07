@@ -1,5 +1,5 @@
+import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
-import { Button } from "@nextui-org/button";
 
 interface Props {
 	isOpen: boolean;
@@ -8,8 +8,7 @@ interface Props {
 	onOpen: () => void;
 }
 
-const InformationModal = () => {
-  const { isOpen, onOpenChange, onClose } = useDisclosure();
+const InformationModal = ({isOpen, onOpenChange, onClose, onOpen}: Props) => {
 
 	return (
 		<Modal
