@@ -1,7 +1,8 @@
 import Loading from "@/app/loading";
-import { avatarDefault } from "@/assets/images";
+import { avatarDefault, defaultBackground } from "@/assets/images";
 import { EditIcon } from "@/assets/svgs";
 import { RootState } from "@/redux/store";
+import { changeDateToString } from "@/utils";
 import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import Image from "next/image";
@@ -25,6 +26,8 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 				<Modal
 					isOpen={isOpen}
 					onOpenChange={onOpenChange}
+					className={isOpen ? "" : "inert"}
+					aria-hidden={!isOpen}
 				>
 					<ModalContent className="divide-y-2">
 						{(onClose) => (
@@ -37,7 +40,7 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 										<div className="relative flex h-36 w-full select-none items-center justify-center rounded-lg bg-slate-100 shadow-md">
 											<div className="w-full">
 												<Image
-													src={detailInformation?.thumbnailUrl ?? avatarDefault}
+													src={detailInformation?.thumbnailUrl ?? defaultBackground}
 													alt="Thumbnail"
 													className="h-36 w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
 													width={240}
@@ -82,7 +85,9 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 														Ngày sinh
 													</p>
 													<p className="text-base font-medium text-text">
-														{detailInformation?.dateOfBirth?.getDate() ?? "-"}
+														{changeDateToString(
+															detailInformation?.dateOfBirth ?? null,
+														)}
 													</p>
 												</div>
 												<div className="flex flex-row items-center gap-4">

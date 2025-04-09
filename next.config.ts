@@ -26,6 +26,11 @@ const nextConfig: NextConfig = withPWA({
 				hostname: "*.giphy.com",
 				pathname: "/**",
 			},
+			{
+				protocol: "http",
+				hostname: "res.cloudinary.com",
+				pathname: "/**",
+			}
 		],
 	},
 });

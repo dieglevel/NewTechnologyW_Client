@@ -1,32 +1,39 @@
 "use client";
 
+import { uploadSingleImageApi } from "@/api";
 import { avatarDefault } from "@/assets/images";
 import { CalendarIcon, PhoneIcon } from "@/assets/svgs";
+import { ErrorResponse } from "@/lib/axios";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Radio, RadioGroup } from "@heroui/radio";
+import { Spinner } from "@heroui/spinner";
+import { addToast } from "@heroui/toast";
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";
+import { handleImageChange, handleUpdateProfile } from "./handle";
 
 export const UpdateProfile = () => {
-	const [imageSrc, setImageSrc] = useState<string | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	const [uploading, setUploading] = useState(false);
 
 	const [fullName, setFullName] = useState<string>("");
-	const [dateOfBirth, setDateOfBirth] = useState<string>("");
+	const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date());
 	const [gender, setGender] = useState<boolean>(true);
 
-	const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file && file.type.startsWith('image/')) {
-		  const reader = new FileReader();
-		  reader.onloadend = () => {
-			 setImageSrc(reader.result as string);
-		  };
-		  reader.readAsDataURL(file);
-		} else {
-		  setImageSrc(null);
-		}
-	 };
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleChangeFullName = (e: ChangeEvent<HTMLInputElement>) => {
+		setFullName(e.target.value);
+	}
+
+	const handleChangeDateOfBirth = (e: ChangeEvent<HTMLInputElement>) => {
+		setDateOfBirth(new Date(e.target.value));
+	}
+
+	const handleChangeGender = (e: ChangeEvent<HTMLInputElement>) => {
+		setGender(e.target.value === "true");
+	}
 
 	return (
 		<div className="flex h-screen flex-col items-center gap-6 pt-14">
@@ -44,19 +51,30 @@ export const UpdateProfile = () => {
 				</div>
 				<div className="flex w-full flex-col items-center justify-center gap-6 px-20 py-10">
 					<div className="flex w-full flex-col items-center justify-center gap-2">
-						<Image
-							priority
-							src={imageSrc || avatarDefault}
-							alt="Avatar"
-							className="rounded-full w-32 h-32 object-contain border-3 border-primary"
-							width={100}
-							height={100}
-						/>
+						<div className="relative flex items-center justify-center">
+							{uploading && (
+								<Spinner
+									className="absolute"
+									size="lg"
+									color="primary"
+								/>
+							)}
+							<Image
+								priority
+								src={previewUrl || avatarDefault}
+								alt="Avatar"
+								className={`h-32 w-32 rounded-full border-4 border-blue-500 object-contain shadow-lg ${uploading && "opacity-70"}`}
+								width={100}
+								height={100}
+							/>
+						</div>
 						<Input
+							disabled={uploading}
+							isDisabled={uploading}
 							type="file"
 							title="Chọn ảnh đại diện"
 							placeholder="asd"
-							onChange={handleFileChange}
+							onChange={(e) => handleImageChange(e, setUploading, setPreviewUrl)}
 							accept="image/*"
 							size="md"
 							variant="faded"
@@ -72,6 +90,9 @@ export const UpdateProfile = () => {
 							variant="underlined"
 							size="sm"
 							placeholder="Họ và tên"
+							value={fullName}
+							onChange={handleChangeFullName}
+							isDisabled={isLoading}
 						/>
 					</div>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
@@ -79,6 +100,10 @@ export const UpdateProfile = () => {
 							type="date"
 							size="sm"
 							variant="underlined"
+							placeholder="Ngày sinh"
+							value={dateOfBirth.toISOString().split("T")[0]}
+							onChange={handleChangeDateOfBirth}
+							isDisabled={isLoading}
 						/>
 					</div>
 					<RadioGroup
@@ -88,6 +113,7 @@ export const UpdateProfile = () => {
 						onChange={() => {
 							setGender(!gender);
 						}}
+						isDisabled={isLoading}
 					>
 						<Radio value="true">Nam</Radio>
 						<Radio value="false">Nữ</Radio>
@@ -95,6 +121,13 @@ export const UpdateProfile = () => {
 					<Button
 						size="md"
 						className="w-full bg-primary text-white"
+						onPress={() => {handleUpdateProfile({
+							gender,
+							fullName,
+							dateOfBirth,
+						})}}
+						isLoading={isLoading}
+						isDisabled={isLoading}
 					>
 						Xác nhận
 					</Button>

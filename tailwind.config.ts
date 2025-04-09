@@ -8,7 +8,7 @@ export default {
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/containers/**/*.{js,ts,jsx,tsx,mdx}",
-		"./node_modules/@heroui/theme/dist/components/(button|dropdown|image|input|input-otp|link|modal|radio|toast|ripple|spinner|menu|divider|popover|form).js",
+		"./node_modules/@heroui/theme/dist/components/(button|dropdown|image|input|input-otp|link|modal|radio|spinner|toast|ripple|menu|divider|popover|form).js",
 	],
 	theme: {
 		extend: {

@@ -3,7 +3,6 @@ import { SVGProps } from "react";
 export const EyeSlashFilledIcon = (props: SVGProps<SVGSVGElement>) => {
    return (
      <svg
-       aria-hidden="true"
        fill="none"
        focusable="false"
        height="1em"

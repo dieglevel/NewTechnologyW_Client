@@ -48,6 +48,7 @@ export const User = () => {
 							key={"detail-information"}
 							onPress={onOpen}
 							className="font-bold"
+							textValue="Thông tin cá nhân"
 						>
 							<p className="font-bold">Thông tin cá nhân</p>
 						</DropdownItem>
