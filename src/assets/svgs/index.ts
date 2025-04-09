@@ -21,3 +21,8 @@ export * from "./pin";
 export * from "./send";
 export * from "./sticker";
 export * from "./user-chat";
+
+export * from "./eye-filled-icon";
+export * from "./eye-slash-filled-icon";
+
+export * from "./edit"

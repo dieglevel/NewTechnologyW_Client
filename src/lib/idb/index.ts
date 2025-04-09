@@ -2,6 +2,34 @@
 const DB_NAME = "MyDatabase";
 const DB_VERSION = 1;
 
+export const RootIDB = () => {
+  const initDB = () => {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+      request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains("users")) {
+          db.createObjectStore("users", { keyPath: "id", autoIncrement: true });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  const deleteDB = () => {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(DB_NAME);
+      request.onsuccess = () => resolve(true);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  return { initDB, deleteDB };
+}
+
 export class IDBManager<T extends { id?: string }> {
   private storeName: string;
 
@@ -9,7 +37,7 @@ export class IDBManager<T extends { id?: string }> {
     this.storeName = storeName;
   }
 
-  private async initDB(): Promise<IDBDatabase> {
+  public async initDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -86,3 +114,5 @@ export class IDBManager<T extends { id?: string }> {
     });
   }
 }
+
+

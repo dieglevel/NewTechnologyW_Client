@@ -2,7 +2,7 @@
 
 import { getAccountApi } from "@/api/auth";
 import { BodyView, ChatList, OptionView, Sidebar } from "@/containers/chat";
-import useSocket from "@/hooks/socket";
+import useSocket from "@/hooks/socket/socket";
 import { Suspense, useEffect, useState } from "react";
 import Loading from "../loading";
 

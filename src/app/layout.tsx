@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-const APP_NAME = "PWA App";
-const APP_DEFAULT_TITLE = "My Awesome PWA App";
+const APP_NAME = "Zalo";
+const APP_DEFAULT_TITLE = "Zalo";
 const APP_TITLE_TEMPLATE = "%s - PWA App";
 const APP_DESCRIPTION = "Best PWA app in the world!";
 
@@ -72,8 +72,8 @@ export default function RootLayout({
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ReduxProvider>
 					<HeroUIProvider>
-						<ToastProvider placement="top-center" />
-						{children}
+						<ToastProvider placement="top-center" toastProps={{classNames: {title: "font-bold text-xl"}}}/>
+							{children}
 					</HeroUIProvider>
 				</ReduxProvider>
 			</body>

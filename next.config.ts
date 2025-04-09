@@ -4,6 +4,7 @@ import path from "path";
 
 const withPWA = withPWAInit({
 	dest: "public",
+	// disable: process.env.NODE_ENV === "development",
 	fallbacks: {
 		document: "/~offline",
 		// This is for /_next/.../.json files.

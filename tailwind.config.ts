@@ -8,8 +8,7 @@ export default {
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/containers/**/*.{js,ts,jsx,tsx,mdx}",
-		"./node_modules/@heroui/theme/dist/components/(button|image|input|input-otp|link|radio|ripple|spinner|form).js",
-		"./node_modules/@heroui/theme/dist/components/(modal|toast|spinner).js",
+		"./node_modules/@heroui/theme/dist/components/(button|dropdown|image|input|input-otp|link|modal|radio|toast|ripple|spinner|menu|divider|popover|form).js",
 	],
 	theme: {
 		extend: {
@@ -108,15 +107,16 @@ export default {
 	},
 	plugins: [
 		require("tailwindcss-animate"),
-		heroui({
-			themes: {
-				light: {
-					colors: {
-						danger: "#FF4D4F",
-					},
-				},
-				dark: {},
-			},
-		}),
+		heroui(),
+		// 	{
+		// 	themes: {
+		// 		light: {
+		// 			colors: {
+		// 				danger: "#FF4D4F",
+		// 			},
+		// 		},
+		// 		dark: {},
+		// 	},
+		// }
 	],
 } satisfies Config;

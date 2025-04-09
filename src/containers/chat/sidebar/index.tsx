@@ -9,15 +9,14 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { User } from "./components/user";
+import Setting from "./components/setting/setting";
 
 export const Sidebar = () => {
 	const { selected, setSelect } = useSidebar();
 	return (
-		<div className="flex h-lvh w-[60px] flex-col justify-between bg-[#1384fd] p-1">
+		<div className="flex h-lvh w-[120px] flex-col justify-between bg-[#1384fd] p-1">
 			<div className="flex flex-col items-center justify-center gap-4">
-				<div className="h-[40px] w-[40px] mt-2">
-					<User />
-				</div>
+				<User />
 				<SVGButton
 					className={selected === SideBarSelected.Chat ? "bg-icon-active" : ""}
 					onClick={() => {
@@ -45,9 +44,7 @@ export const Sidebar = () => {
 					<CloudIcon className="size-8 stroke-[3px] text-icon-active" />
 				</SVGButton>
 
-				<SVGButton>
-					<SettingIcon className="size-8 stroke-[3px] text-icon-active" />
-				</SVGButton>
+				<Setting />
 			</div>
 		</div>
 	);
