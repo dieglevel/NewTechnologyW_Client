@@ -26,3 +26,5 @@ export * from "./eye-filled-icon";
 export * from "./eye-slash-filled-icon";
 
 export * from "./edit"
+
+export * from "./back"

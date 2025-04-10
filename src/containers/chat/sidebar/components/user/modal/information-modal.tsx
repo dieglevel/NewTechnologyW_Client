@@ -4,8 +4,9 @@ import { EditIcon } from "@/assets/svgs";
 import { RootState } from "@/redux/store";
 import { changeDateToString } from "@/utils";
 import { Button } from "@heroui/button";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
+	const router = useRouter();
 	const { detailInformation, status } = useSelector((state: RootState) => state.detailInformation);
 
 	return (
@@ -33,32 +35,32 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 						{(onClose) => (
 							<>
 								<ModalHeader className="flex flex-col gap-1 text-center">
-									Thông tin tài khoản
+									<p>Thông tin tài khoản</p>
 								</ModalHeader>
 								<ModalBody>
 									<div className="relative my-4 flex flex-col gap-4">
 										<div className="relative flex h-36 w-full select-none items-center justify-center rounded-lg bg-slate-100 shadow-md">
 											<div className="w-full">
 												<Image
-													src={detailInformation?.thumbnailUrl ?? defaultBackground}
+													src={
+														detailInformation?.thumbnailUrl ??
+														defaultBackground
+													}
 													alt="Thumbnail"
-													className="h-36 w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
+													className="h-52 w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
 													width={240}
 													height={60}
 													priority
 												/>
 											</div>
-											<div className="absolute left-0 top-28 flex flex-row items-center justify-center gap-2 py-4">
+											<div className="absolute left-0 top-36 flex flex-row items-center justify-center gap-2 py-4">
 												<div className="relative flex items-center justify-center">
-													<div className="absolute -right-0 bottom-0 flex size-6 translate-x-0 translate-y-0 items-center justify-center rounded-full bg-body shadow-md transition-all duration-300 ease-in-out hover:bg-slate-200 hover:shadow-lg">
-														<EditIcon className="size-4 cursor-pointer" />
-													</div>
 													<Image
 														src={
 															detailInformation?.avatarUrl ?? avatarDefault
 														}
 														alt="Avatar"
-														className="max-h-20 min-h-20 min-w-20 max-w-20 cursor-pointer rounded-full border-2 border-solid border-white object-cover shadow-md"
+														className="max-h-20 min-h-20 min-w-20 max-w-20 cursor-pointer rounded-full border-4 border-solid border-blue-600 object-cover shadow-md"
 														width={60}
 														height={60}
 													/>
@@ -69,7 +71,7 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 											</div>
 										</div>
 
-										<div className="mt-16 flex flex-col gap-4 rounded-lg bg-slate-100 p-4 shadow-md">
+										<div className="mt-24 flex flex-col gap-4 rounded-lg bg-slate-100 p-4 shadow-md ">
 											<p className="text-lg font-bold">Thông tin cá nhân</p>
 											<div className="flex flex-col gap-2">
 												<div className="flex flex-row items-center gap-4">
@@ -113,7 +115,9 @@ const InformationModal = ({ isOpen, onOpenChange, onClose, onOpen }: Props) => {
 								<ModalFooter>
 									<Button
 										color="primary"
-										onPress={onClose}
+										onPress={() => {
+											router.push("/update-profile");
+										}}
 										className="w-full text-lg font-bold"
 									>
 										Cập nhật

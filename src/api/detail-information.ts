@@ -22,3 +22,12 @@ export const updateProfile = async (profile: UpdateProfileRequest) => {
       throw error as ErrorResponse
    }
 }
+
+export const getProfile = async () => {
+   try {
+      const response = await api.get<BaseResponse<IDetailInformation>>("/detail-information/my-detail-information")
+      return response.data
+   } catch (error) {
+      throw error as ErrorResponse
+   }
+}

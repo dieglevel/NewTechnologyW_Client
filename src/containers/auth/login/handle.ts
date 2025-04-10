@@ -44,7 +44,6 @@ export const handleLogin = async (
 				error.statusCode === 404 ? "Sai tài khoản hoặc mật khẩu" : "Có lỗi xảy ra, vui lòng thử lại sau",
 			color: "danger",
 		});
-	} finally {
 		setIsLoading(false);
 	}
 };

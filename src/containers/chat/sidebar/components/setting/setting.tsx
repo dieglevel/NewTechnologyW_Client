@@ -19,6 +19,7 @@ const Setting = () => {
 						color="danger"
 						className="text-danger font-bold"
 						onPress={handleLogOut}
+						textValue="Đăng xuất"
 					>
 						<p className="font-bold">Đăng xuất</p>
 					</DropdownItem>
