@@ -1,9 +1,14 @@
 import { updateProfile, UpdateProfileRequest, uploadSingleImageApi } from "@/api";
+import { SocketEmit, SocketOn } from "@/constants/socket";
 import { ErrorResponse } from "@/lib/axios";
+import { LocalStorage } from "@/lib/local-storage";
+import { socketService } from "@/lib/socket/socket";
+import { IDetailInformation } from "@/types/implement";
 import { addToast } from "@heroui/toast";
 import { Dispatch, SetStateAction } from "react";
+import { Socket } from "socket.io-client";
 
-export const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, setUploading: Dispatch<SetStateAction<boolean>>, setPreviewUrl: Dispatch<SetStateAction<string | null>>) => {
+export const handleImageChange = async (id: string | null, e: React.ChangeEvent<HTMLInputElement>, setUploading: Dispatch<SetStateAction<boolean>>, setPreviewUrl: Dispatch<SetStateAction<string | null>>) => {
    setUploading(true);
 
    const file = e.target.files?.[0];
@@ -13,6 +18,7 @@ export const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, 
       return;
    }
    try {
+      const userId = localStorage.getItem(LocalStorage.userId)
       const response = await uploadSingleImageApi(file);
       if (response.statusCode === 200) {
          addToast({
@@ -24,12 +30,17 @@ export const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, 
          });
 
          try {
-            const responseDetailInformation = await updateProfile({
+            socketService.emit(SocketEmit.detailInformation, {
                avatarUrl: response.data.url,
             });
+            socketService?.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
+               if (data.id === userId) {
+                  setPreviewUrl(response.data.url ?? "");
+                  setUploading(false);
+               }
+            });
+            socketService?.off(SocketOn.updateUserDetailInformation);
 
-            setPreviewUrl(response.data.url ?? "");
-            setUploading(false);
          }
          catch (error) {
             const errorDetailInformation = error as ErrorResponse;
@@ -59,7 +70,7 @@ export const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, 
    }
 };
 
-export const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>, setUploading: Dispatch<SetStateAction<boolean>>, setPreviewUrl: Dispatch<SetStateAction<string | null>>) => {
+export const handleThumbnailChange = async (userId: string | null ,e: React.ChangeEvent<HTMLInputElement>, setUploading: Dispatch<SetStateAction<boolean>>, setPreviewUrl: Dispatch<SetStateAction<string | null>>) => {
    setUploading(true);
 
    const file = e.target.files?.[0];
@@ -80,12 +91,17 @@ export const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElemen
          });
 
          try {
-            const responseDetailInformation = await updateProfile({
+            socketService?.emit(SocketEmit.detailInformation, {
                thumbnailUrl: response.data.url,
             });
+            socketService?.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
+               if (data.id === userId) {
+                  setPreviewUrl(response.data.url ?? "");
+                  setUploading(false);
+               }
+            });
+            socketService?.off(SocketOn.updateUserDetailInformation);
 
-            setPreviewUrl(response.data.url ?? "");
-            setUploading(false);
          }
          catch (error) {
             const errorDetailInformation = error as ErrorResponse;
@@ -115,12 +131,23 @@ export const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElemen
    }
 };
 
-export const handleUpdateProfile = async (profile: UpdateProfileRequest) => {
+export const handleUpdateProfile = async (userId: string|null, profile: UpdateProfileRequest) => {
    try {
-      const response = await updateProfile(profile);
-      // to chat
+      socketService?.emit(SocketEmit.detailInformation, profile);
+      socketService?.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
+         if (data.id === userId) {
+            addToast({
+               classNames: { title: "font-bold", description: "text-sm" },
+               variant: "solid",
+               title: "Cập nhật tài khoản thành công",
+               description: "Cập nhật tài khoản thành công",
+               color: "success",
+            });
+         }
+      });
+      socketService?.off(SocketOn.updateUserDetailInformation);
+      
       window.location.href = "/chat";
-
    }
    catch (err) {
       const error = err as ErrorResponse;

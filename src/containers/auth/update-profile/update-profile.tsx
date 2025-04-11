@@ -17,6 +17,9 @@ import { DateInput } from "@heroui/date-input";
 import Loading from "@/app/loading";
 
 export const UpdateProfile = () => {
+
+	const [idDetailInformation, setIdDetailInformation] = useState<string | null>(null);
+
 	const [previewUrlThumbnailUrl, setPreviewUrlThumbnailUrl] = useState<string | null>(null);
 	const [upLoadingThumbnailUrl, setUpLoadingThumbnailUrl] = useState<boolean>(false);
 	const thumbnailRef = useRef<HTMLInputElement>(null);
@@ -39,6 +42,7 @@ export const UpdateProfile = () => {
 			try {
 				const user = await getProfile();
 				if (user.statusCode === 200) {
+					setIdDetailInformation(user.data.id);
 					setPreviewUrlThumbnailUrl(user.data.thumbnailUrl ?? null);
 					setPreviewUrl(user.data.avatarUrl ?? null);
 					setFullName(user.data.fullName ?? "");
@@ -133,6 +137,7 @@ export const UpdateProfile = () => {
 										className="hidden"
 										onChange={(e) => {
 											handleThumbnailChange(
+												idDetailInformation,
 												e,
 												setUpLoadingThumbnailUrl,
 												setPreviewUrlThumbnailUrl,
@@ -171,7 +176,12 @@ export const UpdateProfile = () => {
 									accept="image/*"
 									className="hidden"
 									onChange={(e) => {
-										handleImageChange(e, setUpLoading, setPreviewUrl);
+										handleImageChange(
+											idDetailInformation,
+											e,
+											setUpLoading,
+											setPreviewUrl,
+										);
 									}}
 								/>
 							</div>
@@ -213,22 +223,24 @@ export const UpdateProfile = () => {
 							<Button
 								size="md"
 								className="w-full bg-primary text-white"
-								onPress={async() => {
+								onPress={async () => {
 									setIsLoadingSubmit(true);
 									setUpLoading(true);
 									setUpLoadingThumbnailUrl(true);
-									await handleUpdateProfile({
-										gender,
-										fullName,
-										dateOfBirth: dateOfBirth.toDate(),
-									});
+									await handleUpdateProfile(
+										idDetailInformation,
+										{
+											gender,
+											fullName,
+											dateOfBirth: dateOfBirth.toDate(),
+										},
+									);
 									setUpLoading(false);
 									setUpLoadingThumbnailUrl(false);
 									setIsLoadingSubmit(false);
 								}}
 								isLoading={isLoadingSubmit}
 								isDisabled={isLoadingSubmit}
-								
 							>
 								Xác nhận
 							</Button>

@@ -7,53 +7,60 @@ import { use, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import InformationModal from "./modal/information-modal";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from "@heroui/dropdown";
+import { openModal } from "@/redux/store/ui";
 
 export const User = () => {
+	const [openDropdown, setOpenDropdown] = useState(false);
+
 	const { detailInformation, status: statusDetailInformation } = useSelector(
 		(state: RootState) => state.detailInformation,
 	);
+	const {isOpen: isOpenModal, type} = useSelector((state: RootState) => state.modal);
+
 	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
 		if (statusDetailInformation === "idle") {
-			dispatch(fetchDetailInformation()); 
+			dispatch(fetchDetailInformation());
 		}
 	}, [dispatch, statusDetailInformation]);
-	const [openDropdown, setOpenDropdown] = useState(false);
-	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+	
 
 	const handleOpenDropdown = () => {
 		setOpenDropdown(!openDropdown);
-	}
+	};
 
 	const handleOpenModel = () => {
 		setOpenDropdown(false);
-		onOpen();
-	}
-
-
-
+		dispatch(openModal({ isOpen: true, type: "detailInformation" }));
+	};
 
 	return (
 		<>
-			<Dropdown placement="right-start" isOpen={openDropdown} onOpenChange={handleOpenDropdown}   className="w-full">
+			<Dropdown
+				placement="right-start"
+				isOpen={openDropdown}
+				onOpenChange={handleOpenDropdown}
+				className="w-full"
+			>
 				<DropdownTrigger>
-					<div className="aspect-square w-12 cursor-pointer overflow-hidden rounded-full border-2 border-white shadow-md select-none">
-						<Image
-							src={detailInformation?.avatarUrl ?? avatarDefault}
-							alt="Avatar"
-							width={50}
-							height={50}
-							className="h-full w-full object-cover"
-							priority
-						/>
+					<div className="aspect-square h-12 w-12 cursor-pointer select-none overflow-hidden rounded-full border-2 border-white shadow-md">
+						{detailInformation?.avatarUrl && (
+							<Image
+								src={detailInformation?.avatarUrl ?? avatarDefault}
+								alt="Avatar"
+								width={48}
+								height={48}
+								priority
+							/>
+						)}
 					</div>
 				</DropdownTrigger>
-				<DropdownMenu >
+				<DropdownMenu>
 					<DropdownSection
 						key={"user-information"}
 						className="font-semibold"
-						classNames={{heading: "text-center"}}
+						classNames={{ heading: "text-center" }}
 						title={detailInformation?.fullName ?? "-"}
 					>
 						<DropdownItem
@@ -67,12 +74,7 @@ export const User = () => {
 					</DropdownSection>
 				</DropdownMenu>
 			</Dropdown>
-			<InformationModal
-				isOpen={isOpen}
-				onClose={onClose}
-				onOpen={onOpen}
-				onOpenChange={onOpenChange}
-			></InformationModal>
+
 		</>
 	);
 };

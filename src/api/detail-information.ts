@@ -1,4 +1,5 @@
 import { api, ErrorResponse } from "@/lib/axios"
+import { LocalStorage } from "@/lib/local-storage";
 import { BaseResponse } from "@/types";
 import { IDetailInformation } from "@/types/implement";
 
@@ -24,8 +25,9 @@ export const updateProfile = async (profile: UpdateProfileRequest) => {
 }
 
 export const getProfile = async () => {
+   const userId = localStorage.getItem(LocalStorage.userId)
    try {
-      const response = await api.get<BaseResponse<IDetailInformation>>("/detail-information/my-detail-information")
+      const response = await api.get<BaseResponse<IDetailInformation>>(`/detail-information/${userId}`)
       return response.data
    } catch (error) {
       throw error as ErrorResponse

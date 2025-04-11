@@ -8,7 +8,7 @@ export const loginApi = async (identifier: string, password: string) => {
 	try {
 		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
 		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
-
+		localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 		return response.data;
 	} catch (e) {
 		throw e as ErrorResponse;

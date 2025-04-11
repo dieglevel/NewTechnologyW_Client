@@ -11,6 +11,7 @@
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@giphy/js-fetch-api": "^5.6.0",
+    "@heroui/avatar": "^2.2.13",
     "@heroui/button": "2.2.16",
     "@heroui/date-input": "^2.3.16",
     "@heroui/dropdown": "^2.3.17",

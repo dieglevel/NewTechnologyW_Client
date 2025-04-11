@@ -13,10 +13,24 @@ import Setting from "./components/setting/setting";
 
 export const Sidebar = () => {
 	const { selected, setSelect } = useSidebar();
+
+		const { detailInformation, status: statusDetailInformation } = useSelector(
+			(state: RootState) => state.detailInformation,
+		);
+		const dispatch = useDispatch<AppDispatch>();
+	
+		useEffect(() => {
+
+		}, [statusDetailInformation]);
+		
 	return (
-		<div className="flex h-lvh w-[120px] flex-col justify-between bg-[#1384fd] p-1">
+		<div className="flex h-lvh min-w-[70px] max-w-[70px] flex-col justify-between bg-[#1384fd] p-1">
 			<div className="flex flex-col items-center justify-center gap-4">
-				<User />
+				{statusDetailInformation === "succeeded" ? (
+					<User />
+				) : ( 
+					<div className="h-12 w-12 "></div>
+				)}
 				<SVGButton
 					className={selected === SideBarSelected.Chat ? "bg-icon-active" : ""}
 					onClick={() => {
