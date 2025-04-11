@@ -6,7 +6,7 @@ import useSocket from "@/hooks/socket/socket";
 import { useEffect, useState } from "react";
 import Loading from "../loading";
 import { IDBManager } from "@/lib/idb";
-import { LocalStorageKey } from "@/lib/local-storage";
+import { LocalStorage } from "@/lib/local-storage";
 import { Spinner } from "@heroui/spinner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -19,14 +19,14 @@ const ChatPage = () => {
 
 	useEffect(() => {
 		const fetch = async () => {
-			const token = localStorage.getItem(LocalStorageKey.TOKEN);
+			const token = localStorage.getItem(LocalStorage.token);
 			if (token) {
 				const data = await getAccountApi();
 				if (data) {
 					socket;
 				}
 			} else {
-				localStorage.removeItem(LocalStorageKey.TOKEN);
+				localStorage.removeItem(LocalStorage.token);
 				window.location.href = "/login";
 			}
 		};

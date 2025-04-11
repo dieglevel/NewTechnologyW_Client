@@ -1,12 +1,12 @@
 "use client";
 
-import { LocalStorageKey } from "@/lib/local-storage";
+import { LocalStorage } from "@/lib/local-storage";
 import { useEffect } from "react";
 
 export default function Home() {
 	useEffect(() => {
 		// Check if the user is logged in by checking the token in localStorage
-		const token = localStorage.getItem(LocalStorageKey.TOKEN);
+		const token = localStorage.getItem(LocalStorage.token);
 		if (token) {
 			// If the token exists, redirect to the dashboard
 			window.location.href = "/chat";

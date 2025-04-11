@@ -1,6 +1,6 @@
 import { getIpDeviceApi } from "@/api/ip-device";
 import axios from "axios";
-import { LocalStorageKey } from "../local-storage";
+import { LocalStorage } from "../local-storage";
 import { addToast } from "@heroui/toast";
 
 export interface ErrorResponse {
@@ -27,13 +27,13 @@ api.interceptors.request.use(
 		}
 
 		// Lấy token và idDevice từ localStorage
-		let token = localStorage.getItem(LocalStorageKey.TOKEN);
-		let idDevice = localStorage.getItem(LocalStorageKey.IP_DEVICE);
+		let token = localStorage.getItem(LocalStorage.token);
+		let idDevice = localStorage.getItem(LocalStorage.ipDevice);
 
 		// Nếu chưa có idDevice, gọi API để lấy và lưu lại
 		if (!idDevice) {
 			idDevice = await getIpDeviceApi();
-			localStorage.setItem(LocalStorageKey.IP_DEVICE, idDevice ?? "");
+			localStorage.setItem(LocalStorage.ipDevice, idDevice ?? "");
 		}
 
 		// Nếu có token, gán cả token và idDevice vào headers
@@ -67,7 +67,7 @@ api.interceptors.response.use(
 				description: "Vui lòng đăng nhập lại",
 				color: "danger",
 			})
-			localStorage.removeItem(LocalStorageKey.TOKEN);
+			localStorage.removeItem(LocalStorage.token);
 			window.location.href = "/login";
 		}
 

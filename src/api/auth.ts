@@ -1,13 +1,13 @@
 import { Register } from '@/containers/auth';
 import { api, ErrorResponse } from "@/lib/axios";
-import { LocalStorageKey } from "@/lib/local-storage";
+import { LocalStorage } from "@/lib/local-storage";
 import { BaseResponse } from "@/types";
 import { IAuth, IDetailInformation } from "@/types/implement";
 
 export const loginApi = async (identifier: string, password: string) => {
 	try {
 		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
-		localStorage.setItem(LocalStorageKey.TOKEN, response.data.data.accessToken);
+		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 
 		return response.data;
 	} catch (e) {
@@ -49,7 +49,7 @@ export const registerApi = async (identifier: string, password: string) => {
 		// check if email === true
 		const isEmail = identifier.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 		if (isEmail) {
-			const response = await api.post<BaseResponse<null>>("/auth/register", { "email": identifier, "phone": "", password });
+			const response = await api.post<BaseResponse<IAuth>>("/auth/register", { "email": identifier, "phone": "", password });
 			return response.data;
 		}
 

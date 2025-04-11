@@ -1,12 +1,12 @@
 import { getAccountApi, loginApi } from "@/api/auth";
 import { ErrorResponse } from "@/lib/axios";
-import { LocalStorageKey } from "@/lib/local-storage";
+import { LocalStorage } from "@/lib/local-storage";
 import { addToast } from "@heroui/toast";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
 
 export const handleCheckPage = async () => {
-	const token = localStorage.getItem(LocalStorageKey.TOKEN);
+	const token = localStorage.getItem(LocalStorage.token);
 	if (token) {
 		window.location.href = "/chat";
 	}

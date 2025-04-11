@@ -1,6 +1,6 @@
-export enum SocketOnType {
-   updateDetailInformation = "S_updateDetailInformationService",
-   getDetailInformation = "S_getDetailInformationService",
-   myListRoom = "S_myListRoom",
-   connectServer = "connectServer",
-}
+export class SocketOn {
+   public static readonly updateDetailInformation = "S_updateDetailInformationService";
+   public static readonly getDetailInformation = "S_getDetailInformationService";
+   public static readonly myListRoom = "S_myListRoom";
+   public static readonly connectServer = "connectServer";
+ }

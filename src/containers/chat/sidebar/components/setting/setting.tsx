@@ -1,6 +1,5 @@
 import { SettingIcon } from "@/assets/svgs";
 import { SVGButton } from "@/components/ui";
-import { LocalStorageKey } from "@/lib/local-storage";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from "@heroui/dropdown";
 import { handleLogOut } from "./handle";
 

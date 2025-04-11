@@ -1,7 +1,5 @@
 "use client";
 
-import { LocalStorageKey } from "@/lib/local-storage";
-import { SocketEmitType, SocketOnType } from "@/lib/socket";
 import { AppDispatch } from "@/redux/store";
 import { IDetailInformation } from "@/types/implement";
 import { useEffect, useState } from "react";
@@ -9,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import { useNetworkStatus } from '../network-status';
 import { fetchDetailInformation, setDetailInformation } from "@/redux/store/models";
+import { SocketEmit, SocketOn } from "@/lib/socket";
+import { LocalStorage } from "@/lib/local-storage";
 
 
 const URL = process.env.NEXT_PUBLIC_SOCKET_URL || null;
@@ -26,15 +26,15 @@ const useSocket = () => {
 
 // * handle socket
 	const connectDetailInformation = (socketInstance: Socket) => {
-		socketInstance?.on(SocketOnType.getDetailInformation, (data: IDetailInformation) => {
+		socketInstance?.on(SocketOn.getDetailInformation, (data: IDetailInformation) => {
 			console.log("Get detail information: ", data);
 			dispatch(setDetailInformation(data));
 		});
 	
-		socketInstance?.emit(SocketEmitType.getDetailInformation, {
+		socketInstance?.emit(SocketEmit.getDetailInformation, {
 		});
 	
-		socketInstance?.on(SocketOnType.updateDetailInformation, (data: IDetailInformation) => {
+		socketInstance?.on(SocketOn.updateDetailInformation, (data: IDetailInformation) => {
 			dispatch(setDetailInformation(data));
 			console.log("Update detail information: ", data);
 		});
@@ -56,7 +56,7 @@ const useSocket = () => {
 			return;
 		}
 
-		const token = localStorage.getItem(LocalStorageKey.TOKEN);
+		const token = localStorage.getItem(LocalStorage.token);
 		const socketInstance = io(URL ? URL : "", { extraHeaders: { token: `${token}` } });
 
 		console.log("Socket instance created: ", socketInstance);

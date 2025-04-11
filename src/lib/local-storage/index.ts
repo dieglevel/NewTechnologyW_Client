@@ -1,4 +1,5 @@
-export enum LocalStorageKey {
-   TOKEN = "_TOKEN",
-   IP_DEVICE = "_IP_DEVICE",
+export class LocalStorage {
+   public static readonly token = "_Token";
+   public static readonly ipDevice = "_IpDevice";
+   
 }

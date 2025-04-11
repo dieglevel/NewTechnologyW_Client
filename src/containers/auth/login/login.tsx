@@ -1,10 +1,6 @@
 "use client";
 
-import { loginApi } from "@/api/auth";
 import { LockIcon, PhoneIcon } from "@/assets/svgs";
-import { ErrorResponse } from "@/lib/axios";
-import { LocalStorageKey } from "@/lib/local-storage";
-import { addToast } from "@heroui/toast";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
