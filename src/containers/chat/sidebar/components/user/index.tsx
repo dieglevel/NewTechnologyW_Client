@@ -8,23 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import InformationModal from "./modal/information-modal";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from "@heroui/dropdown";
 import { openModal } from "@/redux/store/ui";
+import { ImageRender } from "./image";
 
 export const User = () => {
 	const [openDropdown, setOpenDropdown] = useState(false);
 
-	const { detailInformation, status: statusDetailInformation } = useSelector(
-		(state: RootState) => state.detailInformation,
-	);
-	const {isOpen: isOpenModal, type} = useSelector((state: RootState) => state.modal);
+	const { isOpen: isOpenModal, type } = useSelector((state: RootState) => state.modal);
 
-	const dispatch = useDispatch<AppDispatch>();
-
-	useEffect(() => {
-		if (statusDetailInformation === "idle") {
-			dispatch(fetchDetailInformation());
-		}
-	}, [dispatch, statusDetailInformation]);
-	
+	const dispatch = useDispatch();
 
 	const handleOpenDropdown = () => {
 		setOpenDropdown(!openDropdown);
@@ -44,16 +35,8 @@ export const User = () => {
 				className="w-full"
 			>
 				<DropdownTrigger>
-					<div className="aspect-square h-12 w-12 cursor-pointer select-none overflow-hidden rounded-full border-2 border-white shadow-md">
-						{detailInformation?.avatarUrl && (
-							<Image
-								src={detailInformation?.avatarUrl ?? avatarDefault}
-								alt="Avatar"
-								width={48}
-								height={48}
-								priority
-							/>
-						)}
+					<div className="flex aspect-square h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-full border-2 border-white shadow-md">
+						<ImageRender />
 					</div>
 				</DropdownTrigger>
 				<DropdownMenu>
@@ -61,7 +44,6 @@ export const User = () => {
 						key={"user-information"}
 						className="font-semibold"
 						classNames={{ heading: "text-center" }}
-						title={detailInformation?.fullName ?? "-"}
 					>
 						<DropdownItem
 							key={"detail-information"}
@@ -74,7 +56,6 @@ export const User = () => {
 					</DropdownSection>
 				</DropdownMenu>
 			</Dropdown>
-
 		</>
 	);
 };
