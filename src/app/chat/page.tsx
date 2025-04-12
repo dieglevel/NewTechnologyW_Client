@@ -24,6 +24,21 @@ const ChatPage = () => {
 				const data = await getAccountApi();
 				if (data) {
 					socketService.connect();
+
+						if (data.statusCode === 200) {
+							const detailInformation = data.data.detailInformation;
+							if (
+								!detailInformation.fullName &&
+								!detailInformation.avatarUrl &&
+								!detailInformation.gender &&
+								!detailInformation.dateOfBirth
+							) {
+								window.location.href = "/update-profile";
+								return;
+							}
+						}
+
+					
 				}
 			} else {
 				localStorage.removeItem(LocalStorage.token);
@@ -41,12 +56,11 @@ const ChatPage = () => {
 		}
 	}, [detailInformationStatus]);
 
-
 	return (
 		<>
-			{isLoading ? 
+			{isLoading ? (
 				<Loading />
-			 : 
+			) : (
 				<div className="flex min-w-[650px] flex-row">
 					<InformationModal />
 					<Sidebar />
@@ -54,7 +68,7 @@ const ChatPage = () => {
 					<BodyView />
 					<OptionView />
 				</div>
-			}
+			)}
 		</>
 	);
 };

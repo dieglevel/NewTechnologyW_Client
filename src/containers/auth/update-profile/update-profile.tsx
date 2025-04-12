@@ -15,6 +15,7 @@ import { handleImageChange, handleThumbnailChange, handleUpdateProfile } from ".
 import { getLocalTimeZone, now, parseAbsoluteToLocal, parseDate, ZonedDateTime } from "@internationalized/date";
 import { DateInput } from "@heroui/date-input";
 import Loading from "@/app/loading";
+import { socketService } from "@/lib/socket/socket";
 
 export const UpdateProfile = () => {
 
@@ -64,6 +65,9 @@ export const UpdateProfile = () => {
 				setIsLoading(false);
 			}
 		};
+
+
+		socketService.connect()
 		getUser();
 	}, []);
 

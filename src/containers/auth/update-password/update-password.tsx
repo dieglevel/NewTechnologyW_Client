@@ -6,14 +6,14 @@ import { Input } from "@heroui/input";
 import { toast } from "@heroui/theme";
 import { addToast, Toast } from "@heroui/toast";
 import { useState } from "react";
-import { checkRegister } from "./handle";
-import { useRouter } from "next/navigation";
-import { registerApi } from "@/api/auth";
+import { checkUpdatePassword } from "./handle";
+import { useRouter, useSearchParams } from "next/navigation";
+import { registerApi, updatePasswordApi } from "@/api/auth";
 
-export const Register = () => {
+export const UpdatePassword = () => {
 	const router = useRouter();
 
-	const [identify, setIdentify] = useState<string>("");
+	const identifier = useSearchParams().get("identifier") || "";
 	const [password, setPassword] = useState<string>("");
 	const [rePassword, setRePassword] = useState<string>("");
 
@@ -21,19 +21,13 @@ export const Register = () => {
 	const [showRePassword, setShowRePassword] = useState<boolean>(false);
 
 	const [error, setError] = useState<{
-		errorIdentify: string;
 		errorPassword: string;
 		errorRePassword: string;
 	}>({
-		errorIdentify: "",
 		errorPassword: "",
 		errorRePassword: "",
 	});
 	const [loading, setLoading] = useState<boolean>(false);
-
-	const handleChangeIdentify = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setIdentify(e.target.value);
-	};
 
 	const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
@@ -45,7 +39,7 @@ export const Register = () => {
 
 	const handleSubmit = () => {
 		setLoading(true);
-		const checkField = checkRegister(identify, password, rePassword, setError);
+		const checkField = checkUpdatePassword(password, rePassword, setError);
 		if (!checkField) {
 			setLoading(false);
 			return;
@@ -53,18 +47,18 @@ export const Register = () => {
 
 		const handleRegister = async () => {
 			try {
-				const response = await registerApi(identify, password);
+				const response = await updatePasswordApi(identifier, password);
 				if (response?.statusCode === 201) {
 					addToast({
-						title: "Đăng ký tài khoản thành công",
+						title: "Cập nhật mật khẩu thành công",
 						color: "success",
 					});
 
-					router.push("/otp?identifier=" + identify + "&type=register");
+					router.push("/login")
 				}
 			} catch (e) {
 				addToast({
-					title: "Đăng ký tài khoản thất bại",
+					title: "Cập nhật mật khẩu thất bại",
 					color: "danger",
 				});
 			} finally {
@@ -88,23 +82,10 @@ export const Register = () => {
 			</div>
 			<div className="flex w-128 flex-col items-center rounded-lg border bg-white">
 				<div className="flex w-full flex-col items-center p-4">
-					<span className="text-md font-semibold">Đăng ký tài khoản Zalo</span>
+					<span className="text-md font-semibold">Đặt lại mật khẩu Zalo</span>
 					<hr className="mt-2 flex w-128 border-gray-300" />
 				</div>
 				<div className="flex w-full flex-col items-center justify-center gap-6 px-20 py-14">
-					<div className="flex w-full flex-row items-center justify-center gap-2">
-						<Input
-							errorMessage={error.errorIdentify}
-							isInvalid={!!error.errorIdentify}
-							disabled={loading}
-							classNames={{ errorMessage: "text-md", input: "text-xl" }}
-							variant="underlined"
-							size="sm"
-							value={identify}
-							onChange={handleChangeIdentify}
-							placeholder="Số điện thoại hoặc email"
-						/>
-					</div>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
 							errorMessage={error.errorPassword}
