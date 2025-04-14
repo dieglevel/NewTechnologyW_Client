@@ -1,6 +1,7 @@
 "use client";
 
-import { verifyAccount } from "@/api/auth";
+import { verifyAccount, verifyForgetPassword } from "@/api/auth";
+import { REGEX_EMAIL } from "@/utils";
 import { Button } from "@heroui/button";
 import { InputOtp } from "@heroui/input-otp";
 import { addToast } from "@heroui/toast";
@@ -21,13 +22,24 @@ export const OTP = () => {
 		setIsLoading(true);
 		console.log("identifier", identifier);
 		try {
-			const response = await verifyAccount(identifier, otp);
-			if (response?.statusCode === 201) {
-				addToast({
-					description: "Xác thực OTP thành công",
-					color: "success",
-				});
-				router.push("/login");
+			if (type === "register") {
+				const response = await verifyAccount(identifier, otp);
+				if (response?.statusCode === 201) {
+					addToast({
+						description: "Xác thực OTP thành công",
+						color: "success",
+					});
+					router.push("/login");
+				}
+			}else if(type === "forget"){
+				const response = await verifyForgetPassword(identifier, otp);
+				if (response?.statusCode === 201) {
+					addToast({
+						description: "Xác thực OTP thành công",
+						color: "success",
+					});
+					router.push("/update-password?identifier="+identifier);
+				}
 			}
 		} catch (error) {
 			addToast({
@@ -51,11 +63,11 @@ export const OTP = () => {
 			</div>
 			<div className="flex h-72 w-128 flex-col items-center rounded-lg border bg-white">
 				<div className="flex w-full flex-col items-center p-4">
-					<span className="text-md font-semibold">Đăng ký tài khoản Zalo</span>
+					<span className="text-md font-semibold">{`${type === "forget" ? "Khôi phục mật khẩu zalo của bạn" : "Đăng ký tài khoản Zalo"} `}</span>
 					<hr className="mt-2 flex w-128 border-gray-300" />
 				</div>
 				<div className="p flex w-full flex-col items-center justify-center gap-6 px-20 py-6">
-					<span>{`Nhập vào OTP đã được gửi vào ${type === "email" ? "email" : "số điện thoại"} của bạn`}</span>
+					<span>{`Nhập vào OTP đã được gửi vào ${REGEX_EMAIL.test(identifier) ? "email" : "số điện thoại"} của bạn`}</span>
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<InputOtp
 							disabled={isLoading}

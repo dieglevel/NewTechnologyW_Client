@@ -11,13 +11,13 @@ import { Spinner } from "@heroui/spinner";
 import { addToast } from "@heroui/toast";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { handleImageChange, handleThumbnailChange, handleUpdateProfile } from "./handle";
+import { handleCheckBirth, handleImageChange, handleThumbnailChange, handleUpdateProfile } from "./handle";
 import { getLocalTimeZone, now, parseAbsoluteToLocal, parseDate, ZonedDateTime } from "@internationalized/date";
 import { DateInput } from "@heroui/date-input";
 import Loading from "@/app/loading";
+import { socketService } from "@/lib/socket/socket";
 
 export const UpdateProfile = () => {
-
 	const [idDetailInformation, setIdDetailInformation] = useState<string | null>(null);
 
 	const [previewUrlThumbnailUrl, setPreviewUrlThumbnailUrl] = useState<string | null>(null);
@@ -64,6 +64,8 @@ export const UpdateProfile = () => {
 				setIsLoading(false);
 			}
 		};
+
+		socketService.connect();
 		getUser();
 	}, []);
 
@@ -224,20 +226,20 @@ export const UpdateProfile = () => {
 								size="md"
 								className="w-full bg-primary text-white"
 								onPress={async () => {
-									setIsLoadingSubmit(true);
-									setUpLoading(true);
-									setUpLoadingThumbnailUrl(true);
-									await handleUpdateProfile(
-										idDetailInformation,
-										{
+									const isBirth = await handleCheckBirth(dateOfBirth);
+									if (isBirth) {
+										setIsLoadingSubmit(true);
+										setUpLoading(true);
+										setUpLoadingThumbnailUrl(true);
+										await handleUpdateProfile(idDetailInformation, {
 											gender,
 											fullName,
 											dateOfBirth: dateOfBirth.toDate(),
-										},
-									);
-									setUpLoading(false);
-									setUpLoadingThumbnailUrl(false);
-									setIsLoadingSubmit(false);
+										});
+										setUpLoading(false);
+										setUpLoadingThumbnailUrl(false);
+										setIsLoadingSubmit(false);
+									}
 								}}
 								isLoading={isLoadingSubmit}
 								isDisabled={isLoadingSubmit}

@@ -92,7 +92,7 @@ export const Login = () => {
 						Bạn chưa có tài khoản? Đăng ký ngay
 					</Link>
 					<Link
-						href="#"
+						href="/login-qr"
 						className="mt-10 flex font-semibold text-primary"
 					>
 						Đăng nhập qua mã QR
