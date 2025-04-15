@@ -1,18 +1,21 @@
 import { AddGroupIcon, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
+import ImageViewer from "@/components/image-preview";
 import Image from "next/image";
 
 export const BodyOption = () => {
 	return (
-		<div className="flex h-full flex-col bg-body p-3 gap-3">
+		<div className="flex h-full flex-col gap-3 bg-body p-3">
 			<div className="flex flex-col items-center justify-center">
-				<Image
-					priority
-					src={"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"}
-					width={50}
-					height={50}
-					alt="avatar"
-					className="size-[50px] max-h-[50px] min-h-[50px] min-w-[50px] max-w-[50px] rounded-full object-cover"
-				/>
+				<ImageViewer src={"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"}>
+					<Image
+						priority
+						src={"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"}
+						width={50}
+						height={50}
+						alt="avatar"
+						className="size-[50px] max-h-[50px] min-h-[50px] min-w-[50px] max-w-[50px] rounded-full object-cover"
+					/>
+				</ImageViewer>
 				<p className="text-xl font-bold">Group name</p>
 			</div>
 			<div className="flex flex-row items-start justify-center gap-3">

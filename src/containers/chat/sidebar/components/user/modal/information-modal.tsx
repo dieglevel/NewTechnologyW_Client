@@ -1,6 +1,7 @@
 import Loading from "@/app/loading";
 import { avatarDefault, defaultBackground } from "@/assets/images";
 import { EditIcon } from "@/assets/svgs";
+import ImageViewer from "@/components/image-preview";
 import { AppDispatch, RootState } from "@/redux/store";
 import { closeModal } from "@/redux/store/ui";
 import { changeDateToString } from "@/utils";
@@ -62,6 +63,7 @@ const InformationModal = ({}: Props) => {
 												</div>
 												<div className="absolute left-0 top-36 flex flex-row items-center justify-center gap-2 py-4">
 													<div className="relative flex items-center justify-center">
+														<ImageViewer src={detailInformation?.avatarUrl ?? avatarDefault}>
 														<Image
 															src={
 																detailInformation?.avatarUrl ??
@@ -72,6 +74,7 @@ const InformationModal = ({}: Props) => {
 															width={60}
 															height={60}
 														/>
+														</ImageViewer>
 													</div>
 													<p className="select-text text-xl font-bold">
 														{detailInformation?.fullName ?? "-"}

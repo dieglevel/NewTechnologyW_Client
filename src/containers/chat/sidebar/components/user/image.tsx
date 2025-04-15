@@ -18,6 +18,7 @@ export const ImageRender = () => {
 			{(status === "loading" || status === "idle") ? (
 				<Spinner color="white"/>
 			) : (
+				<>				
 				<Image
 					src={detailInformation?.avatarUrl ?? avatarDefault}
 					alt="Avatar"
@@ -25,6 +26,8 @@ export const ImageRender = () => {
 					height={48}
 					priority
 				/>
+				</>
+
 			)}
 		</>
 	);

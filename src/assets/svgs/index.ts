@@ -28,3 +28,8 @@ export * from "./eye-slash-filled-icon";
 export * from "./edit"
 
 export * from "./back"
+
+export * from "./zoom-in"
+export * from "./zoom-out"
+export * from "./reload"
+export * from "./close"

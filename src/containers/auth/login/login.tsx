@@ -5,7 +5,7 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { handleCheckPage, handleLogin } from "./handle";
 
 export const Login = () => {
@@ -19,8 +19,17 @@ export const Login = () => {
 		handleCheckPage();
 	}, []);
 
+	const handleKeyPress = async (event: React.KeyboardEvent) => {
+		if (event.key === "Enter") {
+			await handleLogin(setIsLoading, identifier, password, router);
+		}
+	};
+
 	return (
-		<div className="flex h-screen flex-col items-center gap-6 pt-14">
+		<div
+			className="flex h-screen flex-col items-center gap-6 pt-14"
+			onKeyDown={handleKeyPress}
+		>
 			<div className="flex flex-col items-center gap-6">
 				<h1 className="text-6xl font-bold text-primary">Zalo</h1>
 				<div className="flex flex-col items-center">
@@ -74,7 +83,7 @@ export const Login = () => {
 						size="md"
 						className="w-full bg-primary text-white"
 						onPress={async () => {
-							handleLogin(setIsLoading, identifier, password, router);
+							await handleLogin(setIsLoading, identifier, password, router);
 						}}
 					>
 						Đăng nhập
