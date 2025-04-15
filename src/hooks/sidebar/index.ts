@@ -1,5 +1,5 @@
 import { RootState } from "@/redux/store";
-import { changeSidebar, SideBarSelected } from "@/redux/store/sidebar";
+import { changeSidebar, SideBarSelected } from "@/redux/store/ui/sidebar";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useSidebar = () => {

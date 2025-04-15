@@ -12,10 +12,13 @@ import { RootState } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
 import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
+import { useOptionView } from "@/hooks/option-view";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
+	const { isOpen } = useOptionView();
+
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -66,7 +69,7 @@ const ChatPage = () => {
 					<Sidebar />
 					<ChatList />
 					<BodyView />
-					<OptionView />
+					{isOpen && <OptionView />}
 				</div>
 			)}
 		</>

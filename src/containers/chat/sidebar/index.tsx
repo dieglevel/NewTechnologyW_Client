@@ -4,7 +4,7 @@ import { ChatIcon, CloudIcon, ContactIcon, SettingIcon } from "@/assets/svgs";
 import { SVGButton } from "@/components/ui";
 import { useSidebar } from "@/hooks/sidebar";
 import { AppDispatch, RootState } from "@/redux/store";
-import { SideBarSelected } from "@/redux/store/sidebar";
+import { SideBarSelected } from "@/redux/store/ui/sidebar";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
