@@ -1,5 +1,8 @@
 // idbManager.ts
 
+const DB_NAME = "myDatabase";
+const DB_VERSION = 1;
+
 export const RootIDB = () => {
 	const initDB = () => {
 		return new Promise((resolve, reject) => {
@@ -45,13 +48,17 @@ export class IDBManager<T extends { id?: string }> {
 
 			request.onsuccess = (e) => {
 				const db = (e.target as IDBOpenDBRequest).result;
+
 				if (db.objectStoreNames.contains(this.storeName)) {
-					resolve(db); 
+					resolve(db); // Store đã tồn tại
 					return;
 				}
+
 				const currentVersion = db.version;
-				db.close(); 
+				db.close(); // Đóng DB cũ
+
 				const secondRequest = indexedDB.open(DB_NAME, currentVersion + 1);
+
 				secondRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
 					const upgradedDB = (event.target as IDBOpenDBRequest).result;
 					upgradedDB.createObjectStore(this.storeName, {
@@ -59,9 +66,11 @@ export class IDBManager<T extends { id?: string }> {
 						autoIncrement: true,
 					});
 				};
+
 				secondRequest.onsuccess = () => resolve(secondRequest.result);
 				secondRequest.onerror = () => reject(secondRequest.error);
 			};
+
 			request.onerror = () => reject(request.error);
 		});
 	}
