@@ -5,7 +5,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 
 
-const storeName = "detailInformation"; // Tên store trong IndexedDB
+const storeName = "myDetailInformation"; // Tên store trong IndexedDB
 const thunkDB = "idb/"
 const thunkName = "DetailInformation";
 
@@ -16,6 +16,7 @@ const thunkAction = {
 }
 
 const idb = new IDBManager<IDetailInformation>(storeName);
+
 
 export const fetchDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IDetailInformation> => {
   const detailInformations = await idb.getAll();

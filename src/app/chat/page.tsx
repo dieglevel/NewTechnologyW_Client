@@ -13,12 +13,14 @@ import { socketService } from "@/lib/socket/socket";
 import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
+import { SideBarSelected } from "@/redux/store/ui";
+import Contact from "@/containers/chat/contact/contact";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
+	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
-
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -28,20 +30,18 @@ const ChatPage = () => {
 				if (data) {
 					socketService.connect();
 
-						if (data.statusCode === 200) {
-							const detailInformation = data.data.detailInformation;
-							if (
-								!detailInformation.fullName &&
-								!detailInformation.avatarUrl &&
-								!detailInformation.gender &&
-								!detailInformation.dateOfBirth
-							) {
-								window.location.href = "/update-profile";
-								return;
-							}
+					if (data.statusCode === 200) {
+						const detailInformation = data.data.detailInformation;
+						if (
+							!detailInformation.fullName &&
+							!detailInformation.avatarUrl &&
+							!detailInformation.gender &&
+							!detailInformation.dateOfBirth
+						) {
+							window.location.href = "/update-profile";
+							return;
 						}
-
-					
+					}
 				}
 			} else {
 				localStorage.removeItem(LocalStorage.token);
@@ -51,6 +51,8 @@ const ChatPage = () => {
 
 		fetch();
 	}, []);
+
+	
 
 	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
@@ -67,9 +69,17 @@ const ChatPage = () => {
 				<div className="flex min-w-[650px] flex-row">
 					<InformationModal />
 					<Sidebar />
-					<ChatList />
-					<BodyView />
-					{isOpen && <OptionView />}
+					{selected === SideBarSelected.Chat ? (
+						<>
+							<ChatList />
+							<BodyView />
+							{isOpen && <OptionView />}
+						</>
+					) : (
+						<>
+							<Contact />
+						</>
+					)}
 				</div>
 			)}
 		</>

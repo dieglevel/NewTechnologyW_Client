@@ -10,7 +10,7 @@ interface SidebarState {
 }
 
 const initialState: SidebarState = {
-	selected: SideBarSelected.Chat,
+	selected: SideBarSelected.Contact,
 };
 
 const sidebarSlice = createSlice({

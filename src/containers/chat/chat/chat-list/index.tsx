@@ -1,6 +1,6 @@
 "use client"
 
-import { ChatRoom, SearchComponent } from "@/containers/chat/chat-list/components";
+import { ChatRoom, SearchComponent } from "@/containers/chat/chat/chat-list/components";
 import { useSidebar } from "@/hooks/sidebar";
 import { useEffect, useRef } from "react";
 

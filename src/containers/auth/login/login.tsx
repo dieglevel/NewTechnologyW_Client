@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { handleCheckPage, handleLogin } from "./handle";
 
 export const Login = () => {
-	const [identifier, setIdentifier] = useState<string>("admin@gmail.com");
+	const [identifier, setIdentifier] = useState<string>("ldmhieudev@yopmail.com");
 	const [password, setPassword] = useState<string>("admin");
 	const router = useRouter();
 

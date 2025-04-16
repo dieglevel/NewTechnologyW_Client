@@ -1,6 +1,6 @@
 import { EmojiIcon, FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
-import { StickerForm } from "@/containers/chat/main/components/footer/components";
+import { StickerForm } from "./components";
 
 export const FooterChat = () => {
 	return (

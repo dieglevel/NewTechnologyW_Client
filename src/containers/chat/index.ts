@@ -1,4 +1,4 @@
-export * from "./chat-list";
+export * from "./chat/chat-list";
 export * from "./sidebar"
-export * from "./main";
-export * from "./main-option"
+export * from "./chat/chat/chat";
+export * from "./chat/main-option"
