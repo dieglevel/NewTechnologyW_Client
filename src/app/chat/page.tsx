@@ -20,10 +20,14 @@ const ChatPage = () => {
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
+	const { status: roomStatus } = useSelector((state: RootState) => state.listRoom);
 	const { isOpen } = useOptionView();
+
+
 
 	useEffect(() => {
 		const fetch = async () => {
+			setIsLoading(true);
 			const token = localStorage.getItem(LocalStorage.token);
 			if (token) {
 				const data = await getAccountApi();
@@ -56,10 +60,11 @@ const ChatPage = () => {
 
 	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
-		if (detailInformationStatus === "succeeded") {
+		console.log("Room status: ", roomStatus);
+		if (detailInformationStatus === "succeeded" && roomStatus === "succeeded") {
 			setIsLoading(false);
 		}
-	}, [detailInformationStatus]);
+	}, [detailInformationStatus, roomStatus]);
 
 	return (
 		<>

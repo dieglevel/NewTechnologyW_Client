@@ -2,8 +2,9 @@ import { io, Socket } from "socket.io-client";
 import { LocalStorage } from "@/lib/local-storage";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { store } from "@/redux/store";
-import { setDetailInformation, fetchDetailInformation } from "@/redux/store/models";
+import { setDetailInformation, fetchDetailInformation, setRoom } from "@/redux/store/models";
 import { IDetailInformation } from "@/types/implement";
+import { IRoom } from "@/types/implement/room.interface";
 
 class SocketService {
 	private static instance: SocketService;
@@ -52,6 +53,11 @@ class SocketService {
 			console.log("User detail info updated:", data);
 			store.dispatch(setDetailInformation(data));
 		});
+		this.socket.emit(SocketEmit.myListRoom, {});
+		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
+			console.log("My list room:", data);
+			store.dispatch(setRoom(data));
+		})
 	}
 
 	public disconnect() {

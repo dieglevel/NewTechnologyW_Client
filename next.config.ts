@@ -1,17 +1,14 @@
 import withPWAInit from "@ducanh2912/next-pwa";
 import type { NextConfig } from "next";
-import path from "path";
 
 const withPWA = withPWAInit({
 	dest: "public",
 	// disable: process.env.NODE_ENV === "development",
 	fallbacks: {
 		document: "/~offline",
-		// This is for /_next/.../.json files.
-	}
+		// Đây là fallback cho các request JSON: /_next/data/xxx.json (nếu cần)
+	},
 });
-
-
 
 const nextConfig: NextConfig = withPWA({
 	images: {
@@ -30,14 +27,12 @@ const nextConfig: NextConfig = withPWA({
 				protocol: "http",
 				hostname: "res.cloudinary.com",
 				pathname: "/**",
-			}, 
+			},
 			{
 				protocol: "https",
 				hostname: "res.cloudinary.com",
 				pathname: "/**",
 			},
-
-
 		],
 	},
 });

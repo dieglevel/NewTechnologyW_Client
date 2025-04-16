@@ -12,10 +12,10 @@ import { addToast } from "@heroui/toast";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { handleCheckBirth, handleImageChange, handleThumbnailChange, handleUpdateProfile } from "./handle";
-import { getLocalTimeZone, now, parseAbsoluteToLocal, parseDate, ZonedDateTime } from "@internationalized/date";
-import { DateInput } from "@heroui/date-input";
 import Loading from "@/app/loading";
 import { socketService } from "@/lib/socket/socket";
+import { DateValue, getLocalTimeZone, now, parseAbsoluteToLocal, parseDate, ZonedDateTime } from "@internationalized/date";
+import { DateInput } from "@heroui/date-input";
 
 export const UpdateProfile = () => {
 	const [idDetailInformation, setIdDetailInformation] = useState<string | null>(null);

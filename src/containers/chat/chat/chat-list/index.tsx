@@ -3,13 +3,21 @@
 import { ChatRoom, SearchComponent } from "@/containers/chat/chat/chat-list/components";
 import { useSidebar } from "@/hooks/sidebar";
 import { useEffect, useRef } from "react";
+import { AppDispatch, RootState } from '@/redux/store'
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRoom, setRoom, deleteRoom } from "@/redux/store/models/";
+import { socketService } from "@/lib/socket/socket";
 
 export const ChatList = () => {
+   const dispatch = useDispatch<AppDispatch>();
    const divRef = useRef<HTMLDivElement>(null);
 
    const {selected, setSelect} = useSidebar();
-
-
+	const { room } = useSelector((state: RootState) => state.listRoom);
+   
+   useEffect(() => {
+      console.log(room)
+   }, [room])
 
    // hide chat when window has been resized
    useEffect(() => {
