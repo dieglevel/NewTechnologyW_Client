@@ -13,25 +13,6 @@ import { setMyListFriend } from "@/redux/store/models";
 const Contact = () => {
 	const { selected } = useSelector((state: RootState) => state.contactBar);
 
-	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
-
-	const dispatch = useDispatch();
-	useEffect(() => {
-		const fetch = async () => {
-			try {
-				const response = await getListFriend();
-				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
-					store.dispatch(setMyListFriend(response.data));
-				}
-			} catch (error) {
-				const e = error as ErrorResponse;
-			}
-		};
-
-		fetch();
-	}, []);
-
 	const renderContent = () => {
 		switch (selected) {
 			case ContactBarTypes.AddFriend:

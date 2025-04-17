@@ -8,13 +8,16 @@ import { IDBManager } from "@/lib/idb";
 import { LocalStorage } from "@/lib/local-storage";
 import { Spinner } from "@heroui/spinner";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { RootState, store } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
 import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import Contact from "@/containers/chat/contact/contact";
+import { getListFriend } from "@/api";
+import { setMyListFriend } from "@/redux/store/models";
+import { ErrorResponse } from "@/lib/axios";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -22,8 +25,6 @@ const ChatPage = () => {
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { status: roomStatus } = useSelector((state: RootState) => state.listRoom);
 	const { isOpen } = useOptionView();
-
-
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -56,7 +57,21 @@ const ChatPage = () => {
 		fetch();
 	}, []);
 
-	
+	useEffect(() => {
+		const fetch = async () => {
+			try {
+				const response = await getListFriend();
+				if (response?.statusCode === 200) {
+					console.log("response: ", response.data);
+					store.dispatch(setMyListFriend(response.data));
+				}
+			} catch (error) {
+				const e = error as ErrorResponse;
+			}
+		};
+
+		fetch();
+	}, []);
 
 	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
