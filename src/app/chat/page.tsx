@@ -18,18 +18,19 @@ import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const dispatch = useDispatch<AppDispatch>();
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
-	const { status: roomStatus } = useSelector((state: RootState) => state.listRoom);
 	const { isOpen } = useOptionView();
 
 	useEffect(() => {
 		const fetch = async () => {
-			setIsLoading(true);
 			const token = localStorage.getItem(LocalStorage.token);
 			if (token) {
 				const data = await getAccountApi();
+
 				if (data) {
 					socketService.connect();
 
@@ -105,11 +106,11 @@ const ChatPage = () => {
 
 	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
-		console.log("Room status: ", roomStatus);
-		if (detailInformationStatus === "succeeded" && roomStatus === "succeeded") {
+		console.log("Status: ", status);
+		if (detailInformationStatus === "succeeded") {
 			setIsLoading(false);
 		}
-	}, [detailInformationStatus, roomStatus]);
+	}, [detailInformationStatus]);
 
 	return (
 		<>

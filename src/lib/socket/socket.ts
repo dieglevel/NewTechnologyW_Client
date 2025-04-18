@@ -24,6 +24,7 @@ class SocketService {
 		if (this.socket || !navigator.onLine) {
 			console.warn("Already connected or offline.");
 			store.dispatch(fetchDetailInformation());
+			store.dispatch(fetchRoom());
 			return;
 		}
 
@@ -55,20 +56,11 @@ class SocketService {
 		this.socket.emit(SocketEmit.detailInformation, {});
 
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			console.log("My list room:", data);
+			console.log("My list room updated:", data);
 			store.dispatch(setRoom(data));
-		})
-		this.socket.emit(SocketEmit.myListRoom, {});
-
-		// this.socket.on(SocketOn.friend, (data: ISendedFriend) => {
-		// 	store.dispatch(setRoom([data]));
-		// });
-
-		// this.socket.on(SocketOn.requestFriend, (data: IRequestFriend) => {
-		// 	console.log("Request friend:", data);
-		// 	store.dispatch(setRequestFriend(data));
-		// });
-
+		});
+		
+		// this.emit(SocketEmit.detailInformation, {})
 	}
 
 	public disconnect() {

@@ -33,3 +33,12 @@ export const getProfile = async () => {
       throw error as ErrorResponse
    }
 }
+
+export const getProfileFromAnotherUser = async (id: string) => {
+	try {
+		const response = await api.get<BaseResponse<IDetailInformation>>(`/detail-information/${id}`);
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
