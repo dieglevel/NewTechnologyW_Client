@@ -8,14 +8,16 @@ import { IDBManager } from "@/lib/idb";
 import { LocalStorage } from "@/lib/local-storage";
 import { Spinner } from "@heroui/spinner";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
+import { AppDispatch, RootState, store } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
 import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import Contact from "@/containers/chat/contact/contact";
-import { fetchRoom } from "@/redux/store/models";
+import { getListFriend } from "@/api";
+import { setMyListFriend } from "@/redux/store/models";
+import { ErrorResponse } from "@/lib/axios";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const dispatch = useDispatch<AppDispatch>();
@@ -23,7 +25,6 @@ const ChatPage = () => {
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
-	const { status } = useSelector((state: RootState) => state.listRoom);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -50,6 +51,22 @@ const ChatPage = () => {
 			} else {
 				localStorage.removeItem(LocalStorage.token);
 				window.location.href = "/login";
+			}
+		};
+
+		fetch();
+	}, []);
+
+	useEffect(() => {
+		const fetch = async () => {
+			try {
+				const response = await getListFriend();
+				if (response?.statusCode === 200) {
+					console.log("response: ", response.data);
+					store.dispatch(setMyListFriend(response.data));
+				}
+			} catch (error) {
+				const e = error as ErrorResponse;
 			}
 		};
 
