@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 import { LocalStorage } from "@/lib/local-storage";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { store } from "@/redux/store";
-import { setDetailInformation, fetchDetailInformation, setRoom, setRequestFriend } from "@/redux/store/models";
+import { setDetailInformation, fetchDetailInformation, setRoom, setRequestFriend, fetchRoom } from "@/redux/store/models";
 import { IDetailInformation, IRequestFriend, ISendedFriend } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 
@@ -44,17 +44,20 @@ class SocketService {
 	private registerCoreEvents() {
 		if (!this.socket) return;
 
+
+		this.socket.emit(SocketEmit.connectServer, {});
 		this.socket.on(SocketOn.connectServer, (data) => {
 			console.log("Connected to server:", data);
 		});
-		this.socket.emit(SocketEmit.connectServer, {});
 
+		this.socket.emit(SocketEmit.detailInformation, {});
 		this.socket.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
 			console.log("User detail info updated:", data);
 			store.dispatch(setDetailInformation(data));
 		});
-		this.socket.emit(SocketEmit.detailInformation, {});
+		
 
+		this.socket.emit(SocketEmit.myListRoom, {});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
 			console.log("My list room updated:", data);
 			store.dispatch(setRoom(data));

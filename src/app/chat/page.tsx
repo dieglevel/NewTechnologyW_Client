@@ -5,8 +5,8 @@ import { BodyView, OptionView, SecondBar, Sidebar } from "@/containers/chat";
 import { useEffect, useState } from "react";
 import Loading from "../loading";
 import { LocalStorage } from "@/lib/local-storage";
-import { useSelector } from "react-redux";
-import { RootState, store } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState, store } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
@@ -18,7 +18,6 @@ import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const dispatch = useDispatch<AppDispatch>();
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);

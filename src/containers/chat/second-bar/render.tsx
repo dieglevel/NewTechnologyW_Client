@@ -77,17 +77,13 @@ export const SecondBar = () => {
 						<div className="flex flex-col gap-1">
 							{
 								/* { for 5 } */
-								[...Array(5)].map((_, index) => (
+								room?.map((item, index) => (
 									<ChatRoom
 										key={index}
-										userName="Nguyễn Văn A"
-										imageUrl="https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
-										message={{
-											isReceived: true,
-											text: ` ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.`,
+										room={item}
+										onClick={() => {
+											setSelect(SideBarSelected.Chat);
 										}}
-										timeSent={new Date()}
-										type="user"
 									/>
 								))
 							}
