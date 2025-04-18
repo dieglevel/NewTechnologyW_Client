@@ -12,13 +12,19 @@ import ContactBar from "./contact/contact-bar";
 import { ISearchAccount } from "@/types/implement/response";
 import { SearchComponent } from "./search/search";
 import AccountDetail from "./search/components/account-detail";
+import { setSelectedRoom } from "@/redux/store/models/selected-room-slice";
+import { socketService } from "@/lib/socket/socket";
+import { SocketEmit, SocketOn } from "@/constants/socket";
+import { setMessage } from "@/redux/store/models/message-slice";
 
 export const SecondBar = () => {
-	const dispatch = useDispatch<AppDispatch>();
 	const divRef = useRef<HTMLDivElement>(null);
 
 	const { selected, setSelect } = useSidebar();
 	const { room } = useSelector((state: RootState) => state.listRoom);
+
+	const dispatch = useDispatch<AppDispatch>();
+	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
 
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
@@ -28,7 +34,6 @@ export const SecondBar = () => {
 			try {
 				const response = await findAccount(search);
 				if (response.statusCode === 200) {
-					console.log("response: ", response.data);
 					setSearchResult(response.data);
 				}
 			} catch (error) {
@@ -50,16 +55,9 @@ export const SecondBar = () => {
 		};
 	}, [search]);
 
-	useEffect(() => {
-		console.log(room);
-	}, [room]);
-
-	// hide chat when window has been resized
-
 
 	const renderContent = () => {
 		if (searchResult.length > 0) {
-			console.log("searchResult: ", searchResult);
 			return (
 				<div className="flex w-full flex-col bg-body">
 					{searchResult.map((item, index) => (
@@ -76,13 +74,30 @@ export const SecondBar = () => {
 					return (
 						<div className="flex flex-col gap-1">
 							{
-								/* { for 5 } */
 								room?.map((item, index) => (
 									<ChatRoom
 										key={index}
 										room={item}
 										onClick={() => {
-											setSelect(SideBarSelected.Chat);
+											// setSelect(SideBarSelected.Chat);
+											dispatch(setSelectedRoom(item.room_id));
+
+											socketService.emit(SocketEmit.joinRoom, {
+												roomId: item.room_id,
+											});
+
+											// socketService.on(SocketOn.joinRoom, (data) => {
+
+											// });
+
+											socketService.emit(SocketEmit.getMessageByChatRoom, {
+												roomId: item.room_id,
+											});
+
+											socketService.on(SocketOn.getMessageByChatRoom, (data) => {
+												dispatch(setMessage(data));
+												// console.log(data)
+											});
 										}}
 									/>
 								))

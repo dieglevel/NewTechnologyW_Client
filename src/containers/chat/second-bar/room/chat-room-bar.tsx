@@ -18,7 +18,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 
 	useEffect(() => {
 		const fetchDetailInformation = async () => {
-			const response = await getProfileFromAnotherUser(room.messages_latest[0].accountId);
+			const response = await getProfileFromAnotherUser(room.messages_latest.accountId);
 			if (response.data) {
 				setProfile(response.data);
 			}
@@ -52,18 +52,18 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 				<div className="flex items-center justify-between">
 					<p
 						className={
-							(room && room.messages_latest[0].accountId === account_id ? "" : "font-semibold ") +
+							(room && room.messages_latest.accountId === account_id ? "" : "font-semibold ") +
 							"line-clamp-1 text-tiny"
 						}
 					>
-						{room && room.messages_latest[0].accountId === account_id ? "Bạn: " : ""}
-						{room ? room.messages_latest[0].content : "N/A"}
+						{room && room.messages_latest.accountId === account_id ? "Bạn: " : ""}
+						{room ? room.messages_latest.content : "N/A"}
 					</p>
 
 					{room &&
 					room.isSeen &&
 					!room.isSeen.includes(account_id) &&
-					room.messages_latest[0].accountId !== account_id ? (
+					room.messages_latest.accountId !== account_id ? (
 						<div>
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>
