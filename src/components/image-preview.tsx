@@ -92,7 +92,7 @@ export default function ImageViewer({ src, alt = "", children }: ImageViewerProp
 								onClick={(e) => e.stopPropagation()}
 								onWheel={handleWheel}
 								width={700}
-								height={800}
+								height={700}
 								src={src}
 								alt={alt}
 								onMouseDown={startDrag}
@@ -100,8 +100,10 @@ export default function ImageViewer({ src, alt = "", children }: ImageViewerProp
 								style={{
 									transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
 									transition: dragging ? "none" : "transform 0.2s ease",
-									maxWidth: "none",
-									maxHeight: "none",
+									maxWidth: "auto",
+									maxHeight: "auto",
+									width: "auto",
+									height: "auto",
 									cursor: dragging ? "grabbing" : "grab",
 								}}
 								className="mx-auto select-none"

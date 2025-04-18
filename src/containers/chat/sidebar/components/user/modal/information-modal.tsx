@@ -49,17 +49,19 @@ const InformationModal = ({}: Props) => {
 										<div className="relative my-4 flex flex-col gap-4">
 											<div className="relative flex h-36 w-full select-none items-center justify-center rounded-lg bg-slate-100 shadow-md">
 												<div className="w-full">
+													<ImageViewer src={detailInformation?.thumbnailUrl ?? defaultBackground}>
 													<Image
 														src={
 															detailInformation?.thumbnailUrl ??
 															defaultBackground
 														}
 														alt="Thumbnail"
-														className="h-52 w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
+														className="h-auto w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
 														width={240}
 														height={60}
 														priority
 													/>
+													</ImageViewer>
 												</div>
 												<div className="absolute left-0 top-36 flex flex-row items-center justify-center gap-2 py-4">
 													<div className="relative flex items-center justify-center">

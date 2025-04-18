@@ -3,11 +3,18 @@
 import { AddFriendIcon, AddGroupIcon, SearchIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 
-export const SearchComponent = () => {
+interface Props {
+	search: string;
+	setSearchAction: (search: string) => void;
+}
+
+export const SearchComponent = ({ search, setSearchAction }: Props) => {
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-center gap-2 rounded border-b-1 bg-second p-2 py-2">
 			<Input
 				placeholder="Tìm kiếm"
+				value={search}
+				onChange={(e) => setSearchAction(e.target.value)}
 				startContent={<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />}
 				variant="bordered"
 				classNames={{

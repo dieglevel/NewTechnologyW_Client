@@ -24,7 +24,7 @@ export const HeaderChat = ({  imageUrl }: Props) => {
 						width={50}
 						height={50}
 						alt="avatar"
-						className="size-[50px] max-h-[50px] min-h-[50px] min-w-[50px] max-w-[50px] rounded-full object-cover"
+						className="size-[50px] rounded-full object-cover"
 					/>
 				</ImageViewer>
 				<div>

@@ -43,6 +43,16 @@ api.interceptors.request.use(
 
 		config.headers["ip-device"] = idDevice;
 
+		// check network
+		if (navigator.onLine === false) {
+			addToast({
+				title: "Mất kết nối mạng",
+				description: "Vui lòng kiểm tra lại kết nối mạng",
+				color: "danger",
+			});
+			return Promise.reject(new Error("Network is offline"));
+		}
+
 		return config;
 	},
 	(error) => Promise.reject(error)

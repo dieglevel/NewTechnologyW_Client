@@ -1,4 +1,4 @@
-import { BodyOption, HeaderOption } from "@/containers/chat/chat/main-option/components";
+import { BodyOption, HeaderOption } from "@/containers/chat/main-body/chat/main-option/components";
 
 export const OptionView = () => {
 	return (

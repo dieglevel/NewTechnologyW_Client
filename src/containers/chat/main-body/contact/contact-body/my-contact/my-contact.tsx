@@ -9,7 +9,7 @@ const MyContact = () => {
 		<div className="flex h-full w-full flex-col items-center justify-start bg-body p-4">
 			
 				{myListFriend?.map((friend) => (
-					<Friend key={friend.id} data={friend} />
+					<Friend key={friend.accountId} data={friend} />
 				))}
 		</div>
 	);

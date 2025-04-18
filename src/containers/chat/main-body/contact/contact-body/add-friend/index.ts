@@ -1,2 +1,2 @@
 export * from "./request-friend"
-export * from "./add-friend"
+export * from "./add-friend-body"

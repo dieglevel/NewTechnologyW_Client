@@ -13,9 +13,9 @@ const ContactBar = () => {
 	};
 
 	return (
-		<div className="flex w-[25%] flex-col bg-body">
+		<div className="flex w-full flex-col bg-body">
 			<div
-				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 ${selected === ContactBarTypes.Contact ? "bg-primary-200" : ""}`}
+				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 transition-all ${selected === ContactBarTypes.Contact ? "bg-primary-200" : ""}`}
 				onClick={() => handleSelect(ContactBarTypes.Contact)}
 			>
 				<div className="flex size-8 items-center justify-center">
@@ -24,7 +24,7 @@ const ContactBar = () => {
 				<p className="font-bold">Danh sách bạn bè</p>
 			</div>
 			<div
-				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 ${selected === ContactBarTypes.AddFriend ? "bg-primary-200" : ""}`}
+				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 transition-all ${selected === ContactBarTypes.AddFriend ? "bg-primary-200" : ""}`}
 				onClick={() => handleSelect(ContactBarTypes.AddFriend)}
 			>
 				<div className="flex size-8 items-center justify-center">
@@ -33,7 +33,7 @@ const ContactBar = () => {
 				<p className="font-bold">Lời mời kết bạn</p>
 			</div>
 			<div
-				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 ${selected === ContactBarTypes.Blocked ? "bg-primary-200" : ""}`}
+				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 transition-all ${selected === ContactBarTypes.Blocked ? "bg-primary-200" : ""}`}
 				onClick={() => handleSelect(ContactBarTypes.Blocked)}
 			>
 				<p className="font-bold">Danh sách chặn</p>

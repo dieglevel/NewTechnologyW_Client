@@ -66,11 +66,7 @@ const myListFriendSlice = createSlice({
       })
       .addCase(setMyListFriend.fulfilled, (state, action: PayloadAction<IFriend[]>) => {
         state.status = "succeeded";
-        if (state.myListFriend) {
-          state.myListFriend = [...state.myListFriend, ...action.payload];
-        } else {
-          state.myListFriend = action.payload;
-        }
+        state.myListFriend = action.payload;
       })
       .addCase(setMyListFriend.rejected, (state) => {
         state.status = "failed";

@@ -3,8 +3,9 @@ import { SideBarReducer } from "./store/ui/sidebar";
 import { DetailInformationReducer } from "./store/models/detail-information-slice";
 import { modalReducer } from "./store/ui/modal";
 import { ContactBarReducer, OptionViewReducer } from "./store/ui";
-import { MyListFriendReducer } from "./store/models";
+import { MyListFriendReducer, RequestFriendReducer } from "./store/models";
 import { RoomReducer } from "./store/models";
+import { SendedFriendReducer } from "./store/models/sended-friend-slice";
 
 export const store = configureStore({
 	reducer: {
@@ -15,6 +16,8 @@ export const store = configureStore({
 		detailInformation: DetailInformationReducer, // Thêm reducer vào store
 		listRoom: RoomReducer,
 		myListFriend: MyListFriendReducer,
+		requestFriend: RequestFriendReducer,
+		sendedFriend: SendedFriendReducer,
 	},
 });
 

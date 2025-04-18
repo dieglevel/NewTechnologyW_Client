@@ -1,25 +1,23 @@
 "use client";
 
 import { getAccountApi } from "@/api/auth";
-import { BodyView, ChatList, OptionView, Sidebar } from "@/containers/chat";
+import { BodyView, OptionView, SecondBar, Sidebar } from "@/containers/chat";
 import { useEffect, useState } from "react";
 import Loading from "../loading";
-import { IDBManager } from "@/lib/idb";
 import { LocalStorage } from "@/lib/local-storage";
-import { Spinner } from "@heroui/spinner";
 import { useSelector } from "react-redux";
 import { RootState, store } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
-import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
-import Contact from "@/containers/chat/contact/contact";
-import { getListFriend } from "@/api";
-import { setMyListFriend } from "@/redux/store/models";
+import { getListFriend, getListResponseFriend, getListSended } from "@/api";
+import { setMyListFriend, setRequestFriend } from "@/redux/store/models";
 import { ErrorResponse } from "@/lib/axios";
+import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
+import { setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 const ChatPage = () => {
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
@@ -74,6 +72,38 @@ const ChatPage = () => {
 	}, []);
 
 	useEffect(() => {
+		const fetch = async () => {
+			try {
+				const response = await getListSended();
+				if (response?.statusCode === 200) {
+					console.log("response: ", response.data);
+					store.dispatch(setSendedFriend(response.data));
+				}
+			} catch (error) {
+				const e = error as ErrorResponse;
+			}
+		};
+;
+		fetch()
+	}, []);
+
+	useEffect(() => {
+		const fetch = async () => {
+			try {
+				const response = await getListResponseFriend();
+				if (response?.statusCode === 200) {
+					console.log("response: ", response.data);
+					store.dispatch(setRequestFriend(response.data));
+				}
+			} catch (error) {
+				const e = error as ErrorResponse;
+			}
+		};
+;
+		fetch()
+	}, []);
+
+	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
 		console.log("Room status: ", roomStatus);
 		if (detailInformationStatus === "succeeded" && roomStatus === "succeeded") {
@@ -86,19 +116,17 @@ const ChatPage = () => {
 			{isLoading ? (
 				<Loading />
 			) : (
-				<div className="flex min-w-[650px] flex-row">
+				<div className="flex min-w-[650px] flex-row h-screen">
 					<InformationModal />
 					<Sidebar />
+					<SecondBar />
 					{selected === SideBarSelected.Chat ? (
 						<>
-							<ChatList />
 							<BodyView />
 							{isOpen && <OptionView />}
 						</>
 					) : (
-						<>
-							<Contact />
-						</>
+						<ContactBody />
 					)}
 				</div>
 			)}
