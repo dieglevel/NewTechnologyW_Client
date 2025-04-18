@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 import { LocalStorage } from "@/lib/local-storage";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { store } from "@/redux/store";
-import { setDetailInformation, fetchDetailInformation, setRoom } from "@/redux/store/models";
+import { setDetailInformation, fetchDetailInformation, setRoom, fetchRoom } from "@/redux/store/models";
 import { IDetailInformation } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 
@@ -24,6 +24,7 @@ class SocketService {
 		if (this.socket || !navigator.onLine) {
 			console.warn("Already connected or offline.");
 			store.dispatch(fetchDetailInformation());
+			store.dispatch(fetchRoom());
 			return;
 		}
 
@@ -55,9 +56,11 @@ class SocketService {
 		});
 		this.socket.emit(SocketEmit.myListRoom, {});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			console.log("My list room:", data);
+			console.log("My list room updated:", data);
 			store.dispatch(setRoom(data));
-		})
+		});
+		
+		// this.emit(SocketEmit.detailInformation, {})
 	}
 
 	public disconnect() {

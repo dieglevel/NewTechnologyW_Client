@@ -7,30 +7,30 @@ import Loading from "../loading";
 import { IDBManager } from "@/lib/idb";
 import { LocalStorage } from "@/lib/local-storage";
 import { Spinner } from "@heroui/spinner";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
 import { socketService } from "@/lib/socket/socket";
 import { useDisclosure } from "@heroui/modal";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import Contact from "@/containers/chat/contact/contact";
+import { fetchRoom } from "@/redux/store/models";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const dispatch = useDispatch<AppDispatch>();
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
-	const { status: roomStatus } = useSelector((state: RootState) => state.listRoom);
 	const { isOpen } = useOptionView();
-
-
+	const { status } = useSelector((state: RootState) => state.listRoom);
 
 	useEffect(() => {
 		const fetch = async () => {
-			setIsLoading(true);
 			const token = localStorage.getItem(LocalStorage.token);
 			if (token) {
 				const data = await getAccountApi();
+
 				if (data) {
 					socketService.connect();
 
@@ -56,15 +56,13 @@ const ChatPage = () => {
 		fetch();
 	}, []);
 
-	
-
 	useEffect(() => {
 		console.log("Detail information status: ", detailInformationStatus);
-		console.log("Room status: ", roomStatus);
-		if (detailInformationStatus === "succeeded" && roomStatus === "succeeded") {
+		console.log("Status: ", status);
+		if (detailInformationStatus === "succeeded") {
 			setIsLoading(false);
 		}
-	}, [detailInformationStatus, roomStatus]);
+	}, [detailInformationStatus]);
 
 	return (
 		<>

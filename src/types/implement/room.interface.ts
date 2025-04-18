@@ -3,8 +3,8 @@ import { IMessage } from "./message.interface";
 
 
 export interface IRoom extends BaseEntity {
-    id: string;
+    room_id: string;
     roomName: string;
     isSeen?: string[]; 
-    lastMessage: IMessage | null;
+    messages_latest: IMessage[];
 }

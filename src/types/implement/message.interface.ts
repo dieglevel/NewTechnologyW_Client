@@ -6,5 +6,6 @@ export interface IMessage extends BaseEntity {
     roomId: string;
     content: string;
     isDeleted: boolean;
+    isRevoked: boolean;
     file?: string;
 }

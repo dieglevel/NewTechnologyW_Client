@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { IDBManager } from "@/lib/idb";
 import { IRoom } from "@/types/implement/room.interface";
+import { stat } from "fs";
 
 // Config constants
 const storeName = "room";
@@ -11,20 +12,20 @@ const thunkName = "Room";
 const thunkAction = { fetch: "fetch", set: "set", delete: "delete" };
 
 // IDB instance
-const idb = new IDBManager<IRoom>(storeName, "room_id");
+const idb = new IDBManager<IRoom>(storeName, "room_id", "updatedAt");
 
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
-	const rooms = await idb.getAll();
+	const rooms = await idb.getAllByIndex();
 	console.log("Room DB: ", rooms);
 	return rooms || [];
 });
 
 export const setRoom = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (rooms: IRoom[]) => {
-	for (const room of rooms) {
-		await idb.update(room);
-	}
-	return rooms;
+
+	await idb.updateMany(rooms);
+	const updatedRooms = await idb.getAllByIndex();
+	return updatedRooms;
 });
 
 export const deleteRoom = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
@@ -62,9 +63,10 @@ const roomSlice = createSlice({
 			})
 			.addCase(setRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
 				state.status = "succeeded";
+
 				if (state.room) {
 					action.payload.forEach((newRoom) => {
-						const index = state.room!.findIndex((r) => r.id === newRoom.id);
+						const index = state.room!.findIndex((r) => r.room_id === newRoom.room_id);
 						if (index >= 0) {
 							state.room![index] = newRoom;
 						} else {
