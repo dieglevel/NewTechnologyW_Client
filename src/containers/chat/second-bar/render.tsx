@@ -56,12 +56,31 @@ export const SecondBar = () => {
 
 	// hide chat when window has been resized
 
-
 	const renderContent = () => {
-		if (searchResult.length > 0) {
-			console.log("searchResult: ", searchResult);
-			return (
-				<div className="flex w-full flex-col bg-body">
+		return (
+			<>
+				<div
+					className={`flex flex-col gap-1 ${selected === SideBarSelected.Chat ? "" : "hidden"} ${searchResult.length > 0 ? "hidden" : ""}`}
+				>
+					{/* { for 5 } */
+					room?.map((item, index) => (
+						<ChatRoom
+							key={index}
+							room={item}
+							onClick={() => {
+								setSelect(SideBarSelected.Chat);
+							}}
+						/>
+					))}
+				</div>
+
+				<div
+					className={`${selected === SideBarSelected.Chat ? "hidden" : ""} ${searchResult.length > 0 ? "hidden" : ""}`}
+				>
+					<ContactBar />
+				</div>
+
+				<div className={`flex flex-col gap-1 ${searchResult.length > 0 ? "" : "hidden"}`}>
 					{searchResult.map((item, index) => (
 						<AccountDetail
 							key={index}
@@ -69,32 +88,8 @@ export const SecondBar = () => {
 						/>
 					))}
 				</div>
-			);
-		} else {
-			switch (selected) {
-				case SideBarSelected.Chat:
-					return (
-						<div className="flex flex-col gap-1">
-							{
-								/* { for 5 } */
-								room?.map((item, index) => (
-									<ChatRoom
-										key={index}
-										room={item}
-										onClick={() => {
-											setSelect(SideBarSelected.Chat);
-										}}
-									/>
-								))
-							}
-						</div>
-					);
-				case SideBarSelected.Contact:
-					return <ContactBar />;
-				default:
-					null;
-			}
-		}
+			</>
+		);
 	};
 
 	return (
