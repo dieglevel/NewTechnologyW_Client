@@ -12,7 +12,7 @@ const Friend = ({ data }: Props) => {
 			<div className="flex flex-row items-center justify-start gap-4">
 				<div className="flex items-center justify-center rounded-full border-4 border-primary-400">
 					<Image
-						src={data?.avatarUrl ?? avatarDefault}
+						src={data?.detail?.avatarUrl ?? avatarDefault}
 						alt="Friend Image"
 						width={300}
 						height={200}
@@ -20,7 +20,7 @@ const Friend = ({ data }: Props) => {
 					/>
 				</div>
 				<div className="flex flex-col items-start justify-center">
-					<div className="text-center text-lg font-semibold">{data?.fullName ?? "-"}</div>
+					<div className="text-center text-lg font-semibold">{data?.detail?.fullName ?? "-"}</div>
 				</div>
 			</div>
 		</div>

@@ -190,4 +190,20 @@ export class IDBManager<T extends { [key: string]: any }> {
 			request.onerror = () => reject(request.error);
 		});
 	}
+
+	async initData(data: T[]): Promise<void> {
+		const store = await this.getStore("readwrite");
+		return new Promise((resolve, reject) => {
+			const request = store.clear();
+			request.onsuccess = () => {
+				const addRequests = data.map((item) => store.add(item));
+				Promise.all(addRequests)
+					.then(() => resolve())
+					.catch((error) => reject(error));
+			};
+			request.onerror = () => reject(request.error);
+		});
+	}
+
+	
 }

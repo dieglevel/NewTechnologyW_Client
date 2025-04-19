@@ -1,17 +1,61 @@
+import { acceptRequestFriend, rejectRequestFriend } from "@/api";
 import { avatarDefault } from "@/assets/images";
+import { ErrorResponse } from "@/lib/axios";
 import { IRequestFriend } from "@/types/implement";
 import { changeDateToString } from "@/utils";
 import { Button } from "@heroui/button";
+import { addToast } from "@heroui/toast";
 import Image from "next/image";
+import { useState } from "react";
 
 interface Props {
 	data: IRequestFriend;
 }
 
 const RequestFriend = ({ data }: Props) => {
-	const handleAcceptFriend = () => {};
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const handleRejectFriend = () => {};
+	const handleAcceptFriend = async () => {
+		setIsSubmitting(true);
+		try {
+			const response = await acceptRequestFriend(data.requestId ?? "");
+			if (response.statusCode === 200) {
+				addToast({
+					color: "success",
+					title: "Chấp nhận lời mời kết bạn thành công",
+				});
+			}
+		} catch (error) {
+			const err = error as ErrorResponse;
+			addToast({
+				color: "danger",
+				title: "Có lỗi xảy ra khi chấp nhận lời mời kết bạn",
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleRejectFriend = async () => {
+		setIsSubmitting(true);
+		try {
+			const response = await rejectRequestFriend(data.requestId ?? "");
+			if (response.statusCode === 200) {
+				addToast({
+					color: "success",
+					title: "Từ chối lời mời kết bạn thành công",
+				});
+			}
+		} catch (error) {
+			const err = error as ErrorResponse;
+			addToast({
+				color: "danger",
+				title: "Có lỗi xảy ra khi từ chối lời mời kết bạn",
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	return (
 		<div className="flex h-fit w-[40%] flex-col gap-5 rounded-lg bg-slate-50 p-3">
@@ -38,10 +82,20 @@ const RequestFriend = ({ data }: Props) => {
 			</div>
 
 			<div className="flex flex-row items-center justify-center gap-4">
-				<Button className="w-full rounded-lg bg-slate-200 font-bold text-black hover:bg-slate-500">
+				<Button
+					disabled={isSubmitting}
+					isLoading={isSubmitting}
+					className="w-full rounded-lg bg-slate-200 font-bold text-black hover:bg-slate-500"
+					onPress={handleRejectFriend}
+				>
 					Từ chối
 				</Button>
-				<Button className="w-full rounded-lg bg-primary-400 font-bold text-white hover:bg-primary-500">
+				<Button
+					disabled={isSubmitting}
+					isLoading={isSubmitting}
+					className="w-full rounded-lg bg-primary-400 font-bold text-white hover:bg-primary-500"
+					onPress={handleAcceptFriend}
+				>
 					Đồng ý
 				</Button>
 			</div>

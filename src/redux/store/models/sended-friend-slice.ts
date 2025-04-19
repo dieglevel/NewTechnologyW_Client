@@ -13,6 +13,7 @@ const thunkAction = {
   fetch: "fetch",
   set: "set",
   delete: "delete",
+  init: "init",
 }
 
 const idb = new IDBManager<ISendedFriend>(storeName, "receiver_id");
@@ -32,6 +33,11 @@ export const setSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${t
 export const deleteSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
   await idb.delete(id);
   return id;
+});
+
+export const initSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friends: ISendedFriend[]) => {
+  await idb.updateMany(friends);
+  return friends;
 });
 
 interface state {
@@ -86,7 +92,18 @@ const sendedFriendSlice = createSlice({
       })
       .addCase(deleteSendedFriend.rejected, (state) => {
         state.status = "failed";
+      })
+      .addCase(initSendedFriend.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initSendedFriend.fulfilled, (state, action: PayloadAction<ISendedFriend[]>) => {
+        state.status = "succeeded";
+        state.sendedFriends = action.payload;
+      })
+      .addCase(initSendedFriend.rejected, (state) => {
+        state.status = "failed";
       });
+      
 
   },
 });

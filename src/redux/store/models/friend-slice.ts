@@ -13,6 +13,7 @@ const thunkAction = {
   fetch: "fetch",
   set: "set",
   delete: "delete",
+  init: "init",
 }
 
 const idb = new IDBManager<IFriend>(storeName, "accountId");
@@ -32,6 +33,11 @@ export const setMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${t
 export const deleteMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
   await idb.delete(id);
   return id;
+});
+
+export const initMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friend: IFriend[]) => {
+  await idb.initData(friend);
+  return friend;
 });
 
 interface state {
@@ -77,7 +83,7 @@ const myListFriendSlice = createSlice({
       })
       .addCase(deleteMyListFriend.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = "succeeded";
-        const index = state.myListFriend?.findIndex((friend) => friend.id === action.payload);
+        const index = state.myListFriend?.findIndex((friend) => friend.accountId === action.payload);
         if (index !== undefined && index !== -1) {
           if (state.myListFriend) {
             state.myListFriend.splice(index, 1);
@@ -86,7 +92,18 @@ const myListFriendSlice = createSlice({
       })
       .addCase(deleteMyListFriend.rejected, (state) => {
         state.status = "failed";
+      })
+      .addCase(initMyListFriend.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initMyListFriend.fulfilled, (state, action: PayloadAction<IFriend[]>) => {
+        state.status = "succeeded";
+        state.myListFriend = action.payload;
+      })
+      .addCase(initMyListFriend.rejected, (state) => {
+        state.status = "failed";
       });
+      
 
   },
 });

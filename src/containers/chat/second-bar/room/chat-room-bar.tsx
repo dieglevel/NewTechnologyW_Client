@@ -1,5 +1,5 @@
 import { getProfileFromAnotherUser } from "@/api";
-import { api } from "@/lib/axios";
+import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { IDetailInformation } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
@@ -16,15 +16,20 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 	const account_id = localStorage.getItem(LocalStorage.userId) as string;
 	const [profile, setProfile] = useState<IDetailInformation>();
 
-	useEffect(() => {
-		const fetchDetailInformation = async () => {
-			const response = await getProfileFromAnotherUser(room.messages_latest[0].accountId);
-			if (response.data) {
-				setProfile(response.data);
-			}
-		}
-		fetchDetailInformation();
-	}, [room]);
+	// useEffect(() => {
+	// 	const fetchDetailInformation = async () => {
+	// 		try{
+	// 			const response = await getProfileFromAnotherUser(room.messages_latest[0].accountId);
+	// 			if (response.data) {
+	// 				setProfile(response.data);
+	// 			}
+	// 		}
+	// 		catch (error) {
+	// 			const err = error as ErrorResponse
+	// 		}
+	// 	}
+	// 	fetchDetailInformation();
+	// }, [room]);
 
 	return (
 		<div
@@ -48,7 +53,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 						{caculateDuration(room ? new Date(room.updatedAt) : new Date())}
 					</p>
 				</div>
-
+{/* 
 				<div className="flex items-center justify-between">
 					<p
 						className={
@@ -68,7 +73,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>
 					) : null}
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);

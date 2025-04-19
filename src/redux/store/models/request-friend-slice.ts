@@ -13,9 +13,10 @@ const thunkAction = {
   fetch: "fetch",
   set: "set",
   delete: "delete",
+  init: "init",
 }
 
-const idb = new IDBManager<IRequestFriend>(storeName, "sender_id");
+const idb = new IDBManager<IRequestFriend>(storeName, "receiver_id");
 
 export const fetchRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRequestFriend[]> => {
   const requestFriends = await idb.getAll();
@@ -34,13 +35,18 @@ export const deleteRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.del
   return id;
 });
 
+export const initRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friend: IRequestFriend[]) => {
+  await idb.initData(friend);
+  return friend;
+});
+
 interface state {
   requestFriends: IRequestFriend[] | null;
   status: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: state = {
-   requestFriends: null,
+  requestFriends: null,
   status: "idle",
 };
 
@@ -85,6 +91,16 @@ const requestFriendSlice = createSlice({
         }
       })
       .addCase(deleteRequestFriend.rejected, (state) => {
+        state.status = "failed";
+      })
+      .addCase(initRequestFriend.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initRequestFriend.fulfilled, (state, action: PayloadAction<IRequestFriend[]>) => {
+        state.status = "succeeded";
+        state.requestFriends = action.payload;
+      })
+      .addCase(initRequestFriend.rejected, (state) => {
         state.status = "failed";
       });
 
