@@ -28,12 +28,12 @@ export const SecondBar = () => {
 			try {
 				const response = await findAccount(search);
 				if (response.statusCode === 200) {
-					console.log("response: ", response.data);
+					// console.log("response: ", response.data);
 					setSearchResult(response.data);
 				}
 			} catch (error) {
 				const e = error as ErrorResponse;
-				console.log("error: ", e.message);
+				// console.log("error: ", e.message);
 			}
 		};
 
@@ -51,7 +51,7 @@ export const SecondBar = () => {
 	}, [search]);
 
 	useEffect(() => {
-		console.log(room);
+		// console.log(room);
 	}, [room]);
 
 	// hide chat when window has been resized

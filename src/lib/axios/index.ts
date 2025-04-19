@@ -63,7 +63,7 @@ api.interceptors.response.use(
 	(response) => response,
 	(error) => {
 
-		console.log(error)
+		// console.log(error)
 
 		if (!error.response) {
 			return Promise.reject(error);
@@ -77,8 +77,8 @@ api.interceptors.response.use(
 				description: "Vui lòng đăng nhập lại",
 				color: "danger",
 			})
-			// localStorage.removeItem(LocalStorage.token);
-			// window.location.href = "/login";
+			localStorage.removeItem(LocalStorage.token);
+			window.location.href = "/login";
 		}
 
 		return Promise.reject(errorResponse);

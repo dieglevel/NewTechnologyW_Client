@@ -20,14 +20,15 @@ const idb = new IDBManager<ISendedFriend>(storeName, "receiver_id");
 
 export const fetchSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<ISendedFriend[]> => {
   const sendedFriends = await idb.getAll();
-  console.log("sendedFriends DB: ", sendedFriends);
+  // console.log("sendedFriends DB: ", sendedFriends);
   return sendedFriends || null;
 });
 
 export const setSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: ISendedFriend[]) => {
-  console.log("sendedFriends: ", friend);
+  console.log("sendedFriend DB: ", friend);
   await idb.updateMany(friend);
-  return friend;
+  const sendedFriends = await idb.getAll();
+  return sendedFriends; 
 });
 
 export const deleteSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
@@ -36,8 +37,10 @@ export const deleteSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.dele
 });
 
 export const initSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friends: ISendedFriend[]) => {
+  await idb.clear();
   await idb.updateMany(friends);
-  return friends;
+  const sendedFriends = await idb.getAll();
+  return sendedFriends;
 });
 
 interface state {

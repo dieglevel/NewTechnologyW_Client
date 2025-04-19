@@ -20,14 +20,15 @@ const idb = new IDBManager<IFriend>(storeName, "accountId");
 
 export const fetchMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IFriend[]> => {
   const myListFriends = await idb.getAll();
-  console.log("myListFriend DB: ", myListFriends);
+  // console.log("myListFriend DB: ", myListFriends);
   return myListFriends || null;
 });
 
 export const setMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: IFriend[]) => {
-  console.log("friend: ", friend);
+  // console.log("friend: ", friend);
   await idb.updateMany(friend);
-  return friend;
+  const myListFriends = await idb.getAll();
+  return myListFriends;
 });
 
 export const deleteMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
@@ -36,6 +37,7 @@ export const deleteMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.dele
 });
 
 export const initMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friend: IFriend[]) => {
+  await idb.clear();
   await idb.initData(friend);
   return friend;
 });

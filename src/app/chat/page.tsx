@@ -60,7 +60,7 @@ const ChatPage = () => {
 			try {
 				const response = await getListFriend();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
+					// console.log("response: ", response.data);
 					store.dispatch(initMyListFriend(response.data));
 				}
 			} catch (error) {
@@ -76,7 +76,7 @@ const ChatPage = () => {
 			try {
 				const response = await getListSended();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
+					// console.log("response: ", response.data);
 					store.dispatch(initSendedFriend(response.data));
 				}
 			} catch (error) {
@@ -91,7 +91,7 @@ const ChatPage = () => {
 			try {
 				const response = await getListResponseFriend();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
+					// console.log("response: ", response.data);
 					store.dispatch(initRequestFriend(response.data));
 				}
 			} catch (error) {
@@ -102,8 +102,8 @@ const ChatPage = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log("Detail information status: ", detailInformationStatus);
-		console.log("Status: ", status);
+		// console.log("Detail information status: ", detailInformationStatus);
+		// console.log("Status: ", status);
 		if (detailInformationStatus === "succeeded") {
 			setIsLoading(false);
 		}

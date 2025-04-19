@@ -57,3 +57,12 @@ export const rejectRequestFriend = async (requestId: string) => {
       throw error as ErrorResponse
    }
 }
+
+export const unFriend = async (friendId: string) => {
+   try {
+      const response = await api.put<BaseResponse<IFriend>>(`/friend/delete/${friendId}`)
+      return response.data;
+   } catch (error) {
+      throw error as ErrorResponse
+   }
+}

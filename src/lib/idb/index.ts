@@ -141,7 +141,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 				};
 				request.onerror = () => reject(request.error);
 			} catch (error) {
-				console.log("error", error);
+				// console.log("error", error);
 				reject(error);
 			}
 		});

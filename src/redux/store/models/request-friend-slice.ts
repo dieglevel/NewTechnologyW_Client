@@ -16,18 +16,19 @@ const thunkAction = {
   init: "init",
 }
 
-const idb = new IDBManager<IRequestFriend>(storeName, "receiver_id");
+const idb = new IDBManager<IRequestFriend>(storeName, "sender_id");
 
 export const fetchRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRequestFriend[]> => {
   const requestFriends = await idb.getAll();
-  console.log("requestFriends DB: ", requestFriends);
+  // console.log("requestFriends DB: ", requestFriends);
   return requestFriends || null;
 });
 
 export const setRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: IRequestFriend[]) => {
-  console.log("requestFriends: ", friend);
   await idb.updateMany(friend);
-  return friend;
+  const requestFriends = await idb.getAll();
+  console.log("requestFriends DB: ", requestFriends);
+  return requestFriends;
 });
 
 export const deleteRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
@@ -36,6 +37,7 @@ export const deleteRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.del
 });
 
 export const initRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friend: IRequestFriend[]) => {
+  await idb.clear();
   await idb.initData(friend);
   return friend;
 });
@@ -83,7 +85,7 @@ const requestFriendSlice = createSlice({
       })
       .addCase(deleteRequestFriend.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = "succeeded";
-        const index = state.requestFriends?.findIndex((friend) => friend.receiver_id === action.payload);
+        const index = state.requestFriends?.findIndex((friend) => friend.sender_id === action.payload);
         if (index !== undefined && index !== -1) {
           if (state.requestFriends) {
             state.requestFriends.splice(index, 1);

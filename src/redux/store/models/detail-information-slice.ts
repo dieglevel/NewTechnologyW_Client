@@ -21,7 +21,7 @@ const idb = new IDBManager<IDetailInformation>(storeName);
 
 export const fetchDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IDetailInformation> => {
   const detailInformations = await idb.getAll();
-  console.log("DetailInformation DB: ", detailInformations);
+  // console.log("DetailInformation DB: ", detailInformations);
   return detailInformations[0] || null;
 });
 
