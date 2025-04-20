@@ -65,10 +65,14 @@ class SocketService {
 			console.log("Connected to server:", data);
 		});
 
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
+
 		this.socket.emit(SocketEmit.detailInformation, {});
 		this.socket.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
 			store.dispatch(initDetailInformation(data));
 		});
+		
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 		this.socket.emit(SocketEmit.myListRoom, {
 			lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
@@ -77,6 +81,8 @@ class SocketService {
 			// console.log("My list room updated:", data);
 			store.dispatch(initRoom(data));
 		});
+
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 		this.socket.on(SocketOn.requestFriend, (data: {
 			behavior: string, data: IRequestFriend
