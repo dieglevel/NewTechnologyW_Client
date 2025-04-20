@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { BodyChat, FooterChat, HeaderChat } from "./components";
 
-interface Props {
-	roomId: string;
-}
 
 export const BodyView = () => {
 	return (

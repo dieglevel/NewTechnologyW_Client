@@ -1,6 +1,8 @@
 export function caculateDuration(timeSent: Date): string {
-   const now = new Date();
-   const diff = now.getTime() - timeSent.getTime();
+   const now = new Date();   
+
+   const diff = now.getTime() - timeSent.getTime(); // Difference in milliseconds
+   
    const seconds = Math.floor(diff / 1000);
    const minutes = Math.floor(seconds / 60);
    const hours = Math.floor(minutes / 60);

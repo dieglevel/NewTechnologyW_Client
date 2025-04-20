@@ -2,7 +2,13 @@ import { io, Socket } from "socket.io-client";
 import { LocalStorage } from "@/lib/local-storage";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { store } from "@/redux/store";
-import { setDetailInformation, fetchDetailInformation, setRoom, setRequestFriend, fetchRoom } from "@/redux/store/models";
+import {
+	setDetailInformation,
+	fetchDetailInformation,
+	setRoom,
+	setRequestFriend,
+	fetchRoom,
+} from "@/redux/store/models";
 import { IDetailInformation, IRequestFriend, ISendedFriend } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 
@@ -21,32 +27,35 @@ class SocketService {
 	}
 
 	public connect() {
-		if (this.socket || !navigator.onLine) {
-			console.warn("Already connected or offline.");
-			store.dispatch(fetchDetailInformation());
-			store.dispatch(fetchRoom());
-			return;
+		try {
+			if (this.socket || !navigator.onLine) {
+				console.warn("Already connected or offline.");
+				store.dispatch(fetchDetailInformation());
+				store.dispatch(fetchRoom());
+				return;
+			}
+
+			const token = localStorage.getItem(LocalStorage.token);
+
+			this.socket = io(this.URL, {
+				autoConnect: true,
+				extraHeaders: {
+					token: `${token}`,
+				},
+			});
+
+			this.registerCoreEvents();
+		} catch (error) {
+			console.error("Error connecting to socket:", error);
 		}
-
-		const token = localStorage.getItem(LocalStorage.token);
-
-		this.socket = io(this.URL, {
-			autoConnect: true,
-			extraHeaders: {
-				token: `${token}`,
-			},
-		});
-
-		this.registerCoreEvents();
-
 	}
 
 	private registerCoreEvents() {
 		if (!this.socket) return;
 
-
 		this.socket.emit(SocketEmit.connectServer, {});
 		this.socket.on(SocketOn.connectServer, (data) => {
+			
 			console.log("Connected to server:", data);
 		});
 
@@ -55,14 +64,15 @@ class SocketService {
 			console.log("User detail info updated:", data);
 			store.dispatch(setDetailInformation(data));
 		});
-		
 
-		this.socket.emit(SocketEmit.myListRoom, {});
+		this.socket.emit(SocketEmit.myListRoom, {
+			lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
+		});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
 			console.log("My list room updated:", data);
 			store.dispatch(setRoom(data));
 		});
-		
+
 		// this.emit(SocketEmit.detailInformation, {})
 	}
 

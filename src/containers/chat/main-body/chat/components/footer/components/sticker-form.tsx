@@ -12,7 +12,11 @@ enum ListTabs {
 	Gif = "Gif",
 }
 
-export const StickerForm = () => {
+interface StickerFormProps {
+	onSelectSticker?: (sticker: string) => void;
+}
+
+export const StickerForm = ({ onSelectSticker }: StickerFormProps) => {
 	const [isHidden, setIsHidden] = useState<boolean>(true);
 	const [selectType, setSelectType] = useState<ListTabs>(ListTabs.Sticker);
 	const ref = useRef<HTMLDivElement>(null);
@@ -97,7 +101,10 @@ export const StickerForm = () => {
 							width={120}
 							height={120}
 							onClick={() => {
-							}}
+								if (onSelectSticker) {
+									onSelectSticker(item.images.fixed_width.url);
+								}
+							}}	
 						/>
 					))}
 				</div>

@@ -9,23 +9,53 @@ const storeName = "message";
 const thunkDB = "idb/";
 const thunkName = "Message";
 
-const thunkAction = { fetch: "fetch", set: "set", delete: "delete" };
+const thunkAction = { fetch: "fetch", set: "set", delete: "delete", setOne: "setOne", fetchByRoomId: "fetchByRoomId" };
 
 // IDB instance
-const idb = new IDBManager<IMessage>(storeName, "_id", "createdAt");
+const idb = new IDBManager<IMessage>(storeName, "message_id", ["createdAt", "room_id"]);
 
 // Async thunks
-export const fetchMessage = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IMessage[]> => {
-	const messages = await idb.getAllByIndex();
-	console.log("Message DB: ", messages);
-	return messages || [];
-});
+export const fetchMessage = createAsyncThunk(
+	`${thunkDB}${thunkAction.fetch}${thunkName}`,
+	async (): Promise<IMessage[]> => {
+		const messages = await idb.getAllByIndex();
+		console.log("Message DB: ", messages);
+		return messages || [];
+	},
+);
 
-export const setMessage = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (messages: IMessage[]) => {
-	await idb.updateMany(messages);
-	const updatedMessages = await idb.getAllByIndex();
-	return updatedMessages;
-});
+export const fetchMessageByRoomId = createAsyncThunk(
+	`${thunkDB}${thunkAction.fetchByRoomId}${thunkName}`,
+	async (roomId: string): Promise<IMessage[]> => {
+		const messages = await idb.getMessagesByRoomId(roomId);
+		return messages || [];
+	},
+);
+
+export const setMessage = createAsyncThunk(
+	`${thunkDB}${thunkAction.set}${thunkName}`,
+	async ({ messages, roomId }: { messages: IMessage[]; roomId: string }): Promise<IMessage[]> => {
+		try {
+			await idb.updateMany(messages);
+			return messages;
+		} catch (error) {
+			console.log("error", error);
+			return [];
+		}
+	},
+);
+
+export const setOneMessage = createAsyncThunk(
+	`${thunkDB}${thunkAction.setOne}${thunkName}`,
+	async (message: IMessage) => {
+		try {
+			await idb.update(message);
+			return message;
+		} catch (error) {
+			console.log("error", error);
+		}
+	},
+);
 
 export const deleteMessage = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
 	await idb.delete(id);
@@ -34,7 +64,7 @@ export const deleteMessage = createAsyncThunk(`${thunkDB}${thunkAction.delete}${
 
 // Slice state interface
 interface MessageState {
-    message: IMessage[] | null;
+	message: IMessage[] | null;
 	status: "idle" | "loading" | "succeeded" | "failed";
 }
 
@@ -56,6 +86,17 @@ const messageSlice = createSlice({
 			.addCase(fetchMessage.rejected, (state) => {
 				state.status = "failed";
 			})
+			.addCase(fetchMessageByRoomId.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(fetchMessageByRoomId.fulfilled, (state, action: PayloadAction<IMessage[]>) => {
+				state.status = "succeeded";
+				console.log(action.payload);
+				state.message = action.payload;
+			})
+			.addCase(fetchMessageByRoomId.rejected, (state) => {
+				state.status = "failed";
+			})
 
 			.addCase(setMessage.pending, (state) => {
 				state.status = "loading";
@@ -63,20 +104,46 @@ const messageSlice = createSlice({
 			.addCase(setMessage.fulfilled, (state, action: PayloadAction<IMessage[]>) => {
 				state.status = "succeeded";
 
-				if (state.message) {
-					action.payload.forEach((newMessage) => {
-						const index = state.message!.findIndex((m) => m._id === newMessage._id);
-						if (index >= 0) {
-							state.message![index] = newMessage;
-						} else {
-							state.message!.push(newMessage);
-						}
-					});
-				} else {
-					state.message = action.payload;
+				if (action.payload) {
+					if (state.message) {
+						action.payload.forEach((newMessage) => {
+							const index = state.message!.findIndex((m) => m.message_id === newMessage.message_id);
+							if (index >= 0) {
+								state.message![index] = newMessage;
+							} else {
+								state.message!.push(newMessage);
+							}
+						});
+					} else {
+						state.message = action.payload;
+					}
 				}
 			})
 			.addCase(setMessage.rejected, (state) => {
+				state.status = "failed";
+			})
+			.addCase(setOneMessage.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(setOneMessage.fulfilled, (state, action: PayloadAction<IMessage | undefined>) => {
+				state.status = "succeeded";
+
+				const newMessage = action.payload;
+
+				if (newMessage) {
+					if (state.message) {
+						const index = state.message.findIndex((m) => m.message_id === newMessage.message_id);
+						if (index >= 0) {
+							state.message![index] = newMessage;
+						} else {
+							state.message = [...state.message, newMessage]; 
+						}
+					} else {
+						state.message = [newMessage];
+					}
+				}
+			})
+			.addCase(setOneMessage.rejected, (state) => {
 				state.status = "failed";
 			})
 
@@ -86,7 +153,7 @@ const messageSlice = createSlice({
 			.addCase(deleteMessage.fulfilled, (state, action: PayloadAction<string>) => {
 				state.status = "succeeded";
 				if (state.message) {
-					state.message = state.message.filter((m) => m._id !== action.payload);
+					state.message = state.message.filter((m) => m.message_id !== action.payload);
 				}
 			})
 			.addCase(deleteMessage.rejected, (state) => {
@@ -96,4 +163,3 @@ const messageSlice = createSlice({
 });
 
 export const MessageReducer = messageSlice.reducer;
- 

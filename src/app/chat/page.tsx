@@ -17,6 +17,7 @@ import { ErrorResponse } from "@/lib/axios";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
+
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const dispatch = useDispatch<AppDispatch>();
@@ -85,8 +86,7 @@ const ChatPage = () => {
 				const e = error as ErrorResponse;
 			}
 		};
-;
-		fetch()
+		fetch();
 	}, []);
 
 	useEffect(() => {
@@ -101,8 +101,7 @@ const ChatPage = () => {
 				const e = error as ErrorResponse;
 			}
 		};
-;
-		fetch()
+		fetch();
 	}, []);
 
 	useEffect(() => {
@@ -118,20 +117,20 @@ const ChatPage = () => {
 			{isLoading ? (
 				<Loading />
 			) : (
-				<div className="flex min-w-[650px] flex-row h-screen">
+				<div className="flex h-screen min-w-[650px] flex-row">
 					<InformationModal />
 					<Sidebar />
 					<SecondBar />
 					{selected === SideBarSelected.Chat ? (
 						<>
-							{ selectedRoomId ? (
+							{selectedRoomId ? (
 								<>
 									<BodyView />
 									{isOpen && <OptionView />}
 								</>
 							) : (
-								<IntroduceView/>
-							) }
+								<IntroduceView />
+							)}
 						</>
 					) : (
 						<ContactBody />

@@ -1,11 +1,15 @@
 import { getProfileFromAnotherUser } from "@/api";
+import { SocketEmit, SocketOn } from "@/constants/socket";
 import { api } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
+import { socketService } from "@/lib/socket/socket";
+import { RootState } from "@/redux/store";
 import { IDetailInformation } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 import { caculateDuration } from "@/utils/caculate-duration";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 interface Props {
 	room: IRoom;
@@ -16,15 +20,18 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 	const account_id = localStorage.getItem(LocalStorage.userId) as string;
 	const [profile, setProfile] = useState<IDetailInformation>();
 
+
 	useEffect(() => {
 		const fetchDetailInformation = async () => {
-			const response = await getProfileFromAnotherUser(room.messages_latest.accountId);
+			if (room.type === "group") return;
+			const response = await getProfileFromAnotherUser(room.lastMessage.account_id);
 			if (response.data) {
 				setProfile(response.data);
 			}
-		}
+		};
 		fetchDetailInformation();
-	}, [room]);
+	}, [room.lastMessage.account_id]);
+
 
 	return (
 		<div
@@ -34,7 +41,10 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 			<div className="flex items-center rounded-full">
 				<Image
 					priority
-					src={profile?.avatarUrl || "https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"}
+					src={
+						profile?.avatarUrl ||
+						"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
+					}
 					width={50}
 					height={50}
 					alt="avatar"
@@ -43,27 +53,29 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 			</div>
 			<div className="flex flex-1 flex-col">
 				<div className="flex items-center justify-between">
-					<p className="line-clamp-1 text-base font-semibold">{profile?.fullName === null ? "anonymous" : profile?.fullName}</p>
+					<p className="line-clamp-1 text-base font-semibold">
+						{room.type === "group" ? room.name : profile?.fullName}
+					</p>
 					<p className="text-tiny font-semibold">
-						{caculateDuration(room ? new Date(room.updatedAt) : new Date())}
+						{caculateDuration(room ? new Date(room.lastMessage.createdAt) : new Date())}
 					</p>
 				</div>
 
 				<div className="flex items-center justify-between">
 					<p
 						className={
-							(room && room.messages_latest.accountId === account_id ? "" : "font-semibold ") +
+							(room && room.lastMessage.account_id === account_id ? "" : "font-semibold ") +
 							"line-clamp-1 text-tiny"
 						}
 					>
-						{room && room.messages_latest.accountId === account_id ? "Bạn: " : ""}
-						{room ? room.messages_latest.content : "N/A"}
+						{room && room.lastMessage.account_id === account_id ? "Bạn: " : ""}
+						{room ? room.lastMessage.content : "N/A"}
 					</p>
 
 					{room &&
 					room.isSeen &&
 					!room.isSeen.includes(account_id) &&
-					room.messages_latest.accountId !== account_id ? (
+					room.lastMessage.account_id !== account_id ? (
 						<div>
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>

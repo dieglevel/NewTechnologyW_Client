@@ -12,7 +12,7 @@ const thunkName = "Room";
 const thunkAction = { fetch: "fetch", set: "set", delete: "delete" };
 
 // IDB instance
-const idb = new IDBManager<IRoom>(storeName, "room_id", "updatedAt");
+const idb = new IDBManager<IRoom>(storeName, "id", ["lastMessage.createdAt"]);
 
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
@@ -66,7 +66,7 @@ const roomSlice = createSlice({
 
 				if (state.room) {
 					action.payload.forEach((newRoom) => {
-						const index = state.room!.findIndex((r) => r.room_id === newRoom.room_id);
+						const index = state.room!.findIndex((r) => r.id === newRoom.id);
 						if (index >= 0) {
 							state.room![index] = newRoom;
 						} else {

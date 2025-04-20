@@ -9,7 +9,7 @@ type StoreMeta = Map<string, StoreConfig>;
 
 const dbInstances: Map<string, IDBDatabase> = new Map();
 const storeMetas: Map<string, StoreMeta> = new Map();
-const indexMetas: Map<string, string> = new Map();
+const indexMetas: Map<string, string[]> = new Map();
 
 export const RootIDB = (dbName: string) => {
 	const deleteDB = () => {
@@ -30,9 +30,9 @@ export class IDBManager<T extends { [key: string]: any }> {
 	private dbName: string = dbName;
 	private storeName: string;
 	private keyPath: string;
-	private index?: string;
+	private index?: string[];
 
-	constructor(storeName: string, keyPath: string = "id", index?: string) {
+	constructor(storeName: string, keyPath: string = "id", index?: string[]) {
 		this.storeName = storeName;
 		this.keyPath = keyPath;
 		this.index = index;
@@ -70,9 +70,9 @@ export class IDBManager<T extends { [key: string]: any }> {
 							if (indexMetas.has(name)) {
 								const indexName = indexMetas.get(name);
 								if (indexName) {
-									objStore.createIndex(indexName, indexName, {
-										unique: false,
-									});
+									for (const index of indexName) {
+										objStore.createIndex(index, index, { unique: false });
+									}
 								}
 							}
 						}
@@ -122,11 +122,43 @@ export class IDBManager<T extends { [key: string]: any }> {
 		});
 	}
 
+	public async getMessagesByRoomId(roomId: string): Promise<T[]> {
+		const store = await this.getStore("readonly");
+
+		return new Promise((resolve, reject) => {
+			try {
+				const index = store.index("room_id");
+				const request = index.getAll(roomId);
+				request.onsuccess = () => {
+					const result = request.result;
+
+					const sortedMessages = result.sort((a, b) => {
+						return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+					});
+					console.log(sortedMessages[0]);
+					resolve(sortedMessages);
+				};
+
+				request.onerror = (event) => {
+					console.error("Error getting messages:", event);
+					reject(request.error);
+				};
+			} catch (error) {
+				console.log("error", error);
+				reject(error);
+			}
+		});
+	}
+
 	async getAllByIndex(direction: IDBCursorDirection = "prev"): Promise<T[]> {
 		const store = await this.getStore("readonly");
-		return new Promise((resolve, reject) => {	
+		return new Promise((resolve, reject) => {
 			try {
-				const index = store.index(indexMetas.get(this.storeName)!);
+				const indexNames = indexMetas.get(this.storeName)!;
+				if (!indexNames || indexNames.length === 0) {
+					throw new Error(`No indexes found for store: ${this.storeName}`);
+				}
+				const index = store.index(indexNames[0]);
 				const request = index.openCursor(null, direction);
 
 				const results: T[] = [];
@@ -148,14 +180,22 @@ export class IDBManager<T extends { [key: string]: any }> {
 	}
 
 	async update(data: T): Promise<void> {
-		const key = data[this.keyPath];
-		if (!key) throw new Error("Missing keyPath in data for update()");
-		const store = await this.getStore("readwrite");
-		return new Promise((resolve, reject) => {
-			const request = store.put(data);
-			request.onsuccess = () => resolve();
-			request.onerror = () => reject(request.error);
-		});
+		try {
+			const key = data[this.keyPath];
+			if (!key) throw new Error("Missing keyPath in data for update()");
+			const store = await this.getStore("readwrite");
+			return new Promise((resolve, reject) => {
+				const request = store.put(data);
+				request.onsuccess = () => resolve();
+				request.onerror = () => {
+					console.log("error", request.error);
+					reject(request.error);
+				};
+			});
+		} catch (error) {
+			console.log("error", error);
+			throw error;
+		}
 	}
 
 	async updateMany(data: T[]): Promise<void> {

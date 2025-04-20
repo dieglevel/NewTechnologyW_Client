@@ -1,3 +1,5 @@
 export * from "./caculate-duration"
 export * from "./change-date-to-string"
 export * from  "./auth-regex.validate"
+export * from "./normalize-message"
+export * from "./normalize-room"
