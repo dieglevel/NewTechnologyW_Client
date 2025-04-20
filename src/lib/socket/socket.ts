@@ -8,8 +8,13 @@ import {
 	setRoom,
 	setRequestFriend,
 	fetchRoom,
+	initDetailInformation,
+	deleteRequestFriend,
+	setMyListFriend,
+	deleteMyListFriend,
+	initRoom,
 } from "@/redux/store/models";
-import { IDetailInformation, IRequestFriend, ISendedFriend } from "@/types/implement";
+import { IDetailInformation, IFriend, IRequestFriend, ISendedFriend } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 import { deleteSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 
@@ -70,7 +75,7 @@ class SocketService {
 		});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
 			// console.log("My list room updated:", data);
-			store.dispatch(setRoom(data));
+			store.dispatch(initRoom(data));
 		});
 
 		this.socket.on(SocketOn.requestFriend, (data: {

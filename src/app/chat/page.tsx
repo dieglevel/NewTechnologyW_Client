@@ -16,6 +16,7 @@ import { initMyListFriend, initRequestFriend, setMyListFriend, setRequestFriend 
 import { ErrorResponse } from "@/lib/axios";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { initSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
+import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const dispatch = useDispatch<AppDispatch>();
