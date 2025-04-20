@@ -13,25 +13,33 @@ const thunkAction = {
   fetch: "fetch",
   set: "set",
   delete: "delete",
+  init: "init",
 }
 
 const idb = new IDBManager<IFriend>(storeName, "accountId");
 
 export const fetchMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IFriend[]> => {
   const myListFriends = await idb.getAll();
-  console.log("myListFriend DB: ", myListFriends);
+  // console.log("myListFriend DB: ", myListFriends);
   return myListFriends || null;
 });
 
 export const setMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: IFriend[]) => {
-  console.log("friend: ", friend);
+  // console.log("friend: ", friend);
   await idb.updateMany(friend);
-  return friend;
+  const myListFriends = await idb.getAll();
+  return myListFriends;
 });
 
 export const deleteMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
   await idb.delete(id);
   return id;
+});
+
+export const initMyListFriend = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (friend: IFriend[]) => {
+  await idb.clear();
+  await idb.initData(friend);
+  return friend;
 });
 
 interface state {
@@ -77,7 +85,7 @@ const myListFriendSlice = createSlice({
       })
       .addCase(deleteMyListFriend.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = "succeeded";
-        const index = state.myListFriend?.findIndex((friend) => friend.id === action.payload);
+        const index = state.myListFriend?.findIndex((friend) => friend.accountId === action.payload);
         if (index !== undefined && index !== -1) {
           if (state.myListFriend) {
             state.myListFriend.splice(index, 1);
@@ -86,7 +94,18 @@ const myListFriendSlice = createSlice({
       })
       .addCase(deleteMyListFriend.rejected, (state) => {
         state.status = "failed";
+      })
+      .addCase(initMyListFriend.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initMyListFriend.fulfilled, (state, action: PayloadAction<IFriend[]>) => {
+        state.status = "succeeded";
+        state.myListFriend = action.payload;
+      })
+      .addCase(initMyListFriend.rejected, (state) => {
+        state.status = "failed";
       });
+      
 
   },
 });

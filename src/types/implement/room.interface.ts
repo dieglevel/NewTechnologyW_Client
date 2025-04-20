@@ -6,9 +6,9 @@ export interface IRoom extends BaseEntity {
 	id: string;
 	name: string;
 	isSeen?: string[];
-    leader_account_id: string;
+	leader_account_id: string;
 	lastMessage: IMessage;
 	type: string;
-    isDelete: boolean;
-    isLoad: boolean;
+	isDelete: boolean;
+	isLoad: boolean;
 }

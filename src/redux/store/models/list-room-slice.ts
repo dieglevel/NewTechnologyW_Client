@@ -3,13 +3,14 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { IDBManager } from "@/lib/idb";
 import { IRoom } from "@/types/implement/room.interface";
 import { stat } from "fs";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 // Config constants
 const storeName = "room";
 const thunkDB = "idb/";
 const thunkName = "Room";
 
-const thunkAction = { fetch: "fetch", set: "set", delete: "delete" };
+const thunkAction = { fetch: "fetch", set: "set", delete: "delete", init: "init" };
 
 // IDB instance
 const idb = new IDBManager<IRoom>(storeName, "id", ["lastMessage.createdAt"]);
@@ -17,7 +18,7 @@ const idb = new IDBManager<IRoom>(storeName, "id", ["lastMessage.createdAt"]);
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
 	const rooms = await idb.getAllByIndex();
-	console.log("Room DB: ", rooms);
+	// console.log("Room DB: ", rooms);
 	return rooms || [];
 });
 
@@ -31,6 +32,13 @@ export const setRoom = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName
 export const deleteRoom = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
 	await idb.delete(id);
 	return id;
+});
+
+export const initRoom = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (rooms: IRoom[]): Promise<IRoom[]> => {
+	await idb.clear();
+	const updatedRooms = await idb.updateMany(rooms);
+	const room = await idb.getAll()
+	return room;
 });
 
 // Slice state interface
@@ -92,7 +100,18 @@ const roomSlice = createSlice({
 			})
 			.addCase(deleteRoom.rejected, (state) => {
 				state.status = "failed";
-			});
+			})
+			.addCase(initRoom.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(initRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
+				state.status = "succeeded";
+				state.room = action.payload;
+			})
+			.addCase(initRoom.rejected, (state) => {
+				state.status = "failed";
+			})
+
 	},
 });
 

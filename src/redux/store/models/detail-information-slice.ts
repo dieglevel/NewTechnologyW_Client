@@ -13,6 +13,7 @@ const thunkAction = {
   fetch: "fetch",
   set: "set",
   delete: "delete",
+  init: "init",
 }
 
 const idb = new IDBManager<IDetailInformation>(storeName);
@@ -20,7 +21,7 @@ const idb = new IDBManager<IDetailInformation>(storeName);
 
 export const fetchDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IDetailInformation> => {
   const detailInformations = await idb.getAll();
-  console.log("DetailInformation DB: ", detailInformations);
+  // console.log("DetailInformation DB: ", detailInformations);
   return detailInformations[0] || null;
 });
 
@@ -32,6 +33,14 @@ export const setDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.se
 export const deleteDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
   await idb.delete(id);
   return id;
+});
+
+export const initDetailInformation = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (detailInformation: IDetailInformation) => {
+  const data: IDetailInformation[] = [
+    detailInformation
+  ]
+  await idb.initData(data);
+  return detailInformation;
 });
 
 interface state {
@@ -83,7 +92,18 @@ const detailInformationSlice = createSlice({
       })
       .addCase(deleteDetailInformation.rejected, (state) => {
         state.status = "failed";
+      })
+      .addCase(initDetailInformation.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(initDetailInformation.fulfilled, (state, action: PayloadAction<IDetailInformation>) => {
+        state.status = "succeeded";
+        state.detailInformation = action.payload;
+      })
+      .addCase(initDetailInformation.rejected, (state) => {
+        state.status = "failed";
       });
+
 
   },
 });
