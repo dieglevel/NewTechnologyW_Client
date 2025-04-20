@@ -33,6 +33,11 @@ const nextConfig: NextConfig = withPWA({
 				hostname: "res.cloudinary.com",
 				pathname: "/**",
 			},
+			{
+				protocol: "https",
+				hostname: "139.59.253.187",
+				pathname: "/Cloud/**",
+			},
 		],
 	},
 });

@@ -88,12 +88,12 @@ export default function ImageViewer({ src, alt = "", children }: ImageViewerProp
 							exit={{ scale: 0.9, opacity: 0 }}
 							transition={{ duration: 0.2 }}
 						>
-							<Image
+							<img
 								onClick={(e) => e.stopPropagation()}
 								onWheel={handleWheel}
 								width={700}
 								height={700}
-								src={src}
+								src={typeof src === "string" ? src : src.src}
 								alt={alt}
 								onMouseDown={startDrag}
 								draggable={false}

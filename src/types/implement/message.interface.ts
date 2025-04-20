@@ -7,5 +7,7 @@ export interface IMessage extends BaseEntity {
 	account_id: string;
 	room_id: string;
 	content: string;
-	file?: string;
+	files?: any[]; // Changed from string to string[] to accommodate multiple files
+	isRevoked: boolean;
+	isDeleted: boolean;
 }

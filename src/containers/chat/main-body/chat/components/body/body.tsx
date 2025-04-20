@@ -25,7 +25,6 @@ export const BodyChat = () => {
 		
 		if (message && selectedRoomId) {
 			const filteredMessages = message.filter((msg) => msg.room_id === selectedRoomId);
-			console.log("filteredMessages: ", filteredMessages); 	
 			setMessages(filteredMessages);
 		}
 	}, [message, selectedRoomId]);
@@ -35,12 +34,6 @@ export const BodyChat = () => {
 			setPagination((prev) => prev + 1);
 		}
 	}, [inView]);
-
-	useEffect(() => {
-		if (status === "succeeded") {
-			console.log("message: ", message);
-		}
-	}, [status]);
 
 	const renderMessage = () => {
 		return (

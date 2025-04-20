@@ -1,5 +1,7 @@
 // idbManager.ts
 
+import { normalizeMessage } from "@/utils";
+
 type StoreConfig = {
 	keyPath: string;
 	autoIncrement?: boolean;
@@ -203,7 +205,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			data.forEach((item) => {
-				const request = store.put(item);
+				const request = store.put(normalizeMessage(item));
 				request.onsuccess = () => {
 					count++;
 					if (count === data.length) resolve();
@@ -220,7 +222,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 			request.onsuccess = () => resolve();
 			request.onerror = () => reject(request.error);
 		});
-	}
+	}	
 
 	async clear(): Promise<void> {
 		const store = await this.getStore("readwrite");

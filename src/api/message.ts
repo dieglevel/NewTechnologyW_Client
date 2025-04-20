@@ -35,7 +35,7 @@ export const sendMessage = async (data: ISend) => {
 
 		if (data.files && data.files.length > 0) {
 			data.files.forEach((file) => {
-				formData.append("multipleFiles", file); // backend yêu cầu key là `multipleFiles`
+				formData.append("multipleFiles", file);
 			});
 		}
 
@@ -44,6 +44,18 @@ export const sendMessage = async (data: ISend) => {
 				"Content-Type": "multipart/form-data",
 			},
 		});
+
+		console.log("response: ", response.data);
+
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const getMessageByRoomId = async (roomId: string) => {
+	try {
+		const response = await api.get<BaseResponse<IMessage[]>>(`/message/get-all-message-of-room/${roomId}`);
 
 		return response.data;
 	} catch (error) {
