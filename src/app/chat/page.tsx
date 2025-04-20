@@ -12,12 +12,10 @@ import InformationModal from "@/containers/chat/sidebar/components/user/modal/in
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import { getListFriend, getListResponseFriend, getListSended } from "@/api";
-import { setMyListFriend, setRequestFriend } from "@/redux/store/models";
+import { initMyListFriend, initRequestFriend, setMyListFriend, setRequestFriend } from "@/redux/store/models";
 import { ErrorResponse } from "@/lib/axios";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
-import { setSendedFriend } from "@/redux/store/models/sended-friend-slice";
-import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
-
+import { initSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const dispatch = useDispatch<AppDispatch>();
@@ -63,8 +61,8 @@ const ChatPage = () => {
 			try {
 				const response = await getListFriend();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
-					store.dispatch(setMyListFriend(response.data));
+					// console.log("response: ", response.data);
+					store.dispatch(initMyListFriend(response.data));
 				}
 			} catch (error) {
 				const e = error as ErrorResponse;
@@ -79,8 +77,8 @@ const ChatPage = () => {
 			try {
 				const response = await getListSended();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
-					store.dispatch(setSendedFriend(response.data));
+					// console.log("response: ", response.data);
+					store.dispatch(initSendedFriend(response.data));
 				}
 			} catch (error) {
 				const e = error as ErrorResponse;
@@ -94,8 +92,8 @@ const ChatPage = () => {
 			try {
 				const response = await getListResponseFriend();
 				if (response?.statusCode === 200) {
-					console.log("response: ", response.data);
-					store.dispatch(setRequestFriend(response.data));
+					// console.log("response: ", response.data);
+					store.dispatch(initRequestFriend(response.data));
 				}
 			} catch (error) {
 				const e = error as ErrorResponse;
@@ -105,8 +103,8 @@ const ChatPage = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log("Detail information status: ", detailInformationStatus);
-		console.log("Status: ", status);
+		// console.log("Detail information status: ", detailInformationStatus);
+		// console.log("Status: ", status);
 		if (detailInformationStatus === "succeeded") {
 			setIsLoading(false);
 		}

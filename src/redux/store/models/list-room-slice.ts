@@ -17,7 +17,7 @@ const idb = new IDBManager<IRoom>(storeName, "id", ["lastMessage.createdAt"]);
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
 	const rooms = await idb.getAllByIndex();
-	console.log("Room DB: ", rooms);
+	// console.log("Room DB: ", rooms);
 	return rooms || [];
 });
 

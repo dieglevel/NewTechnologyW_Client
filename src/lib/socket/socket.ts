@@ -11,13 +11,14 @@ import {
 } from "@/redux/store/models";
 import { IDetailInformation, IRequestFriend, ISendedFriend } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
+import { deleteSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 
 class SocketService {
 	private static instance: SocketService;
 	private socket: Socket | null = null;
 	private URL = process.env.NEXT_PUBLIC_SOCKET_URL || "";
 
-	private constructor() {}
+	private constructor() { }
 
 	public static getInstance(): SocketService {
 		if (!SocketService.instance) {
@@ -61,19 +62,72 @@ class SocketService {
 
 		this.socket.emit(SocketEmit.detailInformation, {});
 		this.socket.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
-			console.log("User detail info updated:", data);
-			store.dispatch(setDetailInformation(data));
+			store.dispatch(initDetailInformation(data));
 		});
 
 		this.socket.emit(SocketEmit.myListRoom, {
 			lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
 		});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			console.log("My list room updated:", data);
+			// console.log("My list room updated:", data);
 			store.dispatch(setRoom(data));
 		});
 
-		// this.emit(SocketEmit.detailInformation, {})
+		this.socket.on(SocketOn.requestFriend, (data: {
+			behavior: string, data: IRequestFriend
+		}) => {
+			console.log("Socket REQUESTFRIEND request event:", data);
+			if (data.behavior === "add") {
+				// console.log("Friend request received:", data.data);
+				const friendRequest: IRequestFriend[] = [
+					data.data
+				]
+				const myAccountId = localStorage.getItem(LocalStorage.userId) ?? "";
+				if (data.data.sender_id !== myAccountId) {
+
+
+
+					store.dispatch(setRequestFriend(friendRequest));
+				}
+				const sendedFriend: ISendedFriend = data.data as ISendedFriend;
+				const sendedFriends = [sendedFriend]
+				store.dispatch(setSendedFriend(sendedFriends));
+
+			} 
+			else if (data.behavior === "remove") {
+				// console.log("Friend request deleted:", data.data);
+				store.dispatch(deleteRequestFriend(data.data.sender_id ?? ""));
+				store.dispatch(deleteSendedFriend(data.data.receiver_id ?? ""));
+			}
+		});
+
+		this.socket.on(SocketOn.friend, (data: {
+			behavior: string, friend: {
+				accountId: string,
+				friendId: string,
+			}
+			detail_friend: IDetailInformation,
+			accountOwner: string
+		}) => {
+			console.log("Socket FRIENDq event:", data);
+
+			if (data.behavior === "add") {
+				// console.log("Friend added:", data);
+				const friend: IFriend[] = [{
+					accountId: data.friend.accountId,
+					friendId: data.friend.friendId,
+					detail: data.detail_friend,
+				}]
+				store.dispatch(deleteRequestFriend(data.friend.accountId));
+				store.dispatch(deleteSendedFriend(data.friend.accountId));
+				store.dispatch(setMyListFriend(friend));
+			} else if (data.behavior === "remove") {
+				// console.log("Friend deleted:", data.friend);
+				store.dispatch(deleteRequestFriend(data.friend.accountId));
+				store.dispatch(deleteMyListFriend(data.friend.friendId));
+			}
+
+		});
 	}
 
 	public disconnect() {

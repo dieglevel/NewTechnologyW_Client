@@ -1,6 +1,5 @@
 import { getProfileFromAnotherUser } from "@/api";
-import { SocketEmit, SocketOn } from "@/constants/socket";
-import { api } from "@/lib/axios";
+import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { socketService } from "@/lib/socket/socket";
 import { RootState } from "@/redux/store";
@@ -60,7 +59,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 						{caculateDuration(room ? new Date(room.lastMessage.createdAt) : new Date())}
 					</p>
 				</div>
-
+{/* 
 				<div className="flex items-center justify-between">
 					<p
 						className={
@@ -80,7 +79,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>
 					) : null}
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);

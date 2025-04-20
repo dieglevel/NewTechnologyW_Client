@@ -26,7 +26,8 @@ const AccountDetail = ({ data }: Props) => {
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const [message, setMessage] = useState<string>("");
 
-	const {sendedFriends} = useSelector((state: RootState) => state.sendedFriend);
+	const { sendedFriends } = useSelector((state: RootState) => state.sendedFriend);
+	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
 
 	const handleSubmit = async () => {
 		setIsSubmitting(true);
@@ -59,14 +60,21 @@ const AccountDetail = ({ data }: Props) => {
 		if (sendedFriends) {
 			const sendedFriend = sendedFriends.find((friend) => friend.receiver_id === data.id);
 			if (sendedFriend) {
-				console.log("Sended friend: ", sendedFriend, "ID: ", data.id);
+				// console.log("Sended friend: ", sendedFriend, "ID: ", data.id);
 				return true;
 			}
 		}
+
+		if (myListFriend) {
+			const myFriend = myListFriend.find((friend) => friend.accountId === data.id);
+			if (myFriend) {
+				// console.log("My friend: ", myFriend, "ID: ", data.id);
+				return true;
+			}
+		}
+
 		return false;
 	};
-		
-
 
 	return (
 		<>
@@ -170,7 +178,7 @@ const AccountDetail = ({ data }: Props) => {
 													</div>
 												</div>
 											</div>
-											{!checkSendedFriend() && (myAccountID !== data.id) && (
+											{!checkSendedFriend() && myAccountID !== data.id && (
 												<div className="flex flex-col gap-4 rounded-lg bg-slate-100 p-4 shadow-md">
 													<Textarea
 														value={message}
@@ -182,7 +190,7 @@ const AccountDetail = ({ data }: Props) => {
 														color="primary"
 														onPress={handleSubmit}
 														isLoading={isSubmitting}
-														isDisabled={isSubmitting }
+														isDisabled={isSubmitting}
 														className="w-full text-lg font-bold"
 													>
 														Kết bạn
