@@ -3,9 +3,14 @@ import ImageViewer from "@/components/image-preview";
 import { LocalStorage } from "@/lib/local-storage";
 import { IDetailInformation } from "@/types/implement";
 import { IMessage } from "@/types/implement/message.interface";
-import { changeDateToString } from "@/utils";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { socketService } from "@/lib/socket/socket";
+import { SocketEmit, SocketOn } from "@/constants/socket";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
+import { normalizeMessage } from "@/utils";
 
 interface Props {
 	message: IMessage;
@@ -14,6 +19,10 @@ interface Props {
 export const Message = ({ message }: Props) => {
 	const account_id = localStorage.getItem(LocalStorage.userId) as string;
 	const [profile, setProfile] = useState<IDetailInformation>();
+	const [revoked, setRevoked] = useState<boolean>(message.isRevoked || false);
+	const [showOptions, setShowOptions] = useState<boolean>(false);
+	const optionsRef = useRef<HTMLDivElement>(null);
+	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
 		const fetchDetailInformation = async () => {
@@ -25,12 +34,57 @@ export const Message = ({ message }: Props) => {
 		fetchDetailInformation();
 	}, []);
 
+	const handleRevokeMessage = () => {
+		socketService.emit(SocketEmit.revokeMessage, {
+			messageId: message.message_id,
+			roomId: message.room_id,
+		});
+
+		socketService.on(SocketOn.getRevokeMessage, async (data) => {
+			if (data._id === message.message_id) {
+				console.log("Tin nhắn đã được thu hồi:", data);
+				setRevoked(true);
+				await dispatch(setOneMessage(normalizeMessage(data)));
+				await dispatch(fetchMessageByRoomId(message.room_id));
+			}
+		});
+	};
+
+	const handleDeleteMessage = () => {
+		socketService.emit(SocketEmit.revokeMessage, {
+			messageId: message.message_id,
+			roomId: message.room_id,
+		});
+
+		socketService.on(SocketOn.getRevokeMessage, async (data) => {
+			if (data._id === message.message_id) {
+				console.log("Tin nhắn đã được thu hồi:", data);
+				setRevoked(true);
+				await dispatch(setOneMessage(normalizeMessage(data)));
+				await dispatch(fetchMessageByRoomId(message.room_id));
+			}
+		});
+	};
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
+				setShowOptions(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
 	const renderFiles = () => {
 		if (!message.files || message.files.length === 0) return null;
 
 		return (
 			<div className="flex flex-wrap gap-2">
-				{!Array.isArray(message.files) || message.files.length === 0 ? null : message.files.map((file, index) => {
+				{message.files.map((file, index) => {
 					const fileType = file.data?.type || "";
 					const isImage = fileType.startsWith("image/");
 					if (isImage) {
@@ -68,6 +122,19 @@ export const Message = ({ message }: Props) => {
 
 	const isSender = message.account_id === account_id;
 
+	const handleRevoke = async () => {
+		try {
+		} catch (err) {
+			console.error("Lỗi khi thu hồi tin nhắn:", err);
+		}
+	};
+
+	const toggleOptions = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setShowOptions(!showOptions);
+	};
+
 	return (
 		<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
 			{!isSender && (
@@ -91,19 +158,89 @@ export const Message = ({ message }: Props) => {
 				</ImageViewer>
 			)}
 
-			<div
-				className={`flex max-w-[80%] flex-col gap-2 rounded-lg p-3 ${isSender ? "bg-blue-200" : "bg-body"}`}
-			>
-				{!isSender && <h1 className="text-xs font-light text-text-seen">{profile?.fullName}</h1>}
-				{message.isRevoked ? (
-					<p className="text-sm italic text-gray-400">Tin nhắn đã được thu hồi</p>
-				) : (
-					<>
-						{message.content && (
-							<p className="break-words text-sm font-normal text-text">{message.content}</p>
-						)}
-						{renderFiles()}
-					</>
+			<div className="group relative">
+				<div
+					className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${isSender ? "bg-blue-200" : "bg-body"}`}
+				>
+					{!isSender && <h1 className="text-xs font-light text-text-seen">{profile?.fullName}</h1>}
+
+					{revoked ? (
+						<p className="text-sm italic text-gray-400">Tin nhắn đã được thu hồi</p>
+					) : (
+						<>
+							{message.content && (
+								<p className="break-words text-sm font-normal text-text">{message.content}</p>
+							)}
+							{renderFiles()}
+
+							<div className="flex items-center justify-end gap-1 text-xs text-gray-500">
+								{message.createdAt &&
+									new Date(message.createdAt).toLocaleTimeString("vi-VN", {
+										hour: "2-digit",
+										minute: "2-digit",
+									})}
+							</div>
+						</>
+					)}
+				</div>
+
+				{isSender && !revoked && (
+					<div className="absolute -left-6 top-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
+						<button
+							className="rounded-full p-1 hover:bg-gray-200"
+							onClick={toggleOptions}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<circle
+									cx="12"
+									cy="12"
+									r="1"
+								></circle>
+								<circle
+									cx="19"
+									cy="12"
+									r="1"
+								></circle>
+								<circle
+									cx="5"
+									cy="12"
+									r="1"
+								></circle>
+							</svg>
+						</button>
+					</div>
+				)}
+
+				{showOptions && isSender && !revoked && (
+					<div
+						ref={optionsRef}
+						className="absolute right-0 top-0 z-10 w-40 rounded-md bg-zinc-800 py-1 shadow-lg"
+					>
+						<button
+							className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+							onClick={handleRevokeMessage}
+						>
+							<span className="mr-2">↩️</span> Thu hồi
+						</button>
+						<button
+							className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+							onClick={() => {
+								/* Handle delete */
+							}}
+						>
+							<span className="mr-2">🗑️</span> Xóa chỉ ở phía tôi
+						</button>
+					</div>
 				)}
 			</div>
 		</div>
