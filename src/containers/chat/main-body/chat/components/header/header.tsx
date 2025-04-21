@@ -1,14 +1,18 @@
 import { ColumnIcon, SearchIcon, UserIcon } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
 import { useOptionView } from "@/hooks/option-view";
+import { RootState } from "@/redux/store";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
 interface Props {
 	imageUrl: string;
 }
 
-export const HeaderChat = ({  imageUrl }: Props) => {
-	const { isOpen,setSelect } = useOptionView();
+export const HeaderChat = ({ imageUrl }: Props) => {
+	const { isOpen, setSelect } = useOptionView();
+
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const handleToggle = () => {
 		setSelect(!isOpen);
@@ -28,10 +32,10 @@ export const HeaderChat = ({  imageUrl }: Props) => {
 					/>
 				</ImageViewer>
 				<div>
-					<p className="text-xl font-semibold">Group name</p>
+					<p className="text-xl font-semibold">{selectedRoom?.name}</p>
 					<div className="flex flex-row items-center gap-1">
 						<UserIcon className="size-4 font-bold" />
-						<p className="text-sm font-light text-gray-500">5 thành viên</p>
+						<p className="text-sm font-light text-gray-500"></p>
 					</div>
 				</div>
 			</div>
@@ -47,9 +51,7 @@ export const HeaderChat = ({  imageUrl }: Props) => {
 					onClick={handleToggle}
 				>
 					<ColumnIcon
-						className={
-							isOpen ? "stroke-icon-active" : "stroke-icon-second " + ` size-5 stroke-1`
-						}
+						className={isOpen ? "stroke-icon-active" : "stroke-icon-second " + ` size-5 stroke-1`}
 					/>
 				</div>
 			</div>

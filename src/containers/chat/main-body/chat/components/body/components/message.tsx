@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
 import { normalizeMessage } from "@/utils";
+import { setRoom } from "@/redux/store/models";
 
 interface Props {
 	message: IMessage;
@@ -50,18 +51,16 @@ export const Message = ({ message }: Props) => {
 		});
 	};
 
-	const handleDeleteMessage = () => {
-		socketService.emit(SocketEmit.revokeMessage, {
-			messageId: message.message_id,
-			roomId: message.room_id,
-		});
+	const handleForwardMessage = () => {
+		
+		
 
-		socketService.on(SocketOn.getRevokeMessage, async (data) => {
+		socketService.on(SocketOn.forwardMessage, async (data) => {
 			if (data._id === message.message_id) {
-				console.log("Tin nhắn đã được thu hồi:", data);
-				setRevoked(true);
+				console.log("Tin nhắn đã được chuyển tiếp:", data);
 				await dispatch(setOneMessage(normalizeMessage(data)));
 				await dispatch(fetchMessageByRoomId(message.room_id));
+				// await dispatch(setRoom())
 			}
 		});
 	};
@@ -238,7 +237,7 @@ export const Message = ({ message }: Props) => {
 								/* Handle delete */
 							}}
 						>
-							<span className="mr-2">🗑️</span> Xóa chỉ ở phía tôi
+							<span className="mr-2">🗑️</span> Chuyển tiếp tin nhắn
 						</button>
 					</div>
 				)}

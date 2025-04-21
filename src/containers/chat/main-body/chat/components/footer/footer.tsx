@@ -20,7 +20,7 @@ export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleClick = () => {
@@ -70,11 +70,10 @@ export const FooterChat = () => {
 		try {
 			let type: "mixed" | "sticker" | "call" = "mixed";
 
-
 			// Gửi message qua API
 			await sendMessage({
 				accountId: localStorage.getItem(LocalStorage.userId) || "",
-				roomId: selectedRoomId || "",
+				roomId: selectedRoom?.id || "",
 				type,
 				content: message,
 				files: file || undefined,
@@ -95,7 +94,7 @@ export const FooterChat = () => {
 				});
 
 				await dispatch(setOneMessage(normalizeMessage(message)));
-				await dispatch(fetchMessageByRoomId(selectedRoomId || ""));
+				await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 			});
 		} catch (error) {
 			console.error("Lỗi gửi tin nhắn:", error);

@@ -28,11 +28,10 @@ export const SecondBar = () => {
 	const { room, status } = useSelector((state: RootState) => state.listRoom);
 
 	const dispatch = useDispatch<AppDispatch>();
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
-	const { message } = useSelector((state: RootState) => state.message);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -62,15 +61,17 @@ export const SecondBar = () => {
 	}, [search]);
 
 	useEffect(() => {
-		if (!selectedRoomId) return;
+		if (!selectedRoom) return;
 
 		const fetchMessages = async () => {
-			const data = await getMessageByRoomId(selectedRoomId);
+			console.log("selectedRoomId: ", selectedRoom);
+			const data = await getMessageByRoomId(selectedRoom.id);
+			console.log("data: ", data);
 			if (data && data.data) {
-				dispatch(setMessage({ messages: data.data, roomId: selectedRoomId }));
+				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id }));
 			}
 
-			await dispatch(fetchMessageByRoomId(selectedRoomId));
+			await dispatch(fetchMessageByRoomId(selectedRoom.id));
 		};
 
 		fetchMessages();
@@ -78,7 +79,7 @@ export const SecondBar = () => {
 		return () => {
 			socketService.off(SocketOn.getMessageByChatRoom); // Clean up the socket listener
 		};
-	}, [selectedRoomId, status]);
+	}, [selectedRoom, status]);
 
 	// useEffect(() => {
 	// 	console.log("Status: ", status);
@@ -118,7 +119,7 @@ export const SecondBar = () => {
 										room={item}
 										onClick={() => {
 											// setSelect(SideBarSelected.Chat);
-											dispatch(setSelectedRoom(item.id));
+											dispatch(setSelectedRoom(item));
 											socketService.emit(SocketEmit.joinRoom, {
 												room_id: item.id,
 											});

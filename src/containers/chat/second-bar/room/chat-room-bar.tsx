@@ -59,7 +59,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 						{caculateDuration(room ? new Date(room.lastMessage.createdAt) : new Date())}
 					</p>
 				</div>
-{/* 
+
 				<div className="flex items-center justify-between">
 					<p
 						className={
@@ -79,7 +79,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>
 					) : null}
-				</div> */}
+				</div>
 			</div>
 		</div>
 	);
