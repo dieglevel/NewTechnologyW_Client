@@ -6,4 +6,5 @@ export class SocketEmit {
 	public static readonly joinRoom = "joinChatRoom";
 	public static readonly getMessageByChatRoom = "C_GetMessageByChatroom";
 	public static readonly sendMessage = "C_sendMessage";
+	public static readonly revokeMessage = "C_revokeMessage";
 }

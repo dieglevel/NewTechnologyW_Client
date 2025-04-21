@@ -14,7 +14,14 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { handleCheckBirth, handleImageChange, handleThumbnailChange, handleUpdateProfile } from "./handle";
 import Loading from "@/app/loading";
 import { socketService } from "@/lib/socket/socket";
-import { DateValue, getLocalTimeZone, now, parseAbsoluteToLocal, parseDate, ZonedDateTime } from "@internationalized/date";
+import {
+	getLocalTimeZone,
+	now,
+	parseAbsoluteToLocal,
+	parseDate,
+	parseDateTime,
+	ZonedDateTime,
+} from "@internationalized/date";
 import { DateInput } from "@heroui/date-input";
 
 export const UpdateProfile = () => {
@@ -205,7 +212,7 @@ export const UpdateProfile = () => {
 									variant="underlined"
 									isDisabled={isLoadingSubmit}
 									granularity="day"
-									value={dateOfBirth}
+									value={parseDateTime(dateOfBirth.toString())}
 									onChange={handleChangeDateOfBirth}
 								/>
 							</div>

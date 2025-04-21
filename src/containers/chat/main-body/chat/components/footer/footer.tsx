@@ -14,12 +14,13 @@ import { api } from "@/lib/axios";
 import { sendMessage } from "@/api";
 import { normalizeMessage, normalizeRoom } from "@/utils";
 import { IRoom } from "@/types/implement/room.interface";
+import { X } from "lucide-react";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleClick = () => {
@@ -61,40 +62,69 @@ export const FooterChat = () => {
 		}
 	};
 
-	const handleSendMessage = (message: any) => {
+	const handleSendMessage = async (message: any) => {
 		// socketService.connect();
 
 		// socketService.emit(SocketEmit.sendMessage, {});
 
-		sendMessage({
-			accountId: localStorage.getItem(LocalStorage.userId) || "",
-			roomId: selectedRoomId || "",
-			content: message,
-			type: "text",
-		});
+		try {
+			let type: "mixed" | "sticker" | "call" = "mixed";
 
-		socketService.on(SocketOn.sendMessage, async (data) => {
-			const { message, room } = data;
-
-			console.log("data: ", data.message, data.room);
-			console.log("message: ", message, "room: ", room);
-
-			socketService.emit(SocketEmit.myListRoom, {
-				lastUpdatedAt: message.createdAt,
+			// Gửi message qua API
+			await sendMessage({
+				accountId: localStorage.getItem(LocalStorage.userId) || "",
+				roomId: selectedRoom?.id || "",
+				type,
+				content: message,
+				files: file || undefined,
 			});
 
+			// Socket xử lý realtime
+			socketService.on(SocketOn.sendMessage, async (data) => {
+				const { message, room } = data;
 
-			socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
-				console.log("My list room updated:", data);
-				await dispatch(setRoom(data));
-			});	
+				console.log("New message received:", message);
 
-			
-			const normalizedMessage = normalizeMessage(message);
-			await dispatch(setMessage({ messages: [normalizedMessage], roomId: selectedRoomId || "" }));
-			await dispatch(fetchMessageByRoomId(selectedRoomId || ""));
-		});
-		
+				socketService.emit(SocketEmit.myListRoom, {
+					lastUpdatedAt: message.createdAt,
+				});
+
+				socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
+					await dispatch(setRoom(data));
+				});
+
+				await dispatch(setOneMessage(normalizeMessage(message)));
+				await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
+			});
+		} catch (error) {
+			console.error("Lỗi gửi tin nhắn:", error);
+		}
+		// sendMessage({
+		// 	accountId: localStorage.getItem(LocalStorage.userId) || "",
+		// 	roomId: selectedRoomId || "",
+		// 	content: message,
+		// 	type: "text",
+		// });
+
+		// socketService.on(SocketOn.sendMessage, async (data) => {
+		// 	const { message, room } = data;
+
+		// 	console.log("data: ", data.message, data.room);
+		// 	console.log("message: ", message, "room: ", room);
+
+		// 	socketService.emit(SocketEmit.myListRoom, {
+		// 		lastUpdatedAt: message.createdAt,
+		// 	});
+
+		// 	socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
+		// 		console.log("My list room updated:", data);
+		// 		await dispatch(setRoom(data));
+		// 	});
+
+		// 	const normalizedMessage = normalizeMessage(message);
+		// 	await dispatch(setMessage({ messages: [normalizedMessage], roomId: selectedRoomId || "" }));
+		// 	await dispatch(fetchMessageByRoomId(selectedRoomId || ""));
+		// });
 	};
 
 	return (

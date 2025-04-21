@@ -1,24 +1,25 @@
+import { IRoom } from "@/types/implement/room.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SelectedRoomState {
-    selectedRoomId: string | null;
+	selectedRoom: IRoom | null;
 }
 
 const initialState: SelectedRoomState = {
-    selectedRoomId: null,
+	selectedRoom: null,
 };
 
 const selectedRoomSlice = createSlice({
-    name: "selectedRoom",
-    initialState,
-    reducers: {
-        setSelectedRoom: (state, action: PayloadAction<string>) => {
-            state.selectedRoomId = action.payload;
-        },
-        clearSelectedRoom: (state) => {
-            state.selectedRoomId = null;
-        },
-    },
+	name: "selectedRoom",
+	initialState,
+	reducers: {
+		setSelectedRoom: (state, action: PayloadAction<IRoom>) => {
+			state.selectedRoom = action.payload;
+		},
+		clearSelectedRoom: (state) => {
+			state.selectedRoom = null;
+		},
+	},
 });
 
 export const { setSelectedRoom, clearSelectedRoom } = selectedRoomSlice.actions;

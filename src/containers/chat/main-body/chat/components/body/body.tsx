@@ -13,7 +13,7 @@ export const BodyChat = () => {
 	const [pagination, setPagination] = useState<number>(1);
 	const { message, status } = useSelector((state: RootState) => state.message);
 	const [loading, setLoading] = useState<boolean>(false);
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const { ref: topRef, inView } = useInView({
 		rootMargin: "100px",
@@ -22,25 +22,17 @@ export const BodyChat = () => {
 	const [messages, setMessages] = useState<IMessage[]>();
 
 	useEffect(() => {
-		
-		if (message && selectedRoomId) {
-			const filteredMessages = message.filter((msg) => msg.room_id === selectedRoomId);
-			console.log("filteredMessages: ", filteredMessages); 	
+		if (message && selectedRoom) {
+			const filteredMessages = message.filter((msg) => msg.room_id === selectedRoom.id);
 			setMessages(filteredMessages);
 		}
-	}, [message, selectedRoomId]);
+	}, [message, selectedRoom]);
 
 	useEffect(() => {
 		if (inView) {
 			setPagination((prev) => prev + 1);
 		}
 	}, [inView]);
-
-	useEffect(() => {
-		if (status === "succeeded") {
-			console.log("message: ", message);
-		}
-	}, [status]);
 
 	const renderMessage = () => {
 		return (

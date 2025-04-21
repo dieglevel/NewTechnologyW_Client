@@ -5,8 +5,8 @@ import { useSidebar } from "@/hooks/sidebar";
 import { useEffect, useRef, useState } from "react";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { findAccount } from "@/api";
-import { ErrorResponse } from "@/lib/axios";
+import { findAccount, getMessageByRoomId } from "@/api";
+import { api, ErrorResponse } from "@/lib/axios";
 import { SideBarSelected } from "@/redux/store/ui";
 import ContactBar from "./contact/contact-bar";
 import { ISearchAccount } from "@/types/implement/response";
@@ -19,6 +19,7 @@ import { fetchMessageByRoomId, setMessage } from "@/redux/store/models/message-s
 import { Skeleton } from "@heroui/skeleton";
 import { LocalStorage } from "@/lib/local-storage";
 import { IRoom } from "@/types/implement/room.interface";
+import { normalizeMessage } from "@/utils";
 
 export const SecondBar = () => {
 	const divRef = useRef<HTMLDivElement>(null);
@@ -27,11 +28,10 @@ export const SecondBar = () => {
 	const { room, status } = useSelector((state: RootState) => state.listRoom);
 
 	const dispatch = useDispatch<AppDispatch>();
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
-	const { message } = useSelector((state: RootState) => state.message);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -61,18 +61,17 @@ export const SecondBar = () => {
 	}, [search]);
 
 	useEffect(() => {
-		if (!selectedRoomId) return;
+		if (!selectedRoom) return;
 
 		const fetchMessages = async () => {
-			socketService.emit(SocketEmit.getMessageByChatRoom, {
-				roomId: selectedRoomId,
-			});
+			console.log("selectedRoomId: ", selectedRoom);
+			const data = await getMessageByRoomId(selectedRoom.id);
+			console.log("data: ", data);
+			if (data && data.data) {
+				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id }));
+			}
 
-			socketService.on(SocketOn.getMessageByChatRoom, async (data) => {
-				dispatch(setMessage({ messages: data, roomId: selectedRoomId }));
-			});
-
-			await dispatch(fetchMessageByRoomId(selectedRoomId));
+			await dispatch(fetchMessageByRoomId(selectedRoom.id));
 		};
 
 		fetchMessages();
@@ -80,7 +79,7 @@ export const SecondBar = () => {
 		return () => {
 			socketService.off(SocketOn.getMessageByChatRoom); // Clean up the socket listener
 		};
-	}, [selectedRoomId]);
+	}, [selectedRoom, status]);
 
 	// useEffect(() => {
 	// 	console.log("Status: ", status);
@@ -120,7 +119,7 @@ export const SecondBar = () => {
 										room={item}
 										onClick={() => {
 											// setSelect(SideBarSelected.Chat);
-											dispatch(setSelectedRoom(item.id));
+											dispatch(setSelectedRoom(item));
 											socketService.emit(SocketEmit.joinRoom, {
 												room_id: item.id,
 											});

@@ -24,7 +24,7 @@ const ChatPage = () => {
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
-	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -122,7 +122,7 @@ const ChatPage = () => {
 					<SecondBar />
 					{selected === SideBarSelected.Chat ? (
 						<>
-							{selectedRoomId ? (
+							{selectedRoom?.id ? (
 								<>
 									<BodyView />
 									{isOpen && <OptionView />}
