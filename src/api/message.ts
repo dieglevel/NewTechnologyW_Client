@@ -50,3 +50,13 @@ export const sendMessage = async (data: ISend) => {
 		throw error as ErrorResponse;
 	}
 };
+
+export const getMessageByRoomId = async (roomId: string) => {
+	try {
+		const response = await api.get<BaseResponse<IMessage[]>>(`/message/get-all-message-of-room/${roomId}`);
+
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};

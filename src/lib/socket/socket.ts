@@ -78,7 +78,7 @@ class SocketService {
 			lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
 		});
 		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			// console.log("My list room updated:", data);
+			console.log("My list room updated:", data);
 			store.dispatch(initRoom(data));
 		});
 
@@ -103,6 +103,9 @@ class SocketService {
 				const sendedFriend: ISendedFriend = data.data as ISendedFriend;
 				const sendedFriends = [sendedFriend]
 				store.dispatch(setSendedFriend(sendedFriends));
+				socketService.emit(SocketEmit.myListRoom, {
+					lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
+				});
 
 			} 
 			else if (data.behavior === "remove") {

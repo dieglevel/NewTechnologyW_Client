@@ -13,11 +13,10 @@ interface Props {
 }
 
 export const Message = ({ message }: Props) => {
-	const account_id = localStorage.getItem(LocalStorage.userId) as string;
 	const [profile, setProfile] = useState<IDetailInformation>();
 
+	const [account_id] = useState<string>(LocalStorage.userId || "");
 	useEffect(() => {
-
 		// const fetchDetailInformation = async () => {
 		// 	const response = await getProfileFromAnotherUser(message.account_id);
 		// 	if (response.data) {

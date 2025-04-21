@@ -16,20 +16,19 @@ interface Props {
 }
 
 export const ChatRoom = ({ room, onClick }: Props) => {
-	const account_id = localStorage.getItem(LocalStorage.userId) as string;
 	const [profile, setProfile] = useState<IDetailInformation>();
+	const [account_id] = useState<string>(LocalStorage.userId || "");
 
-
-	useEffect(() => {
-		const fetchDetailInformation = async () => {
-			if (room.type === "group") return;
-			const response = await getProfileFromAnotherUser(room.lastMessage.account_id);
-			if (response.data) {
-				setProfile(response.data);
-			}
-		};
-		fetchDetailInformation();
-	}, [room.lastMessage.account_id]);
+	// useEffect(() => {
+	// 	const fetchDetailInformation = async () => {
+	// 		if (room.type === "group") return;
+	// 		const response = await getProfileFromAnotherUser(room.lastMessage.account_id);
+	// 		if (response.data) {
+	// 			setProfile(response.data);
+	// 		}
+	// 	};
+	// 	fetchDetailInformation();
+	// }, [room.lastMessage.account_id]);
 
 
 	return (
@@ -56,7 +55,7 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 						{room.type === "group" ? room.name : profile?.fullName}
 					</p>
 					<p className="text-tiny font-semibold">
-						{caculateDuration(room ? new Date(room.lastMessage.createdAt) : new Date())}
+						{/* {caculateDuration(room ? new Date(room.lastMessage.createdAt) : new Date())} */}
 					</p>
 				</div>
 {/* 
