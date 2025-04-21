@@ -12,16 +12,26 @@ import ContactBar from "./contact/contact-bar";
 import { ISearchAccount } from "@/types/implement/response";
 import { SearchComponent } from "./search/search";
 import AccountDetail from "./search/components/account-detail";
+import { setSelectedRoom } from "@/redux/store/models/selected-room-slice";
+import { socketService } from "@/lib/socket/socket";
+import { SocketEmit, SocketOn } from "@/constants/socket";
+import { fetchMessageByRoomId, setMessage } from "@/redux/store/models/message-slice";
+import { Skeleton } from "@heroui/skeleton";
+import { LocalStorage } from "@/lib/local-storage";
+import { IRoom } from "@/types/implement/room.interface";
 
 export const SecondBar = () => {
-	const dispatch = useDispatch<AppDispatch>();
 	const divRef = useRef<HTMLDivElement>(null);
 
 	const { selected, setSelect } = useSidebar();
-	const { room } = useSelector((state: RootState) => state.listRoom);
+	const { room, status } = useSelector((state: RootState) => state.listRoom);
+
+	const dispatch = useDispatch<AppDispatch>();
+	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
 
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
+	const { message } = useSelector((state: RootState) => state.message);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -51,36 +61,45 @@ export const SecondBar = () => {
 	}, [search]);
 
 	useEffect(() => {
-		// console.log(room);
-	}, [room]);
+		if (!selectedRoomId) return;
 
-	// hide chat when window has been resized
+		const fetchMessages = async () => {
+			socketService.emit(SocketEmit.getMessageByChatRoom, {
+				roomId: selectedRoomId,
+			});
+
+			socketService.on(SocketOn.getMessageByChatRoom, async (data) => {
+				dispatch(setMessage({ messages: data, roomId: selectedRoomId }));
+			});
+
+			await dispatch(fetchMessageByRoomId(selectedRoomId));
+		};
+
+		fetchMessages();
+
+		return () => {
+			socketService.off(SocketOn.getMessageByChatRoom); // Clean up the socket listener
+		};
+	}, [selectedRoomId]);
+
+	// useEffect(() => {
+	// 	console.log("Status: ", status);
+	// 	if (status === "succeeded") {
+	// 		console.log("Room: ", room);
+	// 		if (room) {
+	// 			setListRoom(room); // Assuming `id` is the string property you want
+	// 			console.log(room)
+	// 			console.log()
+	// 		} else {
+	// 			setListRoom([]);
+	// 		}
+	// 	}
+	// }, [ status]);
 
 	const renderContent = () => {
-		return (
-			<>
-				<div
-					className={`flex flex-col gap-1 ${selected === SideBarSelected.Chat ? "" : "hidden"} ${searchResult.length > 0 ? "hidden" : ""}`}
-				>
-					{/* { for 5 } */
-					room?.map((item, index) => (
-						<ChatRoom
-							key={index}
-							room={item}
-							onClick={() => {
-								setSelect(SideBarSelected.Chat);
-							}}
-						/>
-					))}
-				</div>
-
-				<div
-					className={`${selected === SideBarSelected.Chat ? "hidden" : ""} ${searchResult.length > 0 ? "hidden" : ""}`}
-				>
-					<ContactBar />
-				</div>
-
-				<div className={`flex flex-col gap-1 ${searchResult.length > 0 ? "" : "hidden"}`}>
+		if (searchResult.length > 0) {
+			return (
+				<div className="flex w-full flex-col bg-body">
 					{searchResult.map((item, index) => (
 						<AccountDetail
 							key={index}
@@ -88,8 +107,45 @@ export const SecondBar = () => {
 						/>
 					))}
 				</div>
-			</>
-		);
+			);
+		} else {
+			switch (selected) {
+				case SideBarSelected.Chat:
+					return (
+						<div className="flex flex-col gap-1">
+							{room ? (
+								room.map((item, index) => (
+									<ChatRoom
+										key={index}
+										room={item}
+										onClick={() => {
+											// setSelect(SideBarSelected.Chat);
+											dispatch(setSelectedRoom(item.id));
+											socketService.emit(SocketEmit.joinRoom, {
+												room_id: item.id,
+											});
+										}}
+									/>
+								))
+							) : (
+								<div className="w- flex flex-row items-center gap-3 px-3 py-3 transition-all">
+									<div>
+										<Skeleton className="flex h-12 w-12 rounded-full" />{" "}
+									</div>
+									<div className="flex w-full flex-col gap-2">
+										<Skeleton className="h-3 w-3/5 rounded-lg" />{" "}
+										<Skeleton className="h-3 w-3/5 rounded-lg" />
+									</div>
+								</div>
+							)}
+						</div>
+					);
+				case SideBarSelected.Contact:
+					return <ContactBar />;
+				default:
+					null;
+			}
+		}
 	};
 
 	return (

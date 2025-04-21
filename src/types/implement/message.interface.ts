@@ -2,10 +2,10 @@ import { BaseEntity } from "../base-entity";
 
 
 export interface IMessage extends BaseEntity {
-    accountId: string;
-    roomId: string;
-    content: string;
-    isDeleted: boolean;
-    isRevoked: boolean;
-    file?: string;
+	_id: string;
+	message_id: string;
+	account_id: string;
+	room_id: string;
+	content: string;
+	file?: string;
 }

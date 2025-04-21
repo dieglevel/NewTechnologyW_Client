@@ -1,33 +1,67 @@
 import { useSelector } from "react-redux";
 import { Message } from "./components/message";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RootState } from "@/redux/store";
+import { useInView } from "react-intersection-observer";
+import { IMessage } from "@/types/implement/message.interface";
+import { socketService } from "@/lib/socket/socket";
+import { SocketEmit, SocketOn } from "@/constants/socket";
+import { LocalStorage } from "@/lib/local-storage";
 
 export const BodyChat = () => {
-	const [messages, setMessages] = useState<any[]>([]);
+	const divRef = useRef<HTMLDivElement>(null);
+	const [pagination, setPagination] = useState<number>(1);
+	const { message, status } = useSelector((state: RootState) => state.message);
+	const [loading, setLoading] = useState<boolean>(false);
+	const { selectedRoomId } = useSelector((state: RootState) => state.selectedRoom);
 
-	const { detailInformation, status: detailInformationStatus } = useSelector(
-		(state: RootState) => state.detailInformation,
-	);
-
-	const addMessage = (newMessage: any) => {
-		setMessages((prevMessages) => [...prevMessages, newMessage]);
-	};
+	const { ref: topRef, inView } = useInView({
+		rootMargin: "100px",
+		triggerOnce: false,
+	});
+	const [messages, setMessages] = useState<IMessage[]>();
 
 	useEffect(() => {
-		if (detailInformationStatus === "succeeded") {
-			setMessages((pre) => [...pre, JSON.stringify(detailInformation)]);
+		
+		if (message && selectedRoomId) {
+			const filteredMessages = message.filter((msg) => msg.room_id === selectedRoomId);
+			console.log("filteredMessages: ", filteredMessages); 	
+			setMessages(filteredMessages);
 		}
-	}, [detailInformationStatus]);
+	}, [message, selectedRoomId]);
+
+	useEffect(() => {
+		if (inView) {
+			setPagination((prev) => prev + 1);
+		}
+	}, [inView]);
+
+	useEffect(() => {
+		if (status === "succeeded") {
+			console.log("message: ", message);
+		}
+	}, [status]);
+
+	const renderMessage = () => {
+		return (
+			<>
+				{messages?.slice(0, 10 * pagination).map((msg) => (
+					<Message
+						key={msg.message_id}
+						message={msg}
+					/>
+				))}
+			</>
+		);
+	};
 
 	return (
-		<div className="flex h-full w-full flex-col-reverse gap-3 overflow-y-auto  px-3 pb-3 bg-background">
-			{messages.map((message, index) => (
-				<Message
-					key={index}
-					message={message}
-				/>
-			))}
+		<div
+			ref={divRef}
+			className="flex h-full w-full flex-col-reverse gap-3 overflow-y-auto bg-background px-3 pb-3"
+		>
+			{renderMessage()}
+			<div ref={topRef} />
 		</div>
 	);
 };

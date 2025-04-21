@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BodyChat, FooterChat, HeaderChat } from "./components";
 
+
 export const BodyView = () => {
 	return (
 		<div className="flex h-lvh w-full flex-col">

@@ -33,3 +33,8 @@ export * from "./zoom-in"
 export * from "./zoom-out"
 export * from "./reload"
 export * from "./close"
+
+export * from "./bin"
+export * from "./filePreview"
+export * from "./pdf"
+export * from "./word"

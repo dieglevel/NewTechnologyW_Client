@@ -2,7 +2,18 @@ import { io, Socket } from "socket.io-client";
 import { LocalStorage } from "@/lib/local-storage";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { store } from "@/redux/store";
-import { setDetailInformation, fetchDetailInformation, setRoom, setRequestFriend, fetchRoom, deleteRequestFriend, setMyListFriend, initDetailInformation, deleteMyListFriend } from "@/redux/store/models";
+import {
+	setDetailInformation,
+	fetchDetailInformation,
+	setRoom,
+	setRequestFriend,
+	fetchRoom,
+	initDetailInformation,
+	deleteRequestFriend,
+	setMyListFriend,
+	deleteMyListFriend,
+	initRoom,
+} from "@/redux/store/models";
 import { IDetailInformation, IFriend, IRequestFriend, ISendedFriend } from "@/types/implement";
 import { IRoom } from "@/types/implement/room.interface";
 import { deleteSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
@@ -22,46 +33,56 @@ class SocketService {
 	}
 
 	public connect() {
-		if (this.socket || !navigator.onLine) {
-			console.warn("Already connected or offline.");
-			store.dispatch(fetchDetailInformation());
-			store.dispatch(fetchRoom());
-			return;
+		try {
+			if (this.socket || !navigator.onLine) {
+				console.warn("Already connected or offline.");
+				store.dispatch(fetchDetailInformation());
+				store.dispatch(fetchRoom());
+				return;
+			}
+
+			const token = localStorage.getItem(LocalStorage.token);
+
+			this.socket = io(this.URL, {
+				autoConnect: true,
+				extraHeaders: {
+					token: `${token}`,
+				},
+			});
+
+			this.registerCoreEvents();
+		} catch (error) {
+			console.error("Error connecting to socket:", error);
 		}
-
-		const token = localStorage.getItem(LocalStorage.token);
-
-		this.socket = io(this.URL, {
-			autoConnect: true,
-			extraHeaders: {
-				token: `${token}`,
-			},
-		});
-
-		this.registerCoreEvents();
-
 	}
 
 	private registerCoreEvents() {
 		if (!this.socket) return;
 
-
 		this.socket.emit(SocketEmit.connectServer, {});
 		this.socket.on(SocketOn.connectServer, (data) => {
-			// console.log("Connected to server:", data);
+			
+			console.log("Connected to server:", data);
 		});
+
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 		this.socket.emit(SocketEmit.detailInformation, {});
 		this.socket.on(SocketOn.updateUserDetailInformation, (data: IDetailInformation) => {
 			store.dispatch(initDetailInformation(data));
 		});
+		
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
-
-		this.socket.emit(SocketEmit.myListRoom, {});
-		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			// console.log("My list room updated:", data);
-			store.dispatch(setRoom(data));
+		this.socket.emit(SocketEmit.myListRoom, {
+			lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
 		});
+		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
+			console.log("My list room updated:", data);
+			store.dispatch(initRoom(data));
+		});
+
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 		this.socket.on(SocketOn.requestFriend, (data: {
 			behavior: string, data: IRequestFriend
@@ -82,6 +103,9 @@ class SocketService {
 				const sendedFriend: ISendedFriend = data.data as ISendedFriend;
 				const sendedFriends = [sendedFriend]
 				store.dispatch(setSendedFriend(sendedFriends));
+				socketService.emit(SocketEmit.myListRoom, {
+					lastUpdatedAt: "2025-04-10T06:14:28.148+00:00",
+				});
 
 			} 
 			else if (data.behavior === "remove") {
