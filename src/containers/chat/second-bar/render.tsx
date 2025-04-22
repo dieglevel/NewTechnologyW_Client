@@ -33,6 +33,8 @@ export const SecondBar = () => {
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
 
+
+	// Search for account
 	useEffect(() => {
 		const fetch = async () => {
 			try {
@@ -59,27 +61,6 @@ export const SecondBar = () => {
 			clearTimeout(timeoutId);
 		};
 	}, [search]);
-
-	useEffect(() => {
-		if (!selectedRoom) return;
-
-		const fetchMessages = async () => {
-			console.log("selectedRoomId: ", selectedRoom);
-			const data = await getMessageByRoomId(selectedRoom.id);
-			console.log("data: ", data);
-			if (data && data.data) {
-				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id }));
-			}
-
-			await dispatch(fetchMessageByRoomId(selectedRoom.id));
-		};
-
-		fetchMessages();
-
-		return () => {
-			socketService.off(SocketOn.getMessageByChatRoom); // Clean up the socket listener
-		};
-	}, [selectedRoom, status]);
 
 	// useEffect(() => {
 	// 	console.log("Status: ", status);

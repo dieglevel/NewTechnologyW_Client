@@ -62,22 +62,22 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 				<div className="flex items-center justify-between">
 					<p
 						className={
-							(room && room.lastMessage.account_id === account_id ? "" : "font-semibold ") +
+							// (room && room.lastMessage.account_id === account_id ? "" : "font-semibold ") +
 							"line-clamp-1 text-tiny"
 						}
 					>
-						{room && room.lastMessage.account_id === account_id ? "Bạn: " : ""}
-						{room ? room.lastMessage.content : "N/A"}
+						{/* {room && room.lastMessage.account_id === account_id ? "Bạn: " : ""} */}
+						{/* {room ? room.lastMessage.content : "N/A"} */}
 					</p>
 
-					{room &&
+					{/* {room &&
 					room.isSeen &&
 					!room.isSeen.includes(account_id) &&
 					room.lastMessage.account_id !== account_id ? (
 						<div>
 							<div className="size-[8px] rounded-full bg-danger"></div>
 						</div>
-					) : null}
+					) : null} */}
 				</div>
 			</div>
 		</div>
