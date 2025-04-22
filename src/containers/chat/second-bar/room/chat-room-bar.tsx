@@ -12,10 +12,9 @@ import { useSelector } from "react-redux";
 
 interface Props {
 	room: IRoom;
-	onClick?: () => void;
 }
 
-export const ChatRoom = ({ room, onClick }: Props) => {
+export const ChatRoom = ({ room}: Props) => {
 	const [profile, setProfile] = useState<IDetailInformation>();
 	const [account_id] = useState<string>(LocalStorage.userId || "");
 
@@ -34,7 +33,6 @@ export const ChatRoom = ({ room, onClick }: Props) => {
 	return (
 		<div
 			className="flex cursor-pointer flex-row items-center gap-3 px-3 py-3 transition-all hover:bg-background lg:min-w-[300px]"
-			onClick={onClick}
 		>
 			<div className="flex items-center rounded-full">
 				<Image

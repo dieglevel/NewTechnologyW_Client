@@ -98,13 +98,6 @@ export const SecondBar = () => {
 									<ChatRoom
 										key={index}
 										room={item}
-										onClick={() => {
-											// setSelect(SideBarSelected.Chat);
-											dispatch(setSelectedRoom(item));
-											socketService.emit(SocketEmit.joinRoom, {
-												room_id: item.id,
-											});
-										}}
 									/>
 								))
 							) : (
