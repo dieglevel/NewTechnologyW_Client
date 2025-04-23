@@ -11,7 +11,7 @@ type StoreMeta = Map<string, StoreConfig>;
 
 const dbInstances: Map<string, IDBDatabase> = new Map();
 const storeMetas: Map<string, StoreMeta> = new Map();
-const indexMetas: Map<string, string[]> = new Map();
+const indexMetas: Map<string, any[]> = new Map();
 
 export const RootIDB = (dbName: string) => {
 	const deleteDB = () => {
@@ -32,9 +32,9 @@ export class IDBManager<T extends { [key: string]: any }> {
 	private dbName: string = dbName;
 	private storeName: string;
 	private keyPath: string;
-	private index?: string[];
+	private index?: any[];
 
-	constructor(storeName: string, keyPath: string = "id", index?: string[]) {
+	constructor(storeName: string, keyPath: string = "id", index?: any[]) {
 		this.storeName = storeName;
 		this.keyPath = keyPath;
 		this.index = index;
@@ -48,6 +48,22 @@ export class IDBManager<T extends { [key: string]: any }> {
 		}
 		if (this.index) {
 			indexMetas.set(storeName, this.index);
+		}
+	}
+
+	private createIndexesForStore(objStore: IDBObjectStore, storeName: string): void {
+		const indexes = indexMetas.get(storeName);
+
+		console.log("indexes", indexes);
+		if (indexes) {
+			for (const index of indexes) {
+				if (Array.isArray(index)) {
+					console.log("compund index", index);
+					objStore.createIndex(index.join("_"), index, { unique: false });
+				} else {
+					objStore.createIndex(index, index, { unique: false });
+				}
+			}
 		}
 	}
 
@@ -69,14 +85,8 @@ export class IDBManager<T extends { [key: string]: any }> {
 								keyPath: config.keyPath,
 								autoIncrement: config.autoIncrement,
 							});
-							if (indexMetas.has(name)) {
-								const indexName = indexMetas.get(name);
-								if (indexName) {
-									for (const index of indexName) {
-										objStore.createIndex(index, index, { unique: false });
-									}
-								}
-							}
+
+							this.createIndexesForStore(objStore, name);
 						}
 					});
 				}
@@ -129,16 +139,18 @@ export class IDBManager<T extends { [key: string]: any }> {
 
 		return new Promise((resolve, reject) => {
 			try {
-				const index = store.index("room_id");
-				const request = index.getAll(roomId);
-				request.onsuccess = () => {
-					const result = request.result;
+				const index = store.index("room_id_createdAt");
 
-					const sortedMessages = result.sort((a, b) => {
-						return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-					});
-					console.log(sortedMessages[0]);
-					resolve(sortedMessages);
+				const keyRange = IDBKeyRange.bound(
+					[roomId, ""], 
+					[roomId, "\uffff"],
+				); 
+
+				const request = index.getAll(keyRange);
+
+				request.onsuccess = () => {
+					const result = request.result.reverse();
+					resolve(result);
 				};
 
 				request.onerror = (event) => {
@@ -222,7 +234,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 			request.onsuccess = () => resolve();
 			request.onerror = () => reject(request.error);
 		});
-	}	
+	}
 
 	async clear(): Promise<void> {
 		const store = await this.getStore("readwrite");
@@ -246,6 +258,4 @@ export class IDBManager<T extends { [key: string]: any }> {
 			request.onerror = () => reject(request.error);
 		});
 	}
-
-	
 }

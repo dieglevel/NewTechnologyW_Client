@@ -12,7 +12,7 @@ const thunkName = "Message";
 const thunkAction = { fetch: "fetch", set: "set", delete: "delete", setOne: "setOne", fetchByRoomId: "fetchByRoomId" };
 
 // IDB instance
-const idb = new IDBManager<IMessage>(storeName, "message_id", ["createdAt", "room_id"]);
+const idb = new IDBManager<IMessage>(storeName, "message_id", ["createdAt", ["room_id", "createdAt"]]);
 
 // Async thunks
 export const fetchMessage = createAsyncThunk(
