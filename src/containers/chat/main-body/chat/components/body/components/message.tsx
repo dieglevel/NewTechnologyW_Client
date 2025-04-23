@@ -12,22 +12,29 @@ import { AppDispatch } from "@/redux/store";
 import { fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
 import { normalizeMessage } from "@/utils";
 import { setRoom } from "@/redux/store/models";
+import { Spinner } from "@heroui/spinner";
+import { avatarDefault } from "@/assets/images";
+import Loading from "@/app/loading";
 
 interface Props {
 	message: IMessage;
+	isSender: boolean;
 }
 
-export const Message = ({ message }: Props) => {
+export const Message = ({ message, isSender }: Props) => {
 	const [profile, setProfile] = useState<IDetailInformation>();
 	const [revoked, setRevoked] = useState<boolean>(message.isRevoked || false);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
+	const [isLoadingImage, setIsLoadingImage] = useState<boolean>();
+
+	const [isLoadingImageAvatar, setIsLoadingImageAvatar] = useState<boolean>(true);
+
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch<AppDispatch>();
 
-	const [account_id] = useState<string>(LocalStorage.userId || "");
 	useEffect(() => {
 		const fetchDetailInformation = async () => {
-			const response = await getProfileFromAnotherUser(message.account_id);
+			const response = await getProfileFromAnotherUser(message.account_id || "");
 			if (response.data) {
 				setProfile(response.data);
 			}
@@ -46,20 +53,17 @@ export const Message = ({ message }: Props) => {
 				console.log("Tin nhắn đã được thu hồi:", data);
 				setRevoked(true);
 				await dispatch(setOneMessage(normalizeMessage(data)));
-				await dispatch(fetchMessageByRoomId(message.room_id));
+				await dispatch(fetchMessageByRoomId(message.room_id || ""));
 			}
 		});
 	};
 
 	const handleForwardMessage = () => {
-		
-		
-
 		socketService.on(SocketOn.forwardMessage, async (data) => {
 			if (data._id === message.message_id) {
 				console.log("Tin nhắn đã được chuyển tiếp:", data);
 				await dispatch(setOneMessage(normalizeMessage(data)));
-				await dispatch(fetchMessageByRoomId(message.room_id));
+				await dispatch(fetchMessageByRoomId(message.room_id || ""));
 				// await dispatch(setRoom())
 			}
 		});
@@ -92,12 +96,15 @@ export const Message = ({ message }: Props) => {
 								key={index}
 								src={file.url}
 							>
-								<img
+								<Image
 									src={file.url}
 									alt={file.data?.name || "image"}
 									width={200}
 									height={200}
-									className="max-h-[200px] rounded-lg object-cover"
+									className={`max-h-[200px] rounded-lg object-cover ${isLoadingImage ? "opacity-50" : "opacity-100"}`}
+									onLoadingComplete={() => {
+										setIsLoadingImage(false);
+									}}
 								/>
 							</ImageViewer>
 						);
@@ -119,8 +126,6 @@ export const Message = ({ message }: Props) => {
 		);
 	};
 
-	const isSender = message.account_id === account_id;
-
 	const handleRevoke = async () => {
 		try {
 		} catch (err) {
@@ -135,113 +140,120 @@ export const Message = ({ message }: Props) => {
 	};
 
 	return (
-		<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
-			{!isSender && (
-				<ImageViewer
-					src={
-						profile?.avatarUrl ||
-						"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
-					}
-				>
-					<Image
-						priority
-						width={40}
-						height={40}
-						className="mr-2 h-[40px] w-[40px] rounded-full object-cover"
+		<>
+			{message ? (
+				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
+					<ImageViewer
 						src={
 							profile?.avatarUrl ||
 							"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
 						}
-						alt="avatar"
-					/>
-				</ImageViewer>
-			)}
-
-			<div className="group relative">
-				<div
-					className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${isSender ? "bg-blue-200" : "bg-body"}`}
-				>
-					{!isSender && <h1 className="text-xs font-light text-text-seen">{profile?.fullName}</h1>}
-
-					{revoked ? (
-						<p className="text-sm italic text-gray-400">Tin nhắn đã được thu hồi</p>
-					) : (
-						<>
-							{message.content && (
-								<p className="break-words text-sm font-normal text-text">{message.content}</p>
-							)}
-							{renderFiles()}
-
-							<div className="flex items-center justify-end gap-1 text-xs text-gray-500">
-								{message.createdAt &&
-									new Date(message.createdAt).toLocaleTimeString("vi-VN", {
-										hour: "2-digit",
-										minute: "2-digit",
-									})}
-							</div>
-						</>
-					)}
-				</div>
-
-				{isSender && !revoked && (
-					<div className="absolute -left-6 top-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
-						<button
-							className="rounded-full p-1 hover:bg-gray-200"
-							onClick={toggleOptions}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							>
-								<circle
-									cx="12"
-									cy="12"
-									r="1"
-								></circle>
-								<circle
-									cx="19"
-									cy="12"
-									r="1"
-								></circle>
-								<circle
-									cx="5"
-									cy="12"
-									r="1"
-								></circle>
-							</svg>
-						</button>
-					</div>
-				)}
-
-				{showOptions && isSender && !revoked && (
-					<div
-						ref={optionsRef}
-						className="absolute right-0 top-0 z-10 w-40 rounded-md bg-zinc-800 py-1 shadow-lg"
 					>
-						<button
-							className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
-							onClick={handleRevokeMessage}
+						{!isSender && <Spinner className={`${isLoadingImageAvatar ? "block" : "hidden"}`} />}
+
+						<Image
+							onLoadingComplete={() => setIsLoadingImageAvatar(false)}
+							loading="lazy"
+							width={40}
+							height={40}
+							className={`mr-2 h-[40px] w-[40px] rounded-full object-cover ${isSender ? "hidden" : "block"} ${isLoadingImageAvatar ? "hidden" : "block"}`}
+							src={profile?.avatarUrl || avatarDefault}
+							alt="avatar"
+						/>
+					</ImageViewer>
+
+					<div className="group relative">
+						<div
+							className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${isSender ? "bg-blue-200" : "bg-body"}`}
 						>
-							<span className="mr-2">↩️</span> Thu hồi
-						</button>
-						<button
-							className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
-							onClick={() => {
-								/* Handle delete */
-							}}
-						>
-							<span className="mr-2">🗑️</span> Chuyển tiếp tin nhắn
-						</button>
+							<h1 className={`text-xs font-light text-text-seen ${isSender ? "hidden" : "block"}`}>
+								{profile?.fullName}
+							</h1>
+
+							{revoked ? (
+								<p className="text-sm italic text-gray-400">Tin nhắn đã được thu hồi</p>
+							) : (
+								<>
+									<p className="break-words text-sm font-normal text-text">
+										{message.content}
+									</p>
+
+									{renderFiles()}
+
+									<div className="flex items-center justify-end gap-1 text-xs text-gray-500">
+										{message.createdAt &&
+											new Date(message.createdAt).toLocaleTimeString("vi-VN", {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
+									</div>
+								</>
+							)}
+						</div>
+
+						{isSender && !revoked && (
+							<div className="absolute -left-6 top-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
+								<button
+									className="rounded-full p-1 hover:bg-gray-200"
+									onClick={toggleOptions}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<circle
+											cx="12"
+											cy="12"
+											r="1"
+										></circle>
+										<circle
+											cx="19"
+											cy="12"
+											r="1"
+										></circle>
+										<circle
+											cx="5"
+											cy="12"
+											r="1"
+										></circle>
+									</svg>
+								</button>
+							</div>
+						)}
+
+						{showOptions && isSender && !revoked && (
+							<div
+								ref={optionsRef}
+								className="absolute right-0 top-0 z-10 w-40 rounded-md bg-zinc-800 py-1 shadow-lg"
+							>
+								<button
+									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+									onClick={handleRevokeMessage}
+								>
+									<span className="mr-2">↩️</span> Thu hồi
+								</button>
+								<button
+									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+									onClick={() => {
+										/* Handle delete */
+									}}
+								>
+									<span className="mr-2">🗑️</span> Chuyển tiếp tin nhắn
+								</button>
+							</div>
+						)}
 					</div>
-				)}
-			</div>
-		</div>
+				</div>
+			) : (
+				<Spinner />
+			)}
+		</>
 	);
 };

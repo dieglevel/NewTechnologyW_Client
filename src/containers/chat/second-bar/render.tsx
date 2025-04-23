@@ -1,34 +1,24 @@
 "use client";
 
+import { findAccount } from "@/api";
 import { ChatRoom } from "@/containers/chat/second-bar/room";
 import { useSidebar } from "@/hooks/sidebar";
-import { useEffect, useRef, useState } from "react";
-import { AppDispatch, RootState } from "@/redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import { findAccount, getMessageByRoomId } from "@/api";
-import { api, ErrorResponse } from "@/lib/axios";
+import { ErrorResponse } from "@/lib/axios";
+import { RootState } from "@/redux/store";
 import { SideBarSelected } from "@/redux/store/ui";
-import ContactBar from "./contact/contact-bar";
 import { ISearchAccount } from "@/types/implement/response";
-import { SearchComponent } from "./search/search";
-import AccountDetail from "./search/components/account-detail";
-import { setSelectedRoom } from "@/redux/store/models/selected-room-slice";
-import { socketService } from "@/lib/socket/socket";
-import { SocketEmit, SocketOn } from "@/constants/socket";
-import { fetchMessageByRoomId, setMessage } from "@/redux/store/models/message-slice";
 import { Skeleton } from "@heroui/skeleton";
-import { LocalStorage } from "@/lib/local-storage";
-import { IRoom } from "@/types/implement/room.interface";
-import { normalizeMessage } from "@/utils";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import ContactBar from "./contact/contact-bar";
+import AccountDetail from "./search/components/account-detail";
+import { SearchComponent } from "./search/search";
 
 export const SecondBar = () => {
 	const divRef = useRef<HTMLDivElement>(null);
 
 	const { selected, setSelect } = useSidebar();
 	const { room, status } = useSelector((state: RootState) => state.listRoom);
-
-	const dispatch = useDispatch<AppDispatch>();
-	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const [search, setSearch] = useState<string>("");
 	const [searchResult, setSearchResult] = useState<ISearchAccount[]>([]);
@@ -93,8 +83,8 @@ export const SecondBar = () => {
 				case SideBarSelected.Chat:
 					return (
 						<div className="flex flex-col gap-1">
-							{room ? (
-								room.map((item, index) => (
+							{status ? (
+								room?.map((item, index) => (
 									<ChatRoom
 										key={index}
 										room={item}

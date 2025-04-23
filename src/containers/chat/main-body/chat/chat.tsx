@@ -40,13 +40,13 @@ export const BodyView = () => {
 		const fetchMessages = async () => {
 			setIsLoading(true);
 			console.log("selectedRoomId: ", selectedRoom);
-			const data = await getMessageByRoomId(selectedRoom.id);
+			const data = await getMessageByRoomId(selectedRoom.id || "");
 			console.log("data: ", data);
 			if (data && data.data) {
-				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id }));
+				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id || "" }));
 			}
 
-			await dispatch(fetchMessageByRoomId(selectedRoom.id));
+			await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));
 			setIsLoading(false);
 		};
 

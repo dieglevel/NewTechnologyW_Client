@@ -14,6 +14,7 @@ export const BodyChat = () => {
 	const { message, status } = useSelector((state: RootState) => state.message);
 	const [loading, setLoading] = useState<boolean>(false);
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
+	const userId = localStorage.getItem(LocalStorage.userId);
 
 	const { ref: topRef, inView } = useInView({
 		rootMargin: "100px",
@@ -39,6 +40,7 @@ export const BodyChat = () => {
 			<>
 				{messages?.slice(0, 10 * pagination).map((msg) => (
 					<Message
+						isSender={userId === msg.account_id}
 						key={msg.message_id}
 						message={msg}
 					/>
