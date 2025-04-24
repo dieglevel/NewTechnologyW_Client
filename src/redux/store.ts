@@ -6,7 +6,7 @@ import { ContactBarReducer, OptionViewReducer } from "./store/ui";
 import { MyListFriendReducer, RequestFriendReducer } from "./store/models";
 import { RoomReducer } from "./store/models";
 import { SendedFriendReducer } from "./store/models/sended-friend-slice";
-import { SelectedRoomReducer } from "./store/models/selected-room-slice";
+import { SelectedRoomReducer } from "./store/ui/selected-room-slice";
 import { MessageReducer } from "./store/models/message-slice";
 
 export const store = configureStore({

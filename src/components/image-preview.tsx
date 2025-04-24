@@ -88,7 +88,7 @@ export default function ImageViewer({ src, alt = "", children }: ImageViewerProp
 							exit={{ scale: 0.9, opacity: 0 }}
 							transition={{ duration: 0.2 }}
 						>
-							<img
+							<Image
 								onClick={(e) => e.stopPropagation()}
 								onWheel={handleWheel}
 								width={700}

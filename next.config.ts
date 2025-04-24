@@ -36,6 +36,7 @@ const nextConfig: NextConfig = withPWA({
 			{
 				protocol: "https",
 				hostname: "139.59.253.187",
+				port: "",
 				pathname: "/Cloud/**",
 			},
 		],

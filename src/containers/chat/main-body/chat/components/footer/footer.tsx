@@ -21,7 +21,7 @@ export const FooterChat = () => {
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
-	const dispatch = useDispatch<AppDispatch>();
+	// const dispatch = useDispatch<AppDispatch>();
 
 	const handleClick = () => {
 		if (inputRef.current) {
@@ -37,14 +37,11 @@ export const FooterChat = () => {
 		const files = e.target.files;
 		if (files && files.length > 0) {
 			setFile(Array.from(files));
-			console.log("Selected files:", files);
 		}
 	};
 
 	const addMessage = (message: string) => {
 		if (message.trim() === "" && file.length === 0) return;
-		console.log("Message:", message);
-		console.log("Files:", file);
 		handleSendMessage(message);
 		setIMessage("");
 		setFile([]);
@@ -52,7 +49,8 @@ export const FooterChat = () => {
 
 	const sendSticker = (sticker: string) => {
 		if (sticker.trim() === "") return;
-		console.log("Sticker:", sticker);
+		// console.log("Sticker:", sticker);
+		handleSendMessage(sticker, "sticker");
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -62,40 +60,17 @@ export const FooterChat = () => {
 		}
 	};
 
-	const handleSendMessage = async (message: any) => {
-		// socketService.connect();
-
-		// socketService.emit(SocketEmit.sendMessage, {});
-
+	const handleSendMessage = async (message: any, type: "mixed" | "sticker" | "call" = "mixed") => {
 		try {
-			let type: "mixed" | "sticker" | "call" = "mixed";
-
-			// Gửi message qua API
 			await sendMessage({
 				accountId: localStorage.getItem(LocalStorage.userId) || "",
 				roomId: selectedRoom?.id || "",
 				type,
-				content: message,
+				content: type=="mixed" ? message : undefined,
+				sticker: type === "sticker" ? message : undefined,
 				files: file || undefined,
 			});
-
-			// Socket xử lý realtime
-			socketService.on(SocketOn.sendMessage, async (data) => {
-				const { message, room } = data;
-
-				console.log("New message received:", message);
-
-				socketService.emit(SocketEmit.myListRoom, {
-					lastUpdatedAt: message.createdAt,
-				});
-
-				socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
-					await dispatch(setRoom(data));
-				});
-
-				await dispatch(setOneMessage(normalizeMessage(message)));
-				await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
-			});
+			
 		} catch (error) {
 			console.error("Lỗi gửi tin nhắn:", error);
 		}

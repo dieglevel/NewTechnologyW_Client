@@ -1,4 +1,5 @@
-import { BaseEntity } from "../base-entity";
+// import { BaseEntity } from "../base-entity";
+import { IMessageFile } from "./file.interface";
 
 
 export interface IMessage {
@@ -7,9 +8,11 @@ export interface IMessage {
 	account_id?: string;
 	room_id?: string;
 	content?: string;
-	files?: any[]; // Changed from string to string[] to accommodate multiple files
+	sticker?: string;
+	files?: IMessageFile[]; // Changed from string to string[] to accommodate multiple files
 	isRevoked?: boolean;
 	isDeleted?: boolean;
 	createdAt?: Date;
 	updatedAt?: Date;
+	type: "mixed" | "sticker" | "call",
 }

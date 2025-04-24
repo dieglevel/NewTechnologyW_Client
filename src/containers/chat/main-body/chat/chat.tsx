@@ -6,11 +6,15 @@ import { getMessageByRoomId, getProfileFromAnotherUser } from "@/api";
 import { IDetailInformation } from "@/types/implement";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import { fetchMessageByRoomId, setMessage } from "@/redux/store/models/message-slice";
+import { fetchMessageByRoomId, setMessage, setOneMessage } from "@/redux/store/models/message-slice";
 import { socketService } from "@/lib/socket/socket";
-import { SocketOn } from "@/constants/socket";
+import { SocketEmit, SocketOn } from "@/constants/socket";
 import Loading from "@/app/loading";
 import { Spinner } from "@heroui/spinner";
+import { setRoom } from "@/redux/store/models";
+import { normalizeMessage } from "@/utils";
+import { IRoom } from "@/types/implement/room.interface";
+import { Socket } from "socket.io-client";
 
 // interface Props {
 // 	account_id: string;
@@ -35,13 +39,39 @@ export const BodyView = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
+
+		socketService.emit(SocketEmit.joinRoom, {
+			room_id: selectedRoom?.id,
+		});
+
+
+
+		socketService.on(SocketOn.sendMessage, async (data) => {
+			const { message, room } = data;
+
+			console.log("New message received:", message);
+
+			// socketService.emit(SocketEmit.myListRoom, {
+			// 	lastUpdatedAt: message.createdAt,
+			// });
+
+			// socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
+			// 	await dispatch(setRoom(data));
+			// });
+
+			await dispatch(setOneMessage(normalizeMessage(message)));
+			await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
+		});
+	}, []);
+
+	useEffect(() => {
 		if (!selectedRoom) return;
+		
 
 		const fetchMessages = async () => {
 			setIsLoading(true);
 			console.log("selectedRoomId: ", selectedRoom);
 			const data = await getMessageByRoomId(selectedRoom.id || "");
-			console.log("data: ", data);
 			if (data && data.data) {
 				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id || "" }));
 			}
@@ -51,10 +81,6 @@ export const BodyView = () => {
 		};
 
 		fetchMessages();
-
-		return () => {
-			socketService.off(SocketOn.getMessageByChatRoom); // Clean up the socket listener
-		};
 	}, [selectedRoom, status]);
 
 	return (
@@ -62,7 +88,6 @@ export const BodyView = () => {
 			<HeaderChat imageUrl="https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg" />
 			{isLoading ? (
 				<div className="flex h-full w-full items-center justify-center">
-
 					<Spinner size="lg" />
 				</div>
 			) : (

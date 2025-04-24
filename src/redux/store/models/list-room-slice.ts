@@ -13,7 +13,7 @@ const thunkName = "Room";
 const thunkAction = { fetch: "fetch", set: "set", delete: "delete", init: "init" };
 
 // IDB instance
-const idb = new IDBManager<IRoom>(storeName, "id", ["lastMessage.createdAt"]);
+const idb = new IDBManager<IRoom>(storeName, "id", ["latestMessage.createdAt"]);
 
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
@@ -24,7 +24,10 @@ export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunk
 
 export const setRoom = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (rooms: IRoom[]) => {
 
-	await idb.updateMany(rooms);
+	for (const room of rooms) {
+		await idb.update(room);
+	}
+
 	const updatedRooms = await idb.getAllByIndex();
 	return updatedRooms;
 });
@@ -36,8 +39,10 @@ export const deleteRoom = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thu
 
 export const initRoom = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (rooms: IRoom[]): Promise<IRoom[]> => {
 	await idb.clear();
-	const updatedRooms = await idb.updateMany(rooms);
+	// console.log("aaa", rooms);
+	await idb.updateMany(rooms);
 	const room = await idb.getAll()
+	// console.log("room: ", room);
 	return room;
 });
 
@@ -106,6 +111,7 @@ const roomSlice = createSlice({
 			})
 			.addCase(initRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
 				state.status = "succeeded";
+				console.log("action.payload: ", action.payload);	
 				state.room = action.payload;
 			})
 			.addCase(initRoom.rejected, (state) => {

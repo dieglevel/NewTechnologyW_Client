@@ -12,11 +12,12 @@ import InformationModal from "@/containers/chat/sidebar/components/user/modal/in
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import { getListFriend, getListResponseFriend, getListSended } from "@/api";
-import { initMyListFriend, initRequestFriend, setMyListFriend, setRequestFriend } from "@/redux/store/models";
+import { fetchRoom, initMyListFriend, initRequestFriend, initRoom, setMyListFriend, setRequestFriend } from "@/redux/store/models";
 import { ErrorResponse } from "@/lib/axios";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { initSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
+import { getRoomList } from "./handle";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const dispatch = useDispatch<AppDispatch>();
@@ -104,8 +105,19 @@ const ChatPage = () => {
 	}, []);
 
 	useEffect(() => {
-		// console.log("Detail information status: ", detailInformationStatus);
-		// console.log("Status: ", status);
+		const fetch = async () => {
+			try {
+				const response = await getRoomList();
+				dispatch(initRoom(response));
+			} catch (error) {
+				const e = error as ErrorResponse;
+			}
+		}
+		fetch();
+		
+	}, []);
+
+	useEffect(() => {
 		if (detailInformationStatus === "succeeded") {
 			setIsLoading(false);
 		}

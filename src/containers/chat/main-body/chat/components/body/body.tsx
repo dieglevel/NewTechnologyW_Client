@@ -20,14 +20,13 @@ export const BodyChat = () => {
 		rootMargin: "100px",
 		triggerOnce: false,
 	});
-	const [messages, setMessages] = useState<IMessage[]>();
 
-	useEffect(() => {
-		if (message && selectedRoom) {
-			const filteredMessages = message.filter((msg) => msg.room_id === selectedRoom.id);
-			setMessages(filteredMessages);
-		}
-	}, [message, selectedRoom]);
+	// useEffect(() => {
+	// 	if (message && selectedRoom) {
+	// 		const filteredMessages = message.filter((msg) => msg.room_id === selectedRoom.id);
+	// 		setMessages(filteredMessages);
+	// 	}
+	// }, [message, selectedRoom]);
 
 	useEffect(() => {
 		if (inView) {
@@ -38,7 +37,7 @@ export const BodyChat = () => {
 	const renderMessage = () => {
 		return (
 			<>
-				{messages?.slice(0, 10 * pagination).map((msg) => (
+				{message?.slice(0, 10 * pagination).map((msg) => (
 					<Message
 						isSender={userId === msg.account_id}
 						key={msg.message_id}

@@ -7,7 +7,7 @@ export interface IRoom {
 	name?: string;
 	isSeen?: string[];
 	leader_account_id?: string;
-	lastMessage?: IMessage;
+	latestMessage?: IMessage;
 	type?: string;
 	isDelete?: boolean;
 	isLoad?: boolean;

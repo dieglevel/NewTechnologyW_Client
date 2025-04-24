@@ -172,6 +172,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 				if (!indexNames || indexNames.length === 0) {
 					throw new Error(`No indexes found for store: ${this.storeName}`);
 				}
+				console.log("indexNames", indexNames);
 				const index = store.index(indexNames[0]);
 				const request = index.openCursor(null, direction);
 
@@ -218,6 +219,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 			let count = 0;
 			data.forEach((item) => {
 				const request = store.put(normalizeMessage(item));
+				// console.log(item)
 				request.onsuccess = () => {
 					count++;
 					if (count === data.length) resolve();
@@ -245,14 +247,15 @@ export class IDBManager<T extends { [key: string]: any }> {
 		});
 	}
 
-	async initData(data: T[]): Promise<void> {
+	async initData(data: T[]): Promise<T[]> {
 		const store = await this.getStore("readwrite");
 		return new Promise((resolve, reject) => {
 			const request = store.clear();
+			
 			request.onsuccess = () => {
 				const addRequests = data.map((item) => store.add(item));
 				Promise.all(addRequests)
-					.then(() => resolve())
+					.then(() => resolve(data))
 					.catch((error) => reject(error));
 			};
 			request.onerror = () => reject(request.error);

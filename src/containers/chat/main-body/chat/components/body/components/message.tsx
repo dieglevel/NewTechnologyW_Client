@@ -15,6 +15,7 @@ import { setRoom } from "@/redux/store/models";
 import { Spinner } from "@heroui/spinner";
 import { avatarDefault } from "@/assets/images";
 import Loading from "@/app/loading";
+import { q } from "framer-motion/dist/types.d-B50aGbjN";
 
 interface Props {
 	message: IMessage;
@@ -49,6 +50,7 @@ export const Message = ({ message, isSender }: Props) => {
 		});
 
 		socketService.on(SocketOn.getRevokeMessage, async (data) => {
+			console.log("Tin nhắn đã được thu hồi:", data);
 			if (data._id === message.message_id) {
 				console.log("Tin nhắn đã được thu hồi:", data);
 				setRevoked(true);
@@ -58,16 +60,24 @@ export const Message = ({ message, isSender }: Props) => {
 		});
 	};
 
-	const handleForwardMessage = () => {
-		socketService.on(SocketOn.forwardMessage, async (data) => {
+	useEffect(() => {
+		socketService.on(SocketOn.getRevokeMessage, async (data) => {
+
+			console.log("Tin nhắn đã được thu hồi:", data);
 			if (data._id === message.message_id) {
-				console.log("Tin nhắn đã được chuyển tiếp:", data);
+				console.log("Tin nhắn đã được thu hồi:", data);
+				setRevoked(true);
 				await dispatch(setOneMessage(normalizeMessage(data)));
 				await dispatch(fetchMessageByRoomId(message.room_id || ""));
-				// await dispatch(setRoom())
 			}
 		});
-	};
+
+		// return () => {
+		// 	socketService.off(SocketOn.getRevokeMessage);
+		// };
+	}, [message]);
+
+
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -96,15 +106,15 @@ export const Message = ({ message, isSender }: Props) => {
 								key={index}
 								src={file.url}
 							>
-								<Image
+								<Image	
 									src={file.url}
 									alt={file.data?.name || "image"}
 									width={200}
 									height={200}
 									className={`max-h-[200px] rounded-lg object-cover ${isLoadingImage ? "opacity-50" : "opacity-100"}`}
-									onLoadingComplete={() => {
-										setIsLoadingImage(false);
-									}}
+									// onLoadingComplete={() => {
+									// 	setIsLoadingImage(false);
+									// }}
 								/>
 							</ImageViewer>
 						);
@@ -124,13 +134,6 @@ export const Message = ({ message, isSender }: Props) => {
 				})}
 			</div>
 		);
-	};
-
-	const handleRevoke = async () => {
-		try {
-		} catch (err) {
-			console.error("Lỗi khi thu hồi tin nhắn:", err);
-		}
 	};
 
 	const toggleOptions = (e: React.MouseEvent) => {
@@ -175,7 +178,7 @@ export const Message = ({ message, isSender }: Props) => {
 							) : (
 								<>
 									<p className="break-words text-sm font-normal text-text">
-										{message.content}
+										{message.type ? message.content : message.sticker}
 									</p>
 
 									{renderFiles()}
