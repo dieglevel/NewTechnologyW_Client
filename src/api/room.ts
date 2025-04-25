@@ -6,8 +6,13 @@ interface ICreateGroup {
 	name: string;
 }
 interface IAddMember {
-   roomId: string;
+	roomId: string;
 	listAccount: string[];
+}
+
+interface IDeleteMember {
+	roomId: string;
+	removeUserID: string;
 }
 
 export const getRoom = async () => {
@@ -46,6 +51,24 @@ export const addMember = async (data: IAddMember) => {
 			},
 		);
 		console.log("Member added successfully:", response.data);
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const deleteMember = async (data: IDeleteMember) => {
+	try {
+		const response = await api.post<BaseResponse<IRoom>>(
+			`/chat-room/remove-member?chatRoomID=${data.roomId}`,
+			{ removeUserID: data.removeUserID },
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		console.log("Member removed successfully:", response.data);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;

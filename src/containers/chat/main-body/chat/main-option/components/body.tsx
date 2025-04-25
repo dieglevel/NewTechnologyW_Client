@@ -6,7 +6,11 @@ import { RootState } from "@/redux/store";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
-export const BodyOption = () => {
+interface Props {
+	onClick?: () => void;
+}
+
+export const BodyOption = ({onClick}:Props) => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
 
@@ -68,11 +72,14 @@ export const BodyOption = () => {
 					<p className="text-center text-xs font-semibold">Quản lý nhóm</p>
 				</div>
 			</div>
-			<div className="flex flex-col items-center justify-center">
-				<div className="flex flex-col items-center justify-center gap-1">
-					<AddGroupIcon/>
-					<p className="text-center text-xs font-semibold">Thành viên nhóm</p>
-				</div>
+			<div className="flex flex-col justify-center gap-1">
+				<p className="text-base font-semibold">Thành viên nhóm</p>
+				<button className="flex items-center gap-1 mt-3" onClick={onClick}>
+					<AddGroupIcon className="h-5 w-5" />
+					<p className="text-xs">
+						{selectedRoom?.detailRoom?.length} thành viên
+					</p>
+				</button>
 			</div>
 		</div>
 	);

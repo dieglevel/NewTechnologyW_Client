@@ -27,11 +27,12 @@ interface Props {
 }
 
 export const Message = ({ message, isSender }: Props) => {
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
+
 	const [revoked, setRevoked] = useState<boolean>(message.isRevoked || false);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const [showForward, setShowForward] = useState<boolean>(false);
 	const [isLoadingImage, setIsLoadingImage] = useState<boolean>();
-	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const [showOnTop, setShowOnTop] = useState(false);
 	const [isLoadingImageAvatar, setIsLoadingImageAvatar] = useState<boolean>(true);
 	const accountId = localStorage.getItem(LocalStorage.userId);
@@ -39,6 +40,8 @@ export const Message = ({ message, isSender }: Props) => {
 		const user = selectedRoom?.detailRoom?.find((user) => user.id === message.accountId);
 		return user ? (user as IDetailInformation) : null;
 	});
+
+	
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch<AppDispatch>();
 

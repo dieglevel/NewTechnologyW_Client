@@ -15,11 +15,14 @@ import { sendMessage } from "@/api";
 import { normalizeMessage, normalizeRoom } from "@/utils";
 import { IRoom } from "@/types/implement/room.interface";
 import { X } from "lucide-react";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
+	const [showPicker, setShowPicker] = useState(false);
+
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	// const dispatch = useDispatch<AppDispatch>();
 
@@ -27,6 +30,10 @@ export const FooterChat = () => {
 		if (inputRef.current) {
 			inputRef.current.click();
 		}
+	};
+
+	const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+		setIMessage((prev) => prev + emojiData.emoji);
 	};
 
 	const handleRemoveFile = (index: number) => {
@@ -62,7 +69,7 @@ export const FooterChat = () => {
 
 	const handleSendMessage = async (message: any, type: "mixed" | "sticker" | "call" = "mixed") => {
 		try {
-			if( type === "sticker") {
+			if (type === "sticker") {
 				await sendMessage({
 					accountId: localStorage.getItem(LocalStorage.userId) || "",
 					roomId: selectedRoom?.id || "",
@@ -79,7 +86,6 @@ export const FooterChat = () => {
 					files: file || undefined,
 				});
 			}
-			
 		} catch (error) {
 			console.error("Lỗi gửi tin nhắn:", error);
 		}
@@ -139,7 +145,10 @@ export const FooterChat = () => {
 					onKeyDown={handleKeyDown}
 					classNames={{ input: ["bg-body"], inputWrapper: ["border-none", "shadow-none"] }}
 				/>
-				<div className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background">
+				<div
+					className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background"
+					onClick={() => setShowPicker((val) => !val)}
+				>
 					<EmojiIcon className="size-6 stroke-icon-second stroke-2" />
 				</div>
 				<div
@@ -165,6 +174,12 @@ export const FooterChat = () => {
 						onClear={() => setFile([])}
 						onRemoveFile={handleRemoveFile}
 					/>
+				</div>
+			)}
+
+			{showPicker && (
+				<div className="absolute bottom-12 right-24 z-10">
+					<EmojiPicker onEmojiClick={onEmojiClick} />
 				</div>
 			)}
 		</div>
