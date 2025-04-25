@@ -62,14 +62,23 @@ export const FooterChat = () => {
 
 	const handleSendMessage = async (message: any, type: "mixed" | "sticker" | "call" = "mixed") => {
 		try {
-			await sendMessage({
-				accountId: localStorage.getItem(LocalStorage.userId) || "",
-				roomId: selectedRoom?.id || "",
-				type,
-				content: type=="mixed" ? message : undefined,
-				sticker: type === "sticker" ? message : undefined,
-				files: file || undefined,
-			});
+			if( type === "sticker") {
+				await sendMessage({
+					accountId: localStorage.getItem(LocalStorage.userId) || "",
+					roomId: selectedRoom?.id || "",
+					type,
+					sticker: type === "sticker" ? message : undefined,
+					files: file || undefined,
+				});
+			} else {
+				await sendMessage({
+					accountId: localStorage.getItem(LocalStorage.userId) || "",
+					roomId: selectedRoom?.id || "",
+					type,
+					content: message,
+					files: file || undefined,
+				});
+			}
 			
 		} catch (error) {
 			console.error("Lỗi gửi tin nhắn:", error);

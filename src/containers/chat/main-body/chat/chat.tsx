@@ -12,7 +12,7 @@ import { SocketEmit, SocketOn } from "@/constants/socket";
 import Loading from "@/app/loading";
 import { Spinner } from "@heroui/spinner";
 import { setRoom } from "@/redux/store/models";
-import { normalizeMessage } from "@/utils";
+import { normalizeMessage, normalizeRoom } from "@/utils";
 import { IRoom } from "@/types/implement/room.interface";
 import { Socket } from "socket.io-client";
 
@@ -39,41 +39,53 @@ export const BodyView = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-
 		socketService.emit(SocketEmit.joinRoom, {
 			room_id: selectedRoom?.id,
 		});
 
-
-
 		socketService.on(SocketOn.sendMessage, async (data) => {
-			const { message, room } = data;
+			const { message, behavior } = data;
 
-			console.log("New message received:", message);
+			console.log("???????room: ", data);
 
-			// socketService.emit(SocketEmit.myListRoom, {
-			// 	lastUpdatedAt: message.createdAt,
-			// });
-
-			// socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
-			// 	await dispatch(setRoom(data));
-			// });
-
-			await dispatch(setOneMessage(normalizeMessage(message)));
-			await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
+			switch (behavior) {
+				case "add":
+					await dispatch(setOneMessage(message));
+					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
+					break;
+				case "update":
+					await dispatch(setOneMessage(message)); 
+					await dispatch(fetchMessageByRoomId(selectedRoom?.id || "")); 
+					break;
+				case "revoke":
+					
+					await dispatch(setOneMessage(message)); 
+					await dispatch(fetchMessageByRoomId(selectedRoom?.id || "")); 
+					break;
+				case "delete":
+					// await dispatch(setRoom([room]));
+					break;
+				default:
+					break;
+			}
 		});
-	}, []);
+
+		return () => {
+			socketService.off(SocketOn.joinRoom);
+			socketService.off(SocketOn.sendMessage);
+			socketService.off(SocketOn.getRevokeMessage);
+		}
+	}, [selectedRoom]);
 
 	useEffect(() => {
 		if (!selectedRoom) return;
-		
 
 		const fetchMessages = async () => {
 			setIsLoading(true);
 			console.log("selectedRoomId: ", selectedRoom);
 			const data = await getMessageByRoomId(selectedRoom.id || "");
 			if (data && data.data) {
-				dispatch(setMessage({ messages: data.data, roomId: selectedRoom.id || "" }));
+				dispatch(setMessage({ messages: data.data}));
 			}
 
 			await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));

@@ -1,7 +1,12 @@
 export const normalizeRoom = (data: any) => {
-	const { room_id, ...rest } = data;
-	return {
-		...rest,
-		id: room_id,
-	};
+	const { latestMessage, room_id, ...rest } = data;
+	if (!data.id) {
+		return {
+			...rest,
+			id: room_id || latestMessage.roomId,
+			latestMessage: latestMessage,
+		};
+	} else {
+		return data;
+	}
 };

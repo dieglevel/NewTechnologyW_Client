@@ -39,6 +39,12 @@ const nextConfig: NextConfig = withPWA({
 				port: "",
 				pathname: "/Cloud/**",
 			},
+			{
+				protocol: "https",
+				hostname: "zalo-clone-vip-pro.me",
+				port: "",
+				pathname: "/Cloud/**",
+			},
 		],
 	},
 });

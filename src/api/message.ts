@@ -6,7 +6,7 @@ import { IRoom } from "@/types/implement/room.interface";
 interface ISend {
 	accountId?: string;
 	roomId: string;
-	content: string;
+	content?: string;
 	type: string;
 	files?: File[]; // multipleFiles
 	sticker?: string;
@@ -22,7 +22,10 @@ export const sendMessage = async (data: ISend) => {
 		const formData = new FormData();
 
 		formData.append("roomId", data.roomId);
-		formData.append("content", data.content);
+		if (data.content) {
+			formData.append("content", data.content);
+		}
+		// formData.append("content", data.content);
 		formData.append("type", data.type);
 
 		if (data.accountId) {
@@ -63,11 +66,29 @@ export const getMessageByRoomId = async (roomId: string) => {
 	}
 };
 
-export const forwardMessage = async ({messageId, roomId, senderId}: {messageId: string; roomId: string; senderId: string}) => {
+export const forwardMessage = async ({ messageId, roomId }: { messageId: string; roomId: string }) => {
 	try {
-		const response = await api.post<BaseResponse<IMessage>>("/message/forward", { messageId, roomId, senderId });
+		const response = await api.post<BaseResponse<IMessage>>("/message/forward", { messageId, roomId });
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const revokeMessage = async ({ messageId }: { messageId: string }) => {
+	try {
+		const response = await api.delete<BaseResponse<IMessage>>(`/message/revoke/${messageId}`);
 		console.log("response: ", response.data);
 		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+export const deleteMessageById = async ({ messageId }: { messageId: string }) => {
+	try {
+		const response = await api.delete<BaseResponse<IMessage>>(`/message/remove-room-by-my-side/${messageId}`);
+		console.log("response: ", response.data);
+		return response;
 	} catch (error) {
 		throw error as ErrorResponse;
 	}
