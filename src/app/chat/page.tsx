@@ -40,7 +40,7 @@ const ChatPage = () => {
 						const detailInformation = data.data.detailInformation;
 						if (
 							!detailInformation.fullName &&
-							!detailInformation.avatarUrl &&
+							!detailInformation.avatar &&
 							!detailInformation.gender &&
 							!detailInformation.dateOfBirth
 						) {
@@ -108,6 +108,7 @@ const ChatPage = () => {
 		const fetch = async () => {
 			try {
 				const response = await getRoomList();
+				// console.log(response)
 				dispatch(initRoom(response));
 			} catch (error) {
 				const e = error as ErrorResponse;

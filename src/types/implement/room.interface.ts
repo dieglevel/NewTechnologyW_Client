@@ -1,3 +1,4 @@
+import { avatar } from '@/assets/images';
 import { BaseEntity } from "../base-entity";
 import { IMessage } from "./message.interface";
 
@@ -8,7 +9,15 @@ export interface IRoom {
 	isSeen?: string[];
 	leader_account_id?: string;
 	latestMessage?: IMessage;
-	type?: string;
+	type?: "group" | "single" | "channel" | "cloud"; 
 	isDelete?: boolean;
 	isLoad?: boolean;
+	detailRoom?: IDetailRoom[];
+	avatar?: string;
+}
+
+export interface IDetailRoom  {
+	id?: string;
+	fullName?: string;
+	avatar?: string;
 }

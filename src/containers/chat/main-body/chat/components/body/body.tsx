@@ -37,11 +37,12 @@ export const BodyChat = () => {
 	const renderMessage = () => {
 		return (
 			<>
-				{message?.slice(0, 10 * pagination).map((msg) => (
+				{message?.map((msg) => (
 					<Message
-						isSender={userId === msg.account_id}
-						key={msg.message_id}
+						isSender={userId === msg.accountId}
+						key={msg._id}
 						message={msg}
+						
 					/>
 				))}
 			</>

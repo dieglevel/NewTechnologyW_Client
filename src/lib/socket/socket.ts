@@ -73,10 +73,10 @@ class SocketService {
 
 		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
-		this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
-			// store.dispatch(setRoom(data));
-			console.log("Socket MYLISTROOM event:", data);
-		});
+		// this.socket.on(SocketOn.myListRoom, (data: IRoom[]) => {
+		// 	// store.dispatch(setRoom(data));
+		// 	console.log("Socket MYLISTROOM event:", data);
+		// });
 
 		// ---------------------------------------------------------------------------------------------------------------------------------------------
 

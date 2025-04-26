@@ -12,14 +12,13 @@ const thunkName = "Message";
 const thunkAction = { fetch: "fetch", set: "set", delete: "delete", setOne: "setOne", fetchByRoomId: "fetchByRoomId" };
 
 // IDB instance
-const idb = new IDBManager<IMessage>(storeName, "message_id", ["createdAt", ["room_id", "createdAt"]]);
+const idb = new IDBManager<IMessage>(storeName, "_id", ["createdAt", ["roomId", "createdAt"]]);
 
 // Async thunks
 export const fetchMessage = createAsyncThunk(
 	`${thunkDB}${thunkAction.fetch}${thunkName}`,
 	async (): Promise<IMessage[]> => {
 		const messages = await idb.getAllByIndex();
-		console.log("Message DB: ", messages);
 		return messages || [];
 	},
 );
@@ -34,7 +33,7 @@ export const fetchMessageByRoomId = createAsyncThunk(
 
 export const setMessage = createAsyncThunk(
 	`${thunkDB}${thunkAction.set}${thunkName}`,
-	async ({ messages, roomId }: { messages: IMessage[]; roomId: string }): Promise<IMessage[]> => {
+	async ({ messages }: { messages: IMessage[]}): Promise<IMessage[]> => {
 		try {
 			await idb.updateMany(messages);
 			return messages;
@@ -58,6 +57,7 @@ export const setOneMessage = createAsyncThunk(
 );
 
 export const deleteMessage = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
+	console.log("delete id: ", id);
 	await idb.delete(id);
 	return id;
 });
@@ -91,7 +91,6 @@ const messageSlice = createSlice({
 			})
 			.addCase(fetchMessageByRoomId.fulfilled, (state, action: PayloadAction<IMessage[]>) => {
 				state.status = "succeeded";
-				console.log(action.payload);
 				state.message = action.payload;
 			})
 			.addCase(fetchMessageByRoomId.rejected, (state) => {
@@ -107,7 +106,7 @@ const messageSlice = createSlice({
 				if (action.payload) {
 					if (state.message) {
 						action.payload.forEach((newMessage) => {
-							const index = state.message!.findIndex((m) => m.message_id === newMessage.message_id);
+							const index = state.message!.findIndex((m) => m._id === newMessage._id);
 							if (index >= 0) {
 								state.message![index] = newMessage;
 							} else {
@@ -132,7 +131,7 @@ const messageSlice = createSlice({
 
 				if (newMessage) {
 					if (state.message) {
-						const index = state.message.findIndex((m) => m.message_id === newMessage.message_id);
+						const index = state.message.findIndex((m) => m._id === newMessage._id);
 						if (index >= 0) {
 							state.message![index] = newMessage;
 						} else {

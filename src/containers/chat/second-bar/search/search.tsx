@@ -2,6 +2,8 @@
 
 import { AddFriendIcon, AddGroupIcon, SearchIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
+import { useState } from "react";
+import { GroupModal } from "./components/modal-group";
 
 interface Props {
 	search: string;
@@ -9,6 +11,9 @@ interface Props {
 }
 
 export const SearchComponent = ({ search, setSearchAction }: Props) => {
+	
+	const [showGroup, setShowGroup] = useState<boolean>(false)
+
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-center gap-2 rounded border-b-1 bg-second p-2 py-2">
 			<Input
@@ -25,9 +30,16 @@ export const SearchComponent = ({ search, setSearchAction }: Props) => {
 			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-second hover:cursor-pointer hover:bg-[#ccc]">
 				<AddFriendIcon className="size-5 stroke-1" />
 			</div>
-			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-second hover:cursor-pointer hover:bg-[#ccc]">
+			<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-second hover:cursor-pointer hover:bg-[#ccc]" 
+				onClick={() => setShowGroup(true)}
+			>
 				<AddGroupIcon className="size-5 stroke-1" />
 			</div>
+			{ showGroup && (
+				<GroupModal open={showGroup} onOpenChange={setShowGroup} />
+			)
+			}
+			
 		</div>
 	);
 };

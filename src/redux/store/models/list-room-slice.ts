@@ -10,10 +10,10 @@ const storeName = "room";
 const thunkDB = "idb/";
 const thunkName = "Room";
 
-const thunkAction = { fetch: "fetch", set: "set", delete: "delete", init: "init" };
+const thunkAction = { fetch: "fetch", set: "set", delete: "delete", init: "init", update: "update" };
 
 // IDB instance
-const idb = new IDBManager<IRoom>(storeName, "id", ["latestMessage.createdAt"]);
+const idb = new IDBManager<IRoom>(storeName, "id", ["updatedAt"]);
 
 // Async thunks
 export const fetchRoom = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRoom[]> => {
@@ -29,6 +29,17 @@ export const setRoom = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName
 	}
 
 	const updatedRooms = await idb.getAllByIndex();
+
+	return updatedRooms;
+});
+
+export const updateRoom = createAsyncThunk(`${thunkDB}${thunkAction.update}${thunkName}`, async (rooms: IRoom[]) => {
+	for (const room of rooms) {
+		await idb.update(room);
+	}
+
+	const updatedRooms = await idb.getAllByIndex();
+
 	return updatedRooms;
 });
 
@@ -41,7 +52,7 @@ export const initRoom = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkNa
 	await idb.clear();
 	// console.log("aaa", rooms);
 	await idb.updateMany(rooms);
-	const room = await idb.getAll()
+	const room = await idb.getAllByIndex()
 	// console.log("room: ", room);
 	return room;
 });
@@ -93,6 +104,24 @@ const roomSlice = createSlice({
 			.addCase(setRoom.rejected, (state) => {
 				state.status = "failed";
 			})
+			.addCase(updateRoom.pending, (state) => {
+				state.status = "loading";
+			})
+			.addCase(updateRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {	
+				state.status = "succeeded";
+
+				if (state.room && Array.isArray(action.payload)) {
+					const existingRooms = state.room.filter(
+						(r) => !action.payload.some((newR) => newR.id === r.id),
+					);
+					state.room = [...action.payload, ...existingRooms];
+				} else {
+					state.room = action.payload;
+				}
+			})
+			.addCase(updateRoom.rejected, (state) => {
+				state.status = "failed";
+			})
 
 			.addCase(deleteRoom.pending, (state) => {
 				state.status = "loading";
@@ -111,12 +140,12 @@ const roomSlice = createSlice({
 			})
 			.addCase(initRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
 				state.status = "succeeded";
-				console.log("action.payload: ", action.payload);	
+				console.log("action.payload: ", action.payload);
 				state.room = action.payload;
 			})
 			.addCase(initRoom.rejected, (state) => {
 				state.status = "failed";
-			})
+			});
 
 	},
 });

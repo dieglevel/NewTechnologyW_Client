@@ -139,12 +139,9 @@ export class IDBManager<T extends { [key: string]: any }> {
 
 		return new Promise((resolve, reject) => {
 			try {
-				const index = store.index("room_id_createdAt");
+				const index = store.index("roomId_createdAt");
 
-				const keyRange = IDBKeyRange.bound(
-					[roomId, ""], 
-					[roomId, "\uffff"],
-				); 
+				const keyRange = IDBKeyRange.bound([roomId, ""], [roomId, "\uffff"]);
 
 				const request = index.getAll(keyRange);
 
@@ -172,7 +169,6 @@ export class IDBManager<T extends { [key: string]: any }> {
 				if (!indexNames || indexNames.length === 0) {
 					throw new Error(`No indexes found for store: ${this.storeName}`);
 				}
-				console.log("indexNames", indexNames);
 				const index = store.index(indexNames[0]);
 				const request = index.openCursor(null, direction);
 
@@ -198,9 +194,21 @@ export class IDBManager<T extends { [key: string]: any }> {
 		try {
 			const key = data[this.keyPath];
 			if (!key) throw new Error("Missing keyPath in data for update()");
+
 			const store = await this.getStore("readwrite");
-			return new Promise((resolve, reject) => {
-				const request = store.put(data);
+
+			const existingData: T | undefined = await new Promise((resolve, reject) => {
+				const getRequest = store.get(key);
+				getRequest.onsuccess = () => resolve(getRequest.result);
+				getRequest.onerror = () => reject(getRequest.error);
+			});
+
+			const newData = existingData
+				? { ...existingData, ...data } 
+				: data;
+
+			await new Promise<void>((resolve, reject) => {
+				const request = store.put(newData); 
 				request.onsuccess = () => resolve();
 				request.onerror = () => {
 					console.log("error", request.error);
@@ -218,7 +226,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			data.forEach((item) => {
-				const request = store.put(normalizeMessage(item));
+				const request = store.put(item);
 				// console.log(item)
 				request.onsuccess = () => {
 					count++;
@@ -251,7 +259,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 		const store = await this.getStore("readwrite");
 		return new Promise((resolve, reject) => {
 			const request = store.clear();
-			
+
 			request.onsuccess = () => {
 				const addRequests = data.map((item) => store.add(item));
 				Promise.all(addRequests)

@@ -1,4 +1,4 @@
-import { getProfileFromAnotherUser } from "@/api";
+import { deleteMessageById, getProfileFromAnotherUser, revokeMessage } from "@/api";
 import ImageViewer from "@/components/image-preview";
 import { LocalStorage } from "@/lib/local-storage";
 import { IDetailInformation } from "@/types/implement";
@@ -7,15 +7,19 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { socketService } from "@/lib/socket/socket";
 import { SocketEmit, SocketOn } from "@/constants/socket";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { deleteMessage, fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
 import { normalizeMessage } from "@/utils";
 import { setRoom } from "@/redux/store/models";
 import { Spinner } from "@heroui/spinner";
 import { avatarDefault } from "@/assets/images";
 import Loading from "@/app/loading";
 import { q } from "framer-motion/dist/types.d-B50aGbjN";
+import { More } from "@/assets/svgs";
+import { ShareModal } from "./rooms-forward";
+import renderFiles from "./render-files";
+import renderSticker from "./render-sticker";
 
 interface Props {
 	message: IMessage;
@@ -23,61 +27,62 @@ interface Props {
 }
 
 export const Message = ({ message, isSender }: Props) => {
-	const [profile, setProfile] = useState<IDetailInformation>();
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
+
 	const [revoked, setRevoked] = useState<boolean>(message.isRevoked || false);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
+	const [showForward, setShowForward] = useState<boolean>(false);
 	const [isLoadingImage, setIsLoadingImage] = useState<boolean>();
-
+	const [showOnTop, setShowOnTop] = useState(false);
 	const [isLoadingImageAvatar, setIsLoadingImageAvatar] = useState<boolean>(true);
+	const accountId = localStorage.getItem(LocalStorage.userId);
+	const [detailUser, setDetailUser] = useState<IDetailInformation | null>(() => {
+		const user = selectedRoom?.detailRoom?.find((user) => user.id === message.accountId);
+		return user ? (user as IDetailInformation) : null;
+	});
 
+	
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch<AppDispatch>();
 
 	useEffect(() => {
-		const fetchDetailInformation = async () => {
-			const response = await getProfileFromAnotherUser(message.account_id || "");
-			if (response.data) {
-				setProfile(response.data);
-			}
-		};
-		fetchDetailInformation();
-	}, []);
+		if (showOptions && optionsRef.current) {
+			const rect = optionsRef.current.getBoundingClientRect();
+			const isNearBottom = window.innerHeight - rect.bottom < 200; // dưới 100px gần đáy
 
-	const handleRevokeMessage = () => {
-		socketService.emit(SocketEmit.revokeMessage, {
-			messageId: message.message_id,
-			roomId: message.room_id,
-		});
+			setShowOnTop(isNearBottom);
+		}
+	}, [showOptions]);
 
-		socketService.on(SocketOn.getRevokeMessage, async (data) => {
-			console.log("Tin nhắn đã được thu hồi:", data);
-			if (data._id === message.message_id) {
-				console.log("Tin nhắn đã được thu hồi:", data);
-				setRevoked(true);
-				await dispatch(setOneMessage(normalizeMessage(data)));
-				await dispatch(fetchMessageByRoomId(message.room_id || ""));
+	const handleRevokeMessage = async () => {
+		if (message._id) {
+			await revokeMessage({ messageId: message._id });
+		}
+	};
+
+	const handleDeleteMessage = async () => {
+		if (message._id) {
+			const response = await deleteMessageById({ messageId: message._id });
+			if (response.status === 200) {
+				await dispatch(deleteMessage(message._id));
+				await dispatch(fetchMessageByRoomId(message.roomId || ""));
 			}
-		});
+		}
+	};
+
+	const handleForward = () => {
+		setShowForward(true);
 	};
 
 	useEffect(() => {
-		socketService.on(SocketOn.getRevokeMessage, async (data) => {
 
-			console.log("Tin nhắn đã được thu hồi:", data);
-			if (data._id === message.message_id) {
-				console.log("Tin nhắn đã được thu hồi:", data);
-				setRevoked(true);
-				await dispatch(setOneMessage(normalizeMessage(data)));
-				await dispatch(fetchMessageByRoomId(message.room_id || ""));
-			}
-		});
+		if(message.isRevoked)
+			setRevoked(true)
 
 		// return () => {
 		// 	socketService.off(SocketOn.getRevokeMessage);
 		// };
 	}, [message]);
-
-
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -92,50 +97,6 @@ export const Message = ({ message, isSender }: Props) => {
 		};
 	}, []);
 
-	const renderFiles = () => {
-		if (!message.files || message.files.length === 0) return null;
-
-		return (
-			<div className="flex flex-wrap gap-2">
-				{message.files.map((file, index) => {
-					const fileType = file.data?.type || "";
-					const isImage = fileType.startsWith("image/");
-					if (isImage) {
-						return (
-							<ImageViewer
-								key={index}
-								src={file.url}
-							>
-								<Image	
-									src={file.url}
-									alt={file.data?.name || "image"}
-									width={200}
-									height={200}
-									className={`max-h-[200px] rounded-lg object-cover ${isLoadingImage ? "opacity-50" : "opacity-100"}`}
-									// onLoadingComplete={() => {
-									// 	setIsLoadingImage(false);
-									// }}
-								/>
-							</ImageViewer>
-						);
-					}
-
-					return (
-						<a
-							key={index}
-							href={file.url}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="break-words text-sm text-blue-600 underline"
-						>
-							📎 {file.data?.name || "Tệp đính kèm"}
-						</a>
-					);
-				})}
-			</div>
-		);
-	};
-
 	const toggleOptions = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -148,40 +109,50 @@ export const Message = ({ message, isSender }: Props) => {
 				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
 					<ImageViewer
 						src={
-							profile?.avatarUrl ||
+							detailUser?.avatar ||
 							"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
 						}
 					>
-						{!isSender && <Spinner className={`${isLoadingImageAvatar ? "block" : "hidden"}`} />}
+						{/* {!isSender && <Spinner className={`${isLoadingImageAvatar ? "block" : "hidden"}`} />} */}
 
 						<Image
-							onLoadingComplete={() => setIsLoadingImageAvatar(false)}
+							onLoadingComplete={() => {
+								setIsLoadingImageAvatar(false);
+							}}
 							loading="lazy"
 							width={40}
 							height={40}
-							className={`mr-2 h-[40px] w-[40px] rounded-full object-cover ${isSender ? "hidden" : "block"} ${isLoadingImageAvatar ? "hidden" : "block"}`}
-							src={profile?.avatarUrl || avatarDefault}
+							className={`mr-2 h-[40px] w-[40px] rounded-full object-cover ${isSender ? "hidden" : "block"} `}
+							src={detailUser?.avatar || avatarDefault}
 							alt="avatar"
 						/>
 					</ImageViewer>
 
 					<div className="group relative">
 						<div
-							className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${isSender ? "bg-blue-200" : "bg-body"}`}
+							className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${
+								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"
+							} `}
 						>
 							<h1 className={`text-xs font-light text-text-seen ${isSender ? "hidden" : "block"}`}>
-								{profile?.fullName}
+								{detailUser?.fullName || "Tài khoản không tồn tại"}
 							</h1>
 
 							{revoked ? (
 								<p className="text-sm italic text-gray-400">Tin nhắn đã được thu hồi</p>
 							) : (
 								<>
-									<p className="break-words text-sm font-normal text-text">
-										{message.type ? message.content : message.sticker}
-									</p>
+									{message.sticker ? (
+										<div className="flex items-center justify-center">
+											{renderSticker({ url: message.sticker || "" })}
+										</div>
+									) : (
+										<p className={`text-sm ${isSender ? "text-text-seen" : "text-text"}`}>
+											{message.content}
+										</p>
+									)}
 
-									{renderFiles()}
+									{renderFiles({ message, isSender })}
 
 									<div className="flex items-center justify-end gap-1 text-xs text-gray-500">
 										{message.createdAt &&
@@ -195,64 +166,67 @@ export const Message = ({ message, isSender }: Props) => {
 						</div>
 
 						{isSender && !revoked && (
-							<div className="absolute -left-6 top-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
+							<div className="absolute -left-6 bottom-0 opacity-0 transition-opacity group-hover:opacity-100">
 								<button
 									className="rounded-full p-1 hover:bg-gray-200"
 									onClick={toggleOptions}
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<circle
-											cx="12"
-											cy="12"
-											r="1"
-										></circle>
-										<circle
-											cx="19"
-											cy="12"
-											r="1"
-										></circle>
-										<circle
-											cx="5"
-											cy="12"
-											r="1"
-										></circle>
-									</svg>
+									<More />
 								</button>
 							</div>
 						)}
 
-						{showOptions && isSender && !revoked && (
+						{!isSender && !revoked && (
+							<div className="absolute -right-6 bottom-0 group-hover:opacity-100">
+								<button
+									className="rounded-full p-1 hover:bg-gray-200"
+									onClick={toggleOptions}
+								>
+									<More />
+								</button>
+							</div>
+						)}
+
+						{showOptions && !revoked && (
 							<div
 								ref={optionsRef}
-								className="absolute right-0 top-0 z-10 w-40 rounded-md bg-zinc-800 py-1 shadow-lg"
+								className={`absolute ${isSender ? "-left-44" : "-right-44"} ${showOnTop ? "bottom-5 mb-2" : "top-full mt-2"} z-10 w-40 rounded-md bg-white py-1 shadow-lg`}
 							>
-								<button
-									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
-									onClick={handleRevokeMessage}
-								>
-									<span className="mr-2">↩️</span> Thu hồi
-								</button>
+								{isSender && (
+									<button
+										className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+										onClick={handleRevokeMessage}
+									>
+										Thu hồi
+									</button>
+								)}
 								<button
 									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
 									onClick={() => {
-										/* Handle delete */
+										handleDeleteMessage();
 									}}
 								>
-									<span className="mr-2">🗑️</span> Chuyển tiếp tin nhắn
+									Xóa tin nhắn
+								</button>
+
+								<button
+									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+									onClick={() => {
+										handleForward();
+									}}
+								>
+									Chuyển tiếp tin nhắn
 								</button>
 							</div>
 						)}
 					</div>
+					{showForward && (
+						<ShareModal
+							open={showForward}
+							onOpenChange={setShowForward}
+							content={message}
+						/>
+					)}
 				</div>
 			) : (
 				<Spinner />

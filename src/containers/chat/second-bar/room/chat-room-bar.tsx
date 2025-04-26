@@ -1,5 +1,6 @@
 import { getProfileFromAnotherUser } from "@/api";
-import { SocketEmit } from "@/constants/socket";
+import StickerMessage from "@/assets/svgs/sticker-message";
+import { SocketEmit, SocketOn } from "@/constants/socket";
 import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { socketService } from "@/lib/socket/socket";
@@ -11,32 +12,51 @@ import { caculateDuration } from "@/utils/caculate-duration";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { default_group } from "@/assets/images";
+import { setRoom, updateRoom } from "@/redux/store/models";
+import { normalizeRoom } from "@/utils";
+import { addToast } from "@heroui/toast";
 
 interface Props {
 	room: IRoom;
 }
 
 export const ChatRoom = ({ room }: Props) => {
-	const [profile, setProfile] = useState<IDetailInformation>();
-	// const [account_id] = useState<string>(LocalStorage.userId || "");
+	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
 
 	const dispatch = useDispatch<AppDispatch>();
-
-	// console.log("room: ", room);
-	// useEffect(() => {
-	// 	const fetchDetailInformation = async () => {
-	// 		if (room.type === "group") return;
-	// 		const response = await getProfileFromAnotherUser(room.lastMessage?.account_id || "");
-	// 		if (response.data) {
-	// 			setProfile(response.data);
-	// 		}
-	// 	};
-	// 	fetchDetailInformation();
-	// }, [room.lastMessage?.account_id]);
 
 	const handleClick = () => {
 		dispatch(setSelectedRoom(room));
 	};
+
+	useEffect(() => {
+		socketService.on(SocketOn.getListRoom, async (data) => {
+			const { accountOwner, room, behavior } = data;
+			console.log(data)
+
+			switch (behavior) {
+				case "add":
+					await dispatch(setRoom([normalizeRoom(room)]));
+					break;
+				case "update":
+					// addToast({
+					// 	classNames: { title: "font-bold", description: "text-sm" },
+					// 	variant: "solid",
+					// 	title: `${room.name} vừa thêm thành viên`,
+					// 	// description: "Nhóm đã được tạo thành công",
+					// 	color: "success",
+					// });
+					await dispatch(updateRoom([normalizeRoom(room)]));
+					break;
+				case "delete":
+					await dispatch(setRoom([normalizeRoom(room)]));
+					break;
+				default:
+					break;
+			}
+		});
+	}, []);
 
 	return (
 		<div
@@ -47,8 +67,13 @@ export const ChatRoom = ({ room }: Props) => {
 				<Image
 					loading="lazy"
 					src={
-						profile?.avatarUrl ||
-						"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
+						room.avatar ||
+						(room.type === "group"
+							? default_group
+							: room.detailRoom?.[0]?.id === account_id
+								? room.detailRoom?.[1]?.avatar
+								: room.detailRoom?.[0]?.avatar) ||
+						default_group
 					}
 					width={50}
 					height={50}
@@ -59,7 +84,13 @@ export const ChatRoom = ({ room }: Props) => {
 			<div className="flex flex-1 flex-col">
 				<div className="flex items-center justify-between">
 					<p className="line-clamp-1 text-base font-semibold">
-						{room.type === "group" ? room.name : profile?.fullName || "-"}
+						{room.type === "group"
+							? room.name
+							: room.detailRoom?.length === 2
+								? room.detailRoom[0]?.id === account_id
+									? room.detailRoom[1]?.fullName || "-"
+									: room.detailRoom[0]?.fullName || "-"
+								: "-"}
 					</p>
 					<p className="text-tiny font-semibold">
 						{caculateDuration(new Date(room.latestMessage?.createdAt || new Date()))}
@@ -67,15 +98,39 @@ export const ChatRoom = ({ room }: Props) => {
 				</div>
 
 				<div className="flex items-center justify-between">
-					<p
+					<div
 						className={
-							// (room && room.lastMessage.account_id === account_id ? "" : "font-semibold ") +
-							"line-clamp-1 text-tiny"
+							(room.latestMessage?.accountId === account_id ? "" : "font-semibold ") +
+							"line-clamp-1 flex text-tiny"
 						}
 					>
-						{/* {room && room.lastMessage.account_id === account_id ? "Bạn: " : ""} */}
-						{/* {room ? room.lastMessage.content : "N/A"} */}
-					</p>
+						{room.latestMessage?.accountId === account_id ? "Bạn: " : ""}
+						{room.latestMessage?.isRevoked ? (
+							<span>Đã thu hồi</span>
+						) : room.latestMessage?.sticker ? (
+							<p className="ml-1 flex items-center">
+								<StickerMessage className="h-4 w-4" />
+								<span>Đã gửi Sticker</span>
+							</p>
+						) : (
+							room.latestMessage?.hiddenWith?.includes(account_id) ? (
+								<></>
+							) : (
+								room.latestMessage?.content || (room.latestMessage?.files?.length ?? 0) > 0 ? (
+									<span className="line-clamp-1">
+										{room.latestMessage?.content || ""}
+										{(room.latestMessage?.files?.length ?? 0) > 0
+											? ` Đã gửi ${room.latestMessage?.files?.length} tệp`
+											: ""}
+									</span>
+								) : (
+									<span className="line-clamp-1">
+										Chưa có tin nhắn
+									</span>
+								)
+							)
+						)}
+					</div>
 
 					{/* {room &&
 					room.isSeen &&
