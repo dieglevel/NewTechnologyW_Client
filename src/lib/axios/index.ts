@@ -55,14 +55,13 @@ api.interceptors.request.use(
 
 		return config;
 	},
-	(error) => Promise.reject(error)
+	(error) => Promise.reject(error),
 );
 
 // Interceptor xử lý lỗi
 api.interceptors.response.use(
 	(response) => response,
 	(error) => {
-
 		// console.log(error)
 
 		if (!error.response) {
@@ -76,7 +75,7 @@ api.interceptors.response.use(
 				title: "Phiên đăng nhập đã hết hạn",
 				description: "Vui lòng đăng nhập lại",
 				color: "danger",
-			})
+			});
 			localStorage.removeItem(LocalStorage.token);
 			window.location.href = "/login";
 		}

@@ -15,6 +15,7 @@ import { setRoom } from "@/redux/store/models";
 import { normalizeMessage, normalizeRoom } from "@/utils";
 import { IRoom } from "@/types/implement/room.interface";
 import { Socket } from "socket.io-client";
+import { DisbandedGroup } from "./main-option/components/disband-group";
 
 // interface Props {
 // 	account_id: string;
@@ -46,7 +47,6 @@ export const BodyView = () => {
 		socketService.on(SocketOn.sendMessage, async (data) => {
 			const { message, behavior } = data;
 
-			console.log("???????room: ", data);
 
 			switch (behavior) {
 				case "add":
@@ -54,13 +54,12 @@ export const BodyView = () => {
 					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 					break;
 				case "update":
-					await dispatch(setOneMessage(message)); 
-					await dispatch(fetchMessageByRoomId(selectedRoom?.id || "")); 
+					await dispatch(setOneMessage(message));
+					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 					break;
 				case "revoke":
-					
-					await dispatch(setOneMessage(message)); 
-					await dispatch(fetchMessageByRoomId(selectedRoom?.id || "")); 
+					await dispatch(setOneMessage(message));
+					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 					break;
 				case "delete":
 					// await dispatch(setRoom([room]));
@@ -74,25 +73,26 @@ export const BodyView = () => {
 			socketService.off(SocketOn.joinRoom);
 			socketService.off(SocketOn.sendMessage);
 			socketService.off(SocketOn.getRevokeMessage);
-		}
+		};
 	}, [selectedRoom]);
 
 	useEffect(() => {
 		if (!selectedRoom) return;
 
-		const fetchMessages = async () => {
-			setIsLoading(true);
-			console.log("selectedRoomId: ", selectedRoom);
-			const data = await getMessageByRoomId(selectedRoom.id || "");
-			if (data && data.data) {
-				dispatch(setMessage({ messages: data.data}));
-			}
+		if (!selectedRoom.isDisbanded) {
+			const fetchMessages = async () => {
+				setIsLoading(true);
+				const data = await getMessageByRoomId(selectedRoom.id || "");
+				if (data && data.data) {
+					dispatch(setMessage({ messages: data.data }));
+				}
 
-			await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));
-			setIsLoading(false);
-		};
+				await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));
+				setIsLoading(false);
+			};
 
-		fetchMessages();
+			fetchMessages();
+		}
 	}, [selectedRoom, status]);
 
 	return (
@@ -102,12 +102,16 @@ export const BodyView = () => {
 				<div className="flex h-full w-full items-center justify-center">
 					<Spinner size="lg" />
 				</div>
-			) : (
+			) : !selectedRoom?.isDisbanded ? (
 				<>
 					<BodyChat />
 					<FooterChat />
 				</>
+			) : (
+				<DisbandedGroup/>
 			)}
+
+			
 		</div>
 	);
 };

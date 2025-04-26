@@ -6,12 +6,12 @@ import { useState } from "react";
 
 interface ModalConfirmProps {
 	isOpen: boolean;
+    header: string;
 	onOpenChange: () => void;
-	onConfirm: (blockUser: boolean) => void;
+	onConfirm: () => void;
 }
 
-export const ModalConfirm = ({ isOpen, onOpenChange, onConfirm }: ModalConfirmProps) => {
-	const [blockUser, setBlockUser] = useState(false);
+export const ModalConfirm = ({ isOpen, header, onOpenChange, onConfirm }: ModalConfirmProps) => {
 
 	return (
 		<Modal
@@ -24,7 +24,7 @@ export const ModalConfirm = ({ isOpen, onOpenChange, onConfirm }: ModalConfirmPr
                     <>
                         <ModalHeader className="flex flex-col gap-1">Xác nhận</ModalHeader>
                         <ModalBody>
-                            <p>Bạn có chắc chắn muốn xóa thành viên này khỏi nhóm?</p>
+                            <p>{header}</p>
                         </ModalBody>
                         <ModalFooter>
                             <Button
@@ -36,7 +36,7 @@ export const ModalConfirm = ({ isOpen, onOpenChange, onConfirm }: ModalConfirmPr
                             <Button
                                 color="danger"
                                 onPress={() => {
-                                    onConfirm(blockUser);
+                                    onConfirm()
                                     onClose();
                                 }}
                             >

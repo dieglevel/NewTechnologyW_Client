@@ -54,11 +54,9 @@ export class IDBManager<T extends { [key: string]: any }> {
 	private createIndexesForStore(objStore: IDBObjectStore, storeName: string): void {
 		const indexes = indexMetas.get(storeName);
 
-		console.log("indexes", indexes);
 		if (indexes) {
 			for (const index of indexes) {
 				if (Array.isArray(index)) {
-					console.log("compund index", index);
 					objStore.createIndex(index.join("_"), index, { unique: false });
 				} else {
 					objStore.createIndex(index, index, { unique: false });
@@ -155,7 +153,6 @@ export class IDBManager<T extends { [key: string]: any }> {
 					reject(request.error);
 				};
 			} catch (error) {
-				console.log("error", error);
 				reject(error);
 			}
 		});
@@ -211,12 +208,10 @@ export class IDBManager<T extends { [key: string]: any }> {
 				const request = store.put(newData); 
 				request.onsuccess = () => resolve();
 				request.onerror = () => {
-					console.log("error", request.error);
 					reject(request.error);
 				};
 			});
 		} catch (error) {
-			console.log("error", error);
 			throw error;
 		}
 	}

@@ -21,8 +21,10 @@ interface Props {
 	room: IRoom;
 }
 
+
 export const ChatRoom = ({ room }: Props) => {
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
+	const [newAccountOwner, setNewAccountOwner] = useState<IDetailInformation>();
 
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -33,10 +35,19 @@ export const ChatRoom = ({ room }: Props) => {
 	useEffect(() => {
 		socketService.on(SocketOn.getListRoom, async (data) => {
 			const { accountOwner, room, behavior } = data;
-			console.log(data)
+
+
+			for (const owner of accountOwner as IDetailInformation[]) {
+				if(!(owner.id === account_id)) {
+					setNewAccountOwner(owner);
+				}
+			}			
+
 
 			switch (behavior) {
 				case "add":
+					// console.log("Biet day la data khong????", room);
+
 					await dispatch(setRoom([normalizeRoom(room)]));
 					break;
 				case "update":
@@ -51,6 +62,9 @@ export const ChatRoom = ({ room }: Props) => {
 					break;
 				case "delete":
 					await dispatch(setRoom([normalizeRoom(room)]));
+					break;
+				case "disband":
+					await dispatch(updateRoom([normalizeRoom(room)]));
 					break;
 				default:
 					break;

@@ -14,6 +14,7 @@ export interface IRoom {
 	isLoad?: boolean;
 	detailRoom?: IDetailRoom[];
 	avatar?: string;
+	isDisbanded?: boolean;
 }
 
 export interface IDetailRoom  {

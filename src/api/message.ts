@@ -48,7 +48,6 @@ export const sendMessage = async (data: ISend) => {
 			},
 		});
 
-		console.log("response: ", response.data);
 
 		return response.data;
 	} catch (error) {
@@ -59,7 +58,6 @@ export const sendMessage = async (data: ISend) => {
 export const getMessageByRoomId = async (roomId: string) => {
 	try {
 		const response = await api.get<BaseResponse<IMessage[]>>(`/message/get-all-message-of-room/${roomId}`);
-		console.log("response: ", response.data);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
@@ -78,7 +76,6 @@ export const forwardMessage = async ({ messageId, roomId }: { messageId: string;
 export const revokeMessage = async ({ messageId }: { messageId: string }) => {
 	try {
 		const response = await api.delete<BaseResponse<IMessage>>(`/message/revoke/${messageId}`);
-		console.log("response: ", response.data);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
@@ -87,7 +84,6 @@ export const revokeMessage = async ({ messageId }: { messageId: string }) => {
 export const deleteMessageById = async ({ messageId }: { messageId: string }) => {
 	try {
 		const response = await api.delete<BaseResponse<IMessage>>(`/message/remove-room-by-my-side/${messageId}`);
-		console.log("response: ", response.data);
 		return response;
 	} catch (error) {
 		throw error as ErrorResponse;

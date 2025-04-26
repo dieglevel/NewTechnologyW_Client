@@ -2,7 +2,7 @@
 
 import { getAccountApi } from "@/api/auth";
 import { BodyView, OptionView, SecondBar, Sidebar } from "@/containers/chat";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Loading from "../loading";
 import { LocalStorage } from "@/lib/local-storage";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +26,10 @@ const ChatPage = () => {
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
+	
+	useEffect(() => {
+		console.log(selectedRoom, "selected room");
+	}, [selectedRoom]);
 
 	useEffect(() => {
 		const fetch = async () => {
