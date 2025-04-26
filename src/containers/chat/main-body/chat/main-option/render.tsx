@@ -17,6 +17,7 @@ export const OptionView = () => {
 				className={`absolute inset-0 top-auto transition-transform duration-300 ease-in-out ${
 					showMember ? "translate-x-0" : "translate-x-full"
 				}`}
+				style={{ height: "calc(100% - 70px)" }}
 			>
 				<MembersOption />
 			</div>

@@ -42,7 +42,6 @@ export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalP
     };
 
     const handleFileSelected = (file: File) => {
-        console.log("File đã chọn:", file);
         setAvatar(file);
         // TODO: upload hoặc preview
     };

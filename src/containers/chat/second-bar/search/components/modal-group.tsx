@@ -43,7 +43,6 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 	};
 
 	const handleFileSelected = (file: File) => {
-		console.log("File đã chọn:", file);
 		setAvatar(file);
 		// TODO: upload hoặc preview
 	};
@@ -66,7 +65,6 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 
 		const data = await createRoom(dataGroup);
 
-		console.log(data, "data group ne troi");
 
 		if (data.statusCode === 200) {
 			const room = data.data;
@@ -87,11 +85,6 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 		}
 
 		// const data =
-
-		console.log("Selected items: ", selectedItems);
-
-		console.log("Data group: ", data);
-	};
 
 	// useEffect(() => {
 	// 	console.log("Name group: ", nameGroup);

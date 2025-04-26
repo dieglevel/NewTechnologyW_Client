@@ -66,7 +66,7 @@ export const MembersOption = () => {
 			</div>
 
 			{/* Danh sách thành viên */}
-			<div className="flex flex-col gap-3 overflow-y-auto">
+			<div className="flex flex-1 flex-col gap-3 overflow-y-auto">
 				{members.map((member) => (
 					<div
 						key={member.id}
@@ -94,22 +94,35 @@ export const MembersOption = () => {
 
 						{openMenuId === member.id && (
 							<div className="absolute right-8 top-1/2 z-10 w-32 -translate-y-1/2 rounded-md border bg-white shadow-lg">
-								<button
-									onClick={() => {
-										// Xử lý cấp quyền
-										console.log("Cấp quyền cho", member.fullName);
-										setOpenMenuId(null);
-									}}
-									className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-								>
-									Thêm phó nhóm
-								</button>
-								<button
-									onClick={() => handleDeleteClick(member.id || "")}
-									className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-gray-100"
-								>
-									Xóa khỏi nhóm
-								</button>
+								{(selectedRoom?.leader_account_id !== member.id &&
+								selectedRoom?.leader_account_id === account_id) && (
+									<>
+										<button
+											onClick={() => {
+												// Xử lý cấp quyền
+												setOpenMenuId(null);
+											}}
+											className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100`}
+										>
+											Thêm phó nhóm
+										</button>
+										<button
+											onClick={() => handleDeleteClick(member.id || "")}
+											className={`} w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-gray-100`}
+										>
+											Xóa khỏi nhóm
+										</button>
+									</>
+								)}
+
+								{member.id === account_id && (
+									<button
+										onClick={() => handleDeleteClick(member.id || "")}
+										className={`w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-gray-100`}
+									>
+										Rời nhóm
+									</button>
+								)}
 							</div>
 						)}
 					</div>
@@ -122,11 +135,21 @@ export const MembersOption = () => {
 					selectedRoom={selectedRoom}
 				/>
 			)}
-			<ModalConfirm
-				isOpen={openModal}
-				onOpenChange={() => setOpenModal(false)}
-				onConfirm={handleConfirmDelete}
-			/>
+			{account_id === selectedMemberId ? (
+				<ModalConfirm
+					isOpen={openModal}
+					header="Bạn có chắc chắn muốn xóa thành viên này không?"
+					onOpenChange={() => setOpenModal(false)}
+					onConfirm={handleConfirmDelete}
+				/>
+			) : (
+				<ModalConfirm
+					isOpen={openModal}
+					header="Bạn có chắc chắn muốn rời nhóm không?"
+					onOpenChange={() => setOpenModal(false)}
+					onConfirm={handleConfirmDelete}
+				/>
+			)}
 		</div>
 	);
 };
