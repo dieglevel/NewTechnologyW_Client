@@ -47,7 +47,6 @@ export const BodyView = () => {
 		socketService.on(SocketOn.sendMessage, async (data) => {
 			const { message, behavior } = data;
 
-
 			switch (behavior) {
 				case "add":
 					await dispatch(setOneMessage(message));
@@ -78,21 +77,21 @@ export const BodyView = () => {
 
 	useEffect(() => {
 		if (!selectedRoom) return;
+		setIsLoading(true);
 
 		if (!selectedRoom.isDisbanded) {
 			const fetchMessages = async () => {
-				setIsLoading(true);
 				const data = await getMessageByRoomId(selectedRoom.id || "");
 				if (data && data.data) {
 					dispatch(setMessage({ messages: data.data }));
 				}
 
 				await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));
-				setIsLoading(false);
 			};
 
 			fetchMessages();
 		}
+		setIsLoading(false);
 	}, [selectedRoom, status]);
 
 	return (
@@ -108,10 +107,8 @@ export const BodyView = () => {
 					<FooterChat />
 				</>
 			) : (
-				<DisbandedGroup/>
+				<DisbandedGroup />
 			)}
-
-			
 		</div>
 	);
 };

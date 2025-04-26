@@ -14,7 +14,7 @@ import { addMember, createRoom, forwardMessage } from "@/api";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 import { IRoom } from "@/types/implement/room.interface";
-import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Divider } from "@heroui/divider";
 import { Checkbox } from "@heroui/checkbox";
 import { Avatar } from "@heroui/avatar";
@@ -25,7 +25,7 @@ interface ShareModalProps {
 	selectedRoom: IRoom;
 }
 
-export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalProps) {
+export function ModalAddMember({ open, onOpenChange, selectedRoom }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [message, setMessage] = useState("");
 	const [nameGroup, setNameGroup] = useState<string>("");
@@ -64,57 +64,76 @@ export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalP
 		<Modal
 			isOpen={open}
 			onOpenChange={onOpenChange}
-			placement="center"
 		>
-			<ModalContent className="space-y-4 bg-white sm:max-w-md">
-				<ModalHeader>
-					<ModalContent className="mb-5">Thêm thành viên nhóm</ModalContent>
-					<Divider className="" />
+			<ModalContent className="rounded-lg bg-white sm:max-w-md">
+				<ModalHeader className="text-center text-lg font-bold">Tạo nhóm</ModalHeader>
+
+				<Divider />
+
+				<ModalBody className="flex flex-col gap-4">
+					<div className="flex flex-col items-center gap-3">
+						<ImagePickerButton onFileSelected={handleFileSelected} />
+						<Input
+							placeholder="Nhập tên nhóm"
+							value={nameGroup}
+							onChange={(e) => setNameGroup(e.target.value)}
+							variant="underlined"
+							classNames={{
+								input: "text-center bg-background placeholder:text-second placeholder:font-semibold",
+							}}
+						/>
+					</div>
+
 					<Input
-						placeholder="Tìm kiếm"
+						placeholder="Tìm kiếm bạn bè"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						startContent={
-							<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
-						}
+						startContent={<SearchIcon className="size-5 fill-icon-second stroke-icon-second" />}
 						variant="bordered"
 						classNames={{
 							input: "bg-background placeholder:text-second placeholder:font-semibold",
-							inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+							inputWrapper: "border shadow-none bg-body",
 						}}
 					/>
-				</ModalHeader>
 
-				<div className="max-h-64 space-y-2 overflow-y-auto pr-2">
-					{myListFriend?.map((item) => {
-						const isInRoom = selectedRoom?.detailRoom?.some((member) => member.id === item.accountId);
-						return (
+					<div className="ml-2 flex-1 space-y-3">
+						{myListFriend?.map((item) => (
 							<div
 								key={item.accountId}
-								className="flex items-center space-x-3"
+								className="flex items-center gap-3"
 							>
 								<Checkbox
 									id={item.accountId}
-									checked={isInRoom || selectedItems.includes(item.accountId ?? "")}
-									disabled={isInRoom}
-									onChange={() => toggleItem(item?.accountId ?? "")}
+									checked={selectedItems.includes(item.accountId || "")}
+									onChange={() => toggleItem(item.accountId || "")}
+									size="md"
+									color="default"
+									className="flex h-6 min-h-6 w-6 min-w-6 items-center justify-center rounded-full border border-[#83828260] transition-all checked:border-primary checked:bg-primary hover:border-primary hover:bg-primary/10"
+									classNames={{
+										base: "w-6 h-6",
+										wrapper: "w-6 h-6",
+										label: "ml-2 text-base",
+										icon: "w-3 h-3",
+									}}
 								/>
-								<Avatar>
+
+								<Avatar
 									src={item?.detail?.avatarUrl || avatarDefault.src}
-									alt={item.detail?.fullName || "-"}
-								</Avatar>
+									alt={item?.detail?.fullName || "-"}
+									className="h-8 w-8"
+								/>
 								<label
 									htmlFor={item.accountId}
-									className="cursor-pointer text-sm"
+									className="cursor-pointer text-sm font-medium"
 								>
 									{item?.detail?.fullName || "-"}
 								</label>
 							</div>
-						);
-					})}
-				</div>
+						))}
+					</div>
+				</ModalBody>
 
-				<ModalFooter className="sm:justify-between">
+				<ModalFooter className="flex justify-between">
 					<Button
 						variant="ghost"
 						onClick={() => onOpenChange(false)}
@@ -122,11 +141,10 @@ export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalP
 						Hủy
 					</Button>
 					<Button
-						type="button"
 						onClick={handleAddMember}
 						disabled={selectedItems.length === 0}
 					>
-						Thêm thành viên
+						Tạo nhóm
 					</Button>
 				</ModalFooter>
 			</ModalContent>

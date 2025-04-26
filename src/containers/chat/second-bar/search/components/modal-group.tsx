@@ -1,42 +1,33 @@
 "use client";
 
-import { avatarDefault, default_group } from "@/assets/images";
+import { avatarDefault } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
-import { IMessage } from "@/types/implement/message.interface";
+import { createRoom, addMember } from "@/api";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Strikethrough } from "lucide-react";
-import { use, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { addMember, createRoom, forwardMessage } from "@/api";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Divider } from "@heroui/divider";
+import { Checkbox } from "@heroui/checkbox";
+import { Avatar } from "@heroui/avatar";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 
 interface ShareModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	// onShare?: (selectedItems: string[], message: string, file?: File) => void;
-	// items?: ShareItem[];
-	// content?: IMessage;
 }
 
 export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
-	const [message, setMessage] = useState("");
 	const [nameGroup, setNameGroup] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
 	const [avatar, setAvatar] = useState<File | null>(null);
 
-	const { room, status } = useSelector((state: RootState) => state.listRoom);
 	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
-
-	const accountId = localStorage.getItem(LocalStorage.userId);
 
 	const toggleItem = (id: string) => {
 		setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -44,62 +35,51 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 
 	const handleFileSelected = (file: File) => {
 		setAvatar(file);
-		// TODO: upload hoặc preview
 	};
 
 	const handleCreateGroup = async () => {
-		if (!nameGroup) {
+		if (!nameGroup.trim()) {
 			addToast({
-				classNames: { title: "font-bold", description: "text-sm" },
 				variant: "solid",
+				color: "danger",
 				title: "Tạo nhóm thất bại",
 				description: "Vui lòng nhập tên nhóm",
-				color: "danger",
 			});
 			return;
 		}
-		const dataGroup = {
-			// avatarUrl: avatar || default_group,
-			name: nameGroup,
-		};
 
-		const data = await createRoom(dataGroup);
-
+		const data = await createRoom({ name: nameGroup, avatarUrl: avatar });
 
 		if (data.statusCode === 200) {
 			const room = data.data;
-			addToast({
-				classNames: { title: "font-bold", description: "text-sm" },
-				variant: "solid",
-				title: "Tạo nhóm thành công",
-				description: "Nhóm đã được tạo thành công",
-				color: "success",
-			});
-
 			await addMember({
 				roomId: room.id,
 				listAccount: selectedItems,
 			});
 
+			addToast({
+				variant: "solid",
+				color: "success",
+				title: "Tạo nhóm thành công",
+				description: "Nhóm đã được tạo thành công",
+			});
+
 			onOpenChange(false);
 		}
-
-		// const data =
-
-	// useEffect(() => {
-	// 	console.log("Name group: ", nameGroup);
-	// }, [nameGroup]);
+	};
 
 	return (
-		<Dialog
-			open={open}
+		<Modal
+			isOpen={open}
 			onOpenChange={onOpenChange}
 		>
-			<DialogContent className="space-y-4 bg-white sm:max-w-md">
-				<DialogHeader>
-					<DialogTitle className="mb-5">Tạo nhóm</DialogTitle>
-					<Separator className="" />
-					<div className="flex items-center justify-center space-x-5 space-y-2">
+			<ModalContent className="rounded-lg bg-white sm:max-w-md">
+				<ModalHeader className="text-center text-lg font-bold">Tạo nhóm</ModalHeader>
+
+				<Divider />
+
+				<ModalBody className="flex flex-col gap-4">
+					<div className="flex flex-col items-center gap-3">
 						<ImagePickerButton onFileSelected={handleFileSelected} />
 						<Input
 							placeholder="Nhập tên nhóm"
@@ -107,56 +87,61 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 							onChange={(e) => setNameGroup(e.target.value)}
 							variant="underlined"
 							classNames={{
-								input: "bg-background placeholder:text-second placeholder:font-semibold",
-								// inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+								input: "text-center bg-background placeholder:text-second placeholder:font-semibold",
 							}}
 						/>
 					</div>
+
 					<Input
-						placeholder="Tìm kiếm"
+						placeholder="Tìm kiếm bạn bè"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						startContent={
-							<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
-						}
+						startContent={<SearchIcon className="size-5 fill-icon-second stroke-icon-second" />}
 						variant="bordered"
 						classNames={{
 							input: "bg-background placeholder:text-second placeholder:font-semibold",
-							inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+							inputWrapper: "border shadow-none bg-body",
 						}}
 					/>
-				</DialogHeader>
 
-				<div className="max-h-64 space-y-2 overflow-y-auto pr-2">
-					{myListFriend?.map((item) => (
-						<div
-							key={item.accountId}
-							className="flex items-center space-x-3"
-						>
-							<Checkbox
-								id={item.accountId}
-								checked={selectedItems.includes(item?.accountId ?? "")}
-								onCheckedChange={() => toggleItem(item?.accountId ?? "")}
-							/>
-							<Avatar>
-								{
-									<AvatarImage
-										src={item?.detail?.avatarUrl || avatarDefault.src}
-										alt={item.detail?.fullName || "-"}
-									/>
-								}
-							</Avatar>
-							<label
-								htmlFor={item.accountId}
-								className="cursor-pointer text-sm"
+					<div className="flex-1 space-y-3 ml-2">
+						{myListFriend?.map((item) => (
+							<div
+								key={item.accountId}
+								className="flex items-center gap-3"
 							>
-								{item?.detail?.fullName || "-"}
-							</label>
-						</div>
-					))}
-				</div>
+								<Checkbox
+									id={item.accountId}
+									checked={selectedItems.includes(item.accountId || "")}
+									onChange={() => toggleItem(item.accountId || "")}
+									size="md"
+									color="default"
+									className="flex h-6 min-h-6 w-6 min-w-6 items-center justify-center rounded-full border border-[#83828260] transition-all checked:border-primary checked:bg-primary hover:border-primary hover:bg-primary/10"
+									classNames={{
+										base: "w-6 h-6",
+										wrapper: "w-6 h-6",
+										label: "ml-2 text-base",
+										icon: "w-3 h-3",
+									}}
+								/>
 
-				<DialogFooter className="sm:justify-between">
+								<Avatar
+									src={item?.detail?.avatarUrl || avatarDefault.src}
+									alt={item?.detail?.fullName || "-"}
+									className="h-8 w-8"
+								/>
+								<label
+									htmlFor={item.accountId}
+									className="cursor-pointer text-sm font-medium"
+								>
+									{item?.detail?.fullName || "-"}
+								</label>
+							</div>
+						))}
+					</div>
+				</ModalBody>
+
+				<ModalFooter className="flex justify-between">
 					<Button
 						variant="ghost"
 						onClick={() => onOpenChange(false)}
@@ -164,14 +149,13 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						Hủy
 					</Button>
 					<Button
-						type="button"
 						onClick={handleCreateGroup}
 						disabled={selectedItems.length === 0}
 					>
 						Tạo nhóm
 					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 }

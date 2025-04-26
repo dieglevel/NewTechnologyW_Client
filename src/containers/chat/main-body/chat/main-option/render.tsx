@@ -3,7 +3,6 @@
 import { BodyOption, HeaderOption } from "@/containers/chat/main-body/chat/main-option/components";
 import { useState } from "react";
 import { MembersOption } from "./components/members";
-import { Separator } from "@radix-ui/react-separator";
 
 export const OptionView = () => {
 	const [showMember, setShowMember] = useState(false);

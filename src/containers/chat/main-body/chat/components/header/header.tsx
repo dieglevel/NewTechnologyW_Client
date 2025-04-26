@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { default_group } from "@/assets/images";
 import { LocalStorage } from "@/lib/local-storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddMemberModal } from "./components/modal-add";
 
 interface Props {
@@ -27,6 +27,10 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 	const handleModalAdd = () => {
 		setShowAdd(!isShowAdd);
 	};
+
+	useEffect(() => {
+		console.log(isShowAdd, "isShowAdd")
+	},	[isShowAdd]);
 
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-between border-b-1 bg-body px-2">
@@ -96,11 +100,10 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 						className={isOpen ? "stroke-icon-active" : "stroke-icon-second " + ` size-5 stroke-1`}
 					/>
 				</div>
-
 				{selectedRoom && (
 					<AddMemberModal
 						open={isShowAdd}
-						onOpenChange={setShowAdd}
+						onOpenChange={handleModalAdd}
 						selectedRoom={selectedRoom}
 					/>
 				)}

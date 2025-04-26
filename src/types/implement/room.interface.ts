@@ -15,10 +15,12 @@ export interface IRoom {
 	detailRoom?: IDetailRoom[];
 	avatar?: string;
 	isDisbanded?: boolean;
+	avatarUrl?: string;
 }
 
 export interface IDetailRoom  {
 	id?: string;
 	fullName?: string;
 	avatar?: string;
+	avatarUrl?: string;
 }
