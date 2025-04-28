@@ -113,13 +113,13 @@ export const SecondBar = () => {
 	return (
 		<div
 			ref={divRef}
-			className="flex h-lvh min-w-80 max-w-80 flex-col  border-r-1 border-border bg-white"
+			className="flex h-lvh min-w-80 max-w-80 flex-col border-r-1 border-border bg-white"
 		>
 			<SearchComponent
 				search={search}
 				setSearchAction={setSearch}
 			/>
-			{renderContent()}
+			<div className="flex h-full w-full flex-col overflow-x-hidden overflow-y-visible">{renderContent()}</div>
 		</div>
 	);
 };

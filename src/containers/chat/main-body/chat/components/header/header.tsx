@@ -29,10 +29,6 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 		onOpen()
 	};
 
-	useEffect(() => {
-		console.log(isShowAdd, "isShowAdd")
-	},	[isShowAdd]);
-
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-between border-b-1 bg-body px-2">
 			<div className="flex flex-row items-center gap-3">

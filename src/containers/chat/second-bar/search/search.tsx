@@ -15,10 +15,6 @@ export const SearchComponent = ({ search, setSearchAction }: Props) => {
 	
 	const { isOpen, onOpenChange } = useDisclosure();
 
-	useEffect(() => {
-		console.log(showGroup, "search");
-	}, [showGroup]);
-
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-center gap-2 rounded border-b-1 bg-second p-2 py-2">
 			<Input

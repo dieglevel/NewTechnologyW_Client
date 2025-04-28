@@ -49,7 +49,7 @@ export function ModalAddMember({ open, onOpenChange, selectedRoom }: ShareModalP
 	const handleAddMember = async () => {
 		// console.log(selectedItems,  "heheheheh")
 		await addMember({
-			roomId: selectedRoom.id,
+			roomId: selectedRoom.id || "",
 			listAccount: selectedItems,
 		});
 

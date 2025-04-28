@@ -9,15 +9,12 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Divider } from "@heroui/divider";
 import { Checkbox } from "@heroui/checkbox";
 import { Avatar } from "@heroui/avatar";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { Checkbox } from "@heroui/checkbox";
-import { Avatar } from "@heroui/avatar";
 
 interface ShareModalProps {
 	open: boolean;
@@ -55,16 +52,16 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 			return;
 		}
 		const dataGroup = {
-			avatarUrl: avatar || default_group,
+			avatarUrl: avatar,
 			name: nameGroup,
 		};
 
-		const data = await createRoom({ name: nameGroup, avatarUrl: avatar });
+		const data = await createRoom({ name: nameGroup, avatarUrl: avatar || undefined });
 
 		if (data.statusCode === 200) {
 			const room = data.data;
 			await addMember({
-				roomId: room.id,
+				roomId: room.id || "",
 				listAccount: selectedItems,
 			});
 
@@ -73,11 +70,6 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 				color: "success",
 				title: "Tạo nhóm thành công",
 				description: "Nhóm đã được tạo thành công",
-			});
-
-			await addMember({
-				roomId: room.id || "",
-				listAccount: selectedItems,
 			});
 
 			onOpenChange(false);
