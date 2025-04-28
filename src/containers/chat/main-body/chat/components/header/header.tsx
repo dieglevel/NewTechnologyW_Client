@@ -8,24 +8,25 @@ import { default_group } from "@/assets/images";
 import { LocalStorage } from "@/lib/local-storage";
 import { useState } from "react";
 import { AddMemberModal } from "./components/modal-add";
+import { useDisclosure } from "@heroui/modal";
 
 interface Props {
 	imageUrl: string;
 }
 
 export const HeaderChat = ({ imageUrl }: Props) => {
-	const [isShowAdd, setShowAdd] = useState<boolean>(false);
 
-	const { isOpen, setSelect } = useOptionView();
+	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
 	const accountId = localStorage.getItem(LocalStorage.userId) || "";
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const handleToggle = () => {
-		setSelect(!isOpen);
+		onOpen();
 	};
 
 	const handleModalAdd = () => {
-		setShowAdd(!isShowAdd);
+		onOpen()
 	};
 
 	return (
@@ -97,10 +98,10 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 					/>
 				</div>
 
-				{selectedRoom && (
+				{selectedRoom && isOpen && (
 					<AddMemberModal
-						open={isShowAdd}
-						onOpenChange={setShowAdd}
+						open={isOpen}
+						onOpenChangeAction={onOpenChange}
 						selectedRoom={selectedRoom}
 					/>
 				)}

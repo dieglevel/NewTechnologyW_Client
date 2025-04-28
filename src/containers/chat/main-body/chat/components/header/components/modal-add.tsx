@@ -2,10 +2,6 @@
 
 import { avatarDefault, default_group } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { IMessage } from "@/types/implement/message.interface";
@@ -18,60 +14,69 @@ import { addMember, createRoom, forwardMessage } from "@/api";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 import { IRoom } from "@/types/implement/room.interface";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Checkbox } from "@heroui/checkbox";
+import { Avatar } from "@heroui/avatar";
 
-interface ShareModalProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    selectedRoom: IRoom;
+interface Props {
+	open: boolean;
+	onOpenChangeAction: (open: boolean) => void;
+	selectedRoom: IRoom;
 }
 
-export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalProps) {
-    const [selectedItems, setSelectedItems] = useState<string[]>([]);
-    const [message, setMessage] = useState("");
-    const [nameGroup, setNameGroup] = useState<string>("");
-    const [search, setSearch] = useState<string>("");
-    const [avatar, setAvatar] = useState<File | null>(null);
+export function AddMemberModal({ open, onOpenChangeAction, selectedRoom }: Props) {
+	const [selectedItems, setSelectedItems] = useState<string[]>([]);
+	const [isInRoom, setIsInRoom] = useState<string[]>([]);
+	const [search, setSearch] = useState<string>("");
 
-    const { room, status } = useSelector((state: RootState) => state.listRoom);
-    const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
+	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
 
-    const accountId = localStorage.getItem(LocalStorage.userId);
+	const accountId = localStorage.getItem(LocalStorage.userId);
 
-    const toggleItem = (id: string) => {
-        setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
-    };
+	const toggleItem = (id: string) => {
+		if (isInRoom.includes(id)){
+			return;
+		}
 
-    const handleFileSelected = (file: File) => {
-        setAvatar(file);
-        // TODO: upload hoặc preview
-    };
+		if (selectedItems.includes(id)) {
+			setSelectedItems(selectedItems.filter((item) => item !== id));
+		} else {
+			setSelectedItems([...selectedItems, id]);
+		}
+	};
 
-
-    const handleAddMember = async () => {
+	const handleAddMember = async () => {
 		// console.log(selectedItems,  "heheheheh")
-        await addMember({
-			roomId: selectedRoom.id,
+		await addMember({
+			roomId: selectedRoom.id || "",
 			listAccount: selectedItems,
 		});
 
-		onOpenChange(false);
+		onOpenChangeAction(false);
+	};
 
-    };
+	useEffect(() => {
+		let isInRoom: string[] = [];
+		for (let i = 0; i < (selectedRoom.detailRoom?.length || 0); i++) {
+			const id = selectedRoom.detailRoom?.[i]?.id;
+			if (id) {
+				isInRoom.push(id);
+			}
+		}
+		isInRoom.push(accountId || "");
 
+		console.log(isInRoom, "isInRoom");	
+		setIsInRoom(isInRoom);
+	}, [selectedRoom, open]);
 
-    // useEffect(() => {
-    // 	console.log("Name group: ", nameGroup);
-    // }, [nameGroup]);
-
-    return (
-		<Dialog
-			open={open}
-			onOpenChange={onOpenChange}
+	return (
+		<Modal
+			isOpen={open}
+			onOpenChange={onOpenChangeAction}
 		>
-			<DialogContent className="space-y-4 bg-white sm:max-w-md">
-				<DialogHeader>
-					<DialogTitle className="mb-5">Thêm thành viên nhóm</DialogTitle>
-					<Separator className="" />
+			<ModalContent>
+				<ModalHeader>Thêm thành viên nhóm</ModalHeader>
+				<div className="flex w-full flex-col items-center justify-center px-4 py-2">
 					<Input
 						placeholder="Tìm kiếm"
 						value={search}
@@ -82,59 +87,49 @@ export function AddMemberModal({ open, onOpenChange, selectedRoom }: ShareModalP
 						variant="bordered"
 						classNames={{
 							input: "bg-background placeholder:text-second placeholder:font-semibold",
-							inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+							inputWrapper: ["border", "shadow-none", "bg-body"],
 						}}
 					/>
-				</DialogHeader>
 
-				<div className="max-h-64 space-y-2 overflow-y-auto pr-2">
-					{myListFriend?.map((item) => {
-                        const isInRoom = selectedRoom?.detailRoom?.some((member) => member.id === item.accountId);
-                        return (
-						<div
-							key={item.accountId}
-							className="flex items-center space-x-3"
-						>
-							<Checkbox
-								id={item.accountId}
-								checked={isInRoom || selectedItems.includes(item.accountId ?? "")}
-								disabled={isInRoom}
-								onCheckedChange={() => toggleItem(item?.accountId ?? "")}
-							/>
-							<Avatar>
-								{
-									<AvatarImage
-										src={item?.detail?.avatarUrl || avatarDefault.src}
-										alt={item.detail?.fullName || "-"}
-									/>
-								}
-							</Avatar>
-							<label
-								htmlFor={item.accountId}
-								className="cursor-pointer text-sm"
+					<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
+						{myListFriend?.map((item) => (
+							<div
+								key={item.accountId}
+								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background ${
+									isInRoom.includes(item.accountId ?? "") ? "opacity-50" : ""}`}
+								onClick={() => toggleItem(item.accountId ?? "")}
 							>
-								{item?.detail?.fullName || "-"}
-							</label>
-						</div>
-					);})}
+								<Checkbox
+									id={item.accountId}
+									checked={false}
+									isSelected={selectedItems.includes(item.accountId ?? "")}
+									disabled={isInRoom.includes(item.accountId ?? "")}
+								/>
+								<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
+								<p className="font-bold text-md">{item?.detail?.fullName || "-"}</p>
+							</div>
+						))}
+					</div>
 				</div>
 
-				<DialogFooter className="sm:justify-between">
+				<ModalFooter>
 					<Button
 						variant="ghost"
-						onClick={() => onOpenChange(false)}
+						onPress={() => onOpenChangeAction(false)}
+						className="mr-2"
 					>
 						Hủy
 					</Button>
 					<Button
 						type="button"
-						onClick={handleAddMember}
+						onPress={handleAddMember}
+						className="bg-primary text-white hover:bg-primary/80"
 						disabled={selectedItems.length === 0}
 					>
 						Thêm thành viên
 					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-    );
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
+	);
 }

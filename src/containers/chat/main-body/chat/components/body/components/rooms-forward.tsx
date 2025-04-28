@@ -2,10 +2,6 @@
 
 import { default_group } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { IMessage } from "@/types/implement/message.interface";

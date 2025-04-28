@@ -2,10 +2,6 @@
 
 import { avatarDefault, default_group } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { IMessage } from "@/types/implement/message.interface";
@@ -17,6 +13,9 @@ import { useSelector } from "react-redux";
 import { addMember, createRoom, forwardMessage } from "@/api";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
+import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Checkbox } from "@heroui/checkbox";
+import { Avatar } from "@heroui/avatar";
 
 interface ShareModalProps {
 	open: boolean;
@@ -28,12 +27,12 @@ interface ShareModalProps {
 
 export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
-	const [message, setMessage] = useState("");
 	const [nameGroup, setNameGroup] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
 	const [avatar, setAvatar] = useState<File | null>(null);
 
-	const { room, status } = useSelector((state: RootState) => state.listRoom);
+	const [isLoading, setIsLoading] = useState(false);
+
 	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
 
 	const accountId = localStorage.getItem(LocalStorage.userId);
@@ -48,6 +47,7 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 	};
 
 	const handleCreateGroup = async () => {
+		setIsLoading(true);
 		if (!nameGroup) {
 			addToast({
 				classNames: { title: "font-bold", description: "text-sm" },
@@ -56,15 +56,15 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 				description: "Vui lòng nhập tên nhóm",
 				color: "danger",
 			});
+			setIsLoading(false);
 			return;
 		}
 		const dataGroup = {
-			// avatarUrl: avatar || default_group,
+			avatarUrl: avatar || default_group,
 			name: nameGroup,
 		};
 
 		const data = await createRoom(dataGroup);
-
 
 		if (data.statusCode === 200) {
 			const room = data.data;
@@ -77,101 +77,91 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 			});
 
 			await addMember({
-				roomId: room.id,
+				roomId: room.id || "",
 				listAccount: selectedItems,
 			});
 
 			onOpenChange(false);
 		}
-
-		// const data =
-
-	// useEffect(() => {
-	// 	console.log("Name group: ", nameGroup);
-	// }, [nameGroup]);
+		setIsLoading(false);
+	};
 
 	return (
-		<Dialog
-			open={open}
+		<Modal
+			isOpen={open}
 			onOpenChange={onOpenChange}
 		>
-			<DialogContent className="space-y-4 bg-white sm:max-w-md">
-				<DialogHeader>
-					<DialogTitle className="mb-5">Tạo nhóm</DialogTitle>
-					<Separator className="" />
-					<div className="flex items-center justify-center space-x-5 space-y-2">
-						<ImagePickerButton onFileSelected={handleFileSelected} />
+			<ModalContent>
+				<ModalHeader>Tạo nhóm</ModalHeader>
+				<div className="flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden">
+					<div className="flex w-full flex-col items-center justify-center gap-2 px-4">
+						<div className="flex w-full flex-row items-center justify-between gap-2">
+							<ImagePickerButton onFileSelected={handleFileSelected} />
+							<Input
+								placeholder="Nhập tên nhóm"
+								value={nameGroup}
+								onChange={(e) => setNameGroup(e.target.value)}
+								variant="underlined"
+								classNames={{
+									input: "bg-background placeholder:text-second placeholder:font-semibold",
+									// inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+								}}
+							/>
+						</div>
 						<Input
-							placeholder="Nhập tên nhóm"
-							value={nameGroup}
-							onChange={(e) => setNameGroup(e.target.value)}
-							variant="underlined"
+							placeholder="Tìm kiếm"
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							startContent={
+								<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
+							}
+							variant="bordered"
 							classNames={{
 								input: "bg-background placeholder:text-second placeholder:font-semibold",
-								// inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
+								inputWrapper: ["border", "shadow-none", "bg-body"],
 							}}
 						/>
 					</div>
-					<Input
-						placeholder="Tìm kiếm"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						startContent={
-							<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
-						}
-						variant="bordered"
-						classNames={{
-							input: "bg-background placeholder:text-second placeholder:font-semibold",
-							inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
-						}}
-					/>
-				</DialogHeader>
 
-				<div className="max-h-64 space-y-2 overflow-y-auto pr-2">
-					{myListFriend?.map((item) => (
-						<div
-							key={item.accountId}
-							className="flex items-center space-x-3"
-						>
-							<Checkbox
-								id={item.accountId}
-								checked={selectedItems.includes(item?.accountId ?? "")}
-								onCheckedChange={() => toggleItem(item?.accountId ?? "")}
-							/>
-							<Avatar>
-								{
-									<AvatarImage
-										src={item?.detail?.avatarUrl || avatarDefault.src}
-										alt={item.detail?.fullName || "-"}
-									/>
-								}
-							</Avatar>
-							<label
-								htmlFor={item.accountId}
-								className="cursor-pointer text-sm"
+					<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
+						{myListFriend?.map((item) => (
+							<div
+								key={item.accountId}
+								className={`border-b-border-second $ flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
+								onClick={() => toggleItem(item.accountId ?? "")}
 							>
-								{item?.detail?.fullName || "-"}
-							</label>
-						</div>
-					))}
+								<Checkbox
+									id={item.accountId}
+									checked={false}
+									isSelected={selectedItems.includes(item.accountId ?? "")}
+								/>
+								<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
+								<p className="text-md font-bold">{item?.detail?.fullName || "-"}</p>
+							</div>
+						))}
+					</div>
 				</div>
 
-				<DialogFooter className="sm:justify-between">
+				<ModalFooter>
 					<Button
 						variant="ghost"
-						onClick={() => onOpenChange(false)}
+						onPress={() => onOpenChange(false)}
+						className="mr-2"
+						disabled={isLoading}
 					>
 						Hủy
 					</Button>
 					<Button
 						type="button"
-						onClick={handleCreateGroup}
-						disabled={selectedItems.length === 0}
+						onPress={handleCreateGroup}
+						className="bg-primary text-white hover:bg-primary/80"
+						disabled={selectedItems.length === 0 || isLoading}
+						isLoading={isLoading}
 					>
-						Tạo nhóm
+						Thêm thành viên
 					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 }
