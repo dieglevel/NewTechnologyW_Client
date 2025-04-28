@@ -1,16 +1,18 @@
 "use client";
 
-import { avatarDefault, default_group } from "@/assets/images";
+import { avatarDefault } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
-import { IMessage } from "@/types/implement/message.interface";
+import { createRoom, addMember } from "@/api";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Strikethrough } from "lucide-react";
-import { use, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { addMember, createRoom, forwardMessage } from "@/api";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Divider } from "@heroui/divider";
+import { Checkbox } from "@heroui/checkbox";
+import { Avatar } from "@heroui/avatar";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
@@ -20,9 +22,6 @@ import { Avatar } from "@heroui/avatar";
 interface ShareModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	// onShare?: (selectedItems: string[], message: string, file?: File) => void;
-	// items?: ShareItem[];
-	// content?: IMessage;
 }
 
 export function GroupModal({ open, onOpenChange }: ShareModalProps) {
@@ -35,26 +34,22 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 
 	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
 
-	const accountId = localStorage.getItem(LocalStorage.userId);
-
 	const toggleItem = (id: string) => {
 		setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
 	};
 
 	const handleFileSelected = (file: File) => {
 		setAvatar(file);
-		// TODO: upload hoặc preview
 	};
 
 	const handleCreateGroup = async () => {
 		setIsLoading(true);
 		if (!nameGroup) {
 			addToast({
-				classNames: { title: "font-bold", description: "text-sm" },
 				variant: "solid",
+				color: "danger",
 				title: "Tạo nhóm thất bại",
 				description: "Vui lòng nhập tên nhóm",
-				color: "danger",
 			});
 			setIsLoading(false);
 			return;
@@ -64,16 +59,20 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 			name: nameGroup,
 		};
 
-		const data = await createRoom(dataGroup);
+		const data = await createRoom({ name: nameGroup, avatarUrl: avatar });
 
 		if (data.statusCode === 200) {
 			const room = data.data;
+			await addMember({
+				roomId: room.id,
+				listAccount: selectedItems,
+			});
+
 			addToast({
-				classNames: { title: "font-bold", description: "text-sm" },
 				variant: "solid",
+				color: "success",
 				title: "Tạo nhóm thành công",
 				description: "Nhóm đã được tạo thành công",
-				color: "success",
 			});
 
 			await addMember({

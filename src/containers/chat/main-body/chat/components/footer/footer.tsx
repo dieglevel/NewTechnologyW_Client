@@ -69,13 +69,14 @@ export const FooterChat = () => {
 
 	const handleSendMessage = async (message: any, type: "mixed" | "sticker" | "call" = "mixed") => {
 		try {
+			console.log(file)
 			if (type === "sticker") {
 				await sendMessage({
 					accountId: localStorage.getItem(LocalStorage.userId) || "",
 					roomId: selectedRoom?.id || "",
 					type,
 					sticker: type === "sticker" ? message : undefined,
-					files: file || undefined,
+					files: file,
 				});
 			} else {
 				await sendMessage({
@@ -83,11 +84,12 @@ export const FooterChat = () => {
 					roomId: selectedRoom?.id || "",
 					type,
 					content: message,
-					files: file || undefined,
+					files: file,
 				});
 			}
 		} catch (error) {
-			console.error("Lỗi gửi tin nhắn:", error);
+			console.log(error)
+			// console.error("Lỗi gửi tin nhắn:", error);
 		}
 		// sendMessage({
 		// 	accountId: localStorage.getItem(LocalStorage.userId) || "",

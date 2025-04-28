@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { default_group } from "@/assets/images";
 import { LocalStorage } from "@/lib/local-storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddMemberModal } from "./components/modal-add";
 import { useDisclosure } from "@heroui/modal";
 
@@ -28,6 +28,10 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 	const handleModalAdd = () => {
 		onOpen()
 	};
+
+	useEffect(() => {
+		console.log(isShowAdd, "isShowAdd")
+	},	[isShowAdd]);
 
 	return (
 		<div className="flex h-16 max-h-16 min-h-16 flex-row items-center justify-between border-b-1 bg-body px-2">

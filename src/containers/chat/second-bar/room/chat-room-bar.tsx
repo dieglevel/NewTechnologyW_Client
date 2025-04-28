@@ -7,7 +7,7 @@ import { socketService } from "@/lib/socket/socket";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setSelectedRoom } from "@/redux/store/ui/selected-room-slice";
 import { IDetailInformation } from "@/types/implement";
-import { IRoom } from "@/types/implement/room.interface";
+import { IDetailRoom, IRoom } from "@/types/implement/room.interface";
 import { caculateDuration } from "@/utils/caculate-duration";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
@@ -21,10 +21,9 @@ interface Props {
 	room: IRoom;
 }
 
-
 export const ChatRoom = ({ room }: Props) => {
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
-	const [newAccountOwner, setNewAccountOwner] = useState<IDetailInformation>();
+	const [newAccountOwner, setNewAccountOwner] = useState<IDetailRoom[]>();
 
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -35,20 +34,20 @@ export const ChatRoom = ({ room }: Props) => {
 	useEffect(() => {
 		socketService.on(SocketOn.getListRoom, async (data) => {
 			const { accountOwner, room, behavior } = data;
+			const newRoom = room as IRoom;
 
+			console.log("Sau khi update room", data)
 
-			for (const owner of accountOwner as IDetailInformation[]) {
-				if(!(owner.id === account_id)) {
-					setNewAccountOwner(owner);
-				}
-			}			
-
+			if (accountOwner.avatar) {
+				newRoom.detailRoom = accountOwner;
+			}
+			console.log("Received data:", data, room)
 
 			switch (behavior) {
 				case "add":
 					// console.log("Biet day la data khong????", room);
 
-					await dispatch(setRoom([normalizeRoom(room)]));
+					await dispatch(setRoom([normalizeRoom(newRoom)]));
 					break;
 				case "update":
 					// addToast({
@@ -58,13 +57,14 @@ export const ChatRoom = ({ room }: Props) => {
 					// 	// description: "Nhóm đã được tạo thành công",
 					// 	color: "success",
 					// });
-					await dispatch(updateRoom([normalizeRoom(room)]));
+					await dispatch(updateRoom([normalizeRoom(newRoom)]));
 					break;
 				case "delete":
-					await dispatch(setRoom([normalizeRoom(room)]));
+					await dispatch(setRoom([normalizeRoom(newRoom)]));
 					break;
 				case "disband":
-					await dispatch(updateRoom([normalizeRoom(room)]));
+					await dispatch(updateRoom([normalizeRoom(newRoom)]));
+					dispatch(setSelectedRoom(newRoom))
 					break;
 				default:
 					break;
@@ -82,11 +82,12 @@ export const ChatRoom = ({ room }: Props) => {
 					loading="lazy"
 					src={
 						room.avatar ||
+						room.avatarUrl ||
 						(room.type === "group"
 							? default_group
 							: room.detailRoom?.[0]?.id === account_id
-								? room.detailRoom?.[1]?.avatar
-								: room.detailRoom?.[0]?.avatar) ||
+								? room.detailRoom?.[1]?.avatar || room.detailRoom?.[1]?.avatarUrl
+								: room.detailRoom?.[0]?.avatar || room.detailRoom?.[0]?.avatarUrl) ||
 						default_group
 					}
 					width={50}
@@ -118,19 +119,22 @@ export const ChatRoom = ({ room }: Props) => {
 							"line-clamp-1 flex text-tiny"
 						}
 					>
-						{room.latestMessage?.accountId === account_id ? "Bạn: " : ""}
-						{room.latestMessage?.isRevoked ? (
-							<span>Đã thu hồi</span>
-						) : room.latestMessage?.sticker ? (
-							<p className="ml-1 flex items-center">
-								<StickerMessage className="h-4 w-4" />
-								<span>Đã gửi Sticker</span>
-							</p>
+						{room.isDisbanded ? (
+							"Đã giải tán"
 						) : (
-							room.latestMessage?.hiddenWith?.includes(account_id) ? (
-								<></>
-							) : (
-								room.latestMessage?.content || (room.latestMessage?.files?.length ?? 0) > 0 ? (
+							<>
+								{room.latestMessage?.accountId === account_id ? "Bạn: " : ""}
+								{room.latestMessage?.isRevoked ? (
+									<span>Đã thu hồi</span>
+								) : room.latestMessage?.sticker ? (
+									<p className="ml-1 flex items-center">
+										<StickerMessage className="h-4 w-4" />
+										<span>Đã gửi Sticker</span>
+									</p>
+								) : room.latestMessage?.hiddenWith?.includes(account_id) ? (
+									<></>
+								) : room.latestMessage?.content ||
+								  (room.latestMessage?.files?.length ?? 0) > 0 ? (
 									<span className="line-clamp-1">
 										{room.latestMessage?.content || ""}
 										{(room.latestMessage?.files?.length ?? 0) > 0
@@ -138,11 +142,9 @@ export const ChatRoom = ({ room }: Props) => {
 											: ""}
 									</span>
 								) : (
-									<span className="line-clamp-1">
-										Chưa có tin nhắn
-									</span>
-								)
-							)
+									<span className="line-clamp-1">Chưa có tin nhắn</span>
+								)}
+							</>
 						)}
 					</div>
 

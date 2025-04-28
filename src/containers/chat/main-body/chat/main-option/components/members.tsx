@@ -7,6 +7,7 @@ import { AddMemberModal } from "../../components/header/components/modal-add";
 import { ModalConfirm } from "./modal-confirm";
 import { deleteMember } from "@/api";
 import { addToast } from "@heroui/toast";
+import { ModalAddMember } from "./modal-add";
 
 export const MembersOption = () => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
@@ -94,26 +95,26 @@ export const MembersOption = () => {
 
 						{openMenuId === member.id && (
 							<div className="absolute right-8 top-1/2 z-10 w-32 -translate-y-1/2 rounded-md border bg-white shadow-lg">
-								{(selectedRoom?.leader_account_id !== member.id &&
-								selectedRoom?.leader_account_id === account_id) && (
-									<>
-										<button
-											onClick={() => {
-												// Xử lý cấp quyền
-												setOpenMenuId(null);
-											}}
-											className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100`}
-										>
-											Thêm phó nhóm
-										</button>
-										<button
-											onClick={() => handleDeleteClick(member.id || "")}
-											className={`} w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-gray-100`}
-										>
-											Xóa khỏi nhóm
-										</button>
-									</>
-								)}
+								{selectedRoom?.leader_account_id !== member.id &&
+									selectedRoom?.leader_account_id === account_id && (
+										<>
+											<button
+												onClick={() => {
+													// Xử lý cấp quyền
+													setOpenMenuId(null);
+												}}
+												className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100`}
+											>
+												Thêm phó nhóm
+											</button>
+											<button
+												onClick={() => handleDeleteClick(member.id || "")}
+												className={`} w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-gray-100`}
+											>
+												Xóa khỏi nhóm
+											</button>
+										</>
+									)}
 
 								{member.id === account_id && (
 									<button
@@ -129,7 +130,7 @@ export const MembersOption = () => {
 				))}
 			</div>
 			{selectedRoom && (
-				<AddMemberModal
+				<ModalAddMember
 					open={isShowAdd}
 					onOpenChange={setShowAdd}
 					selectedRoom={selectedRoom}

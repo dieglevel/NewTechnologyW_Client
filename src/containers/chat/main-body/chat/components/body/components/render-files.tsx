@@ -1,5 +1,6 @@
 import ImageViewer from "@/components/image-preview";
 import { IMessage } from "@/types/implement/message.interface";
+import { FileIcon } from "lucide-react";
 
 interface Props {
 	message: IMessage;
@@ -14,6 +15,8 @@ const renderFiles = ({ message, isSender }: Props) => {
 			{message.files.map((file, index) => {
 				const fileType = file.data?.type || "";
 				const isImage = fileType.startsWith("image/");
+				const isVideo = fileType.startsWith("video/");
+
 				if (isImage) {
 					return (
 						<ImageViewer
@@ -25,12 +28,24 @@ const renderFiles = ({ message, isSender }: Props) => {
 								alt={file.data?.name || "image"}
 								width={200}
 								height={200}
-								className={`max-h-[200px] rounded-lg object-cover opacity-100`}
-								// onLoadingComplete={() => {
-								// 	setIsLoadingImage(false);
-								// }}
+								className="max-h-[200px] rounded-lg object-cover opacity-100"
 							/>
 						</ImageViewer>
+					);
+				}
+
+				if (isVideo) {
+					return (
+						<video
+							key={index}
+							src={file.url}
+							controls
+							width={300}
+							height={200}
+							className="rounded-lg object-cover"
+						>
+							Your browser does not support the video tag.
+						</video>
 					);
 				}
 
@@ -40,9 +55,12 @@ const renderFiles = ({ message, isSender }: Props) => {
 						href={file.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="break-words text-sm text-blue-600 underline"
+						className="flex items-center gap-3 rounded-md border border-gray-300 p-2 transition-colors hover:bg-gray-100"
 					>
-						📎 {file.data?.name || "Tệp đính kèm"}
+						<FileIcon />
+						<span className="break-words text-sm font-medium text-blue-600 underline">
+							{file.data?.name || "Tệp đính kèm"}
+						</span>
 					</a>
 				);
 			})}

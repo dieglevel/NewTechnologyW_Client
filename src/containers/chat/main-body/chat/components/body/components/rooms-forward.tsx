@@ -13,6 +13,10 @@ import { useSelector } from "react-redux";
 import renderSticker from "./render-sticker";
 import renderFiles from "./render-files";
 import { forwardMessage } from "@/api";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Divider } from "@heroui/divider";
+import { Checkbox } from "@heroui/checkbox";
+import { Avatar } from "@heroui/avatar";
 
 interface ShareItem {
 	id: string;
@@ -26,7 +30,7 @@ interface ShareModalProps {
 	onOpenChange: (open: boolean) => void;
 	onShare?: (selectedItems: string[], message: string, file?: File) => void;
 	items?: ShareItem[];
-	content?: IMessage;	
+	content?: IMessage;
 }
 
 export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalProps) {
@@ -40,11 +44,11 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 	};
 
 	const handleShare = async () => {
-		if( content?._id && content?.roomId) {
+		if (content?._id && content?.roomId) {
 			for (const item of selectedItems) {
 				await forwardMessage({
 					messageId: content?._id,
-					roomId: item
+					roomId: item,
 				});
 				// console.log("TUuuuuuu do", item)
 			}
@@ -53,14 +57,14 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 	};
 
 	return (
-		<Dialog
-			open={open}
+		<Modal
+			isOpen={open}
 			onOpenChange={onOpenChange}
 		>
-			<DialogContent className="space-y-4 bg-white sm:max-w-md">
-				<DialogHeader>
-					<DialogTitle className="mb-5">Chia sẻ</DialogTitle>
-					<Separator className="" />
+			<ModalContent className="space-y-4 bg-white sm:max-w-md">
+				<ModalHeader>
+					<ModalBody className="mb-5">Chia sẻ</ModalBody>
+					<Divider className="" />
 					<Input
 						placeholder="Tìm kiếm"
 						startContent={
@@ -72,7 +76,7 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 							inputWrapper: ["border", "shadow-none", "bg-body", "mt-4"],
 						}}
 					/>
-				</DialogHeader>
+				</ModalHeader>
 
 				<div className="max-h-64 space-y-2 overflow-y-auto pr-2">
 					{room?.map((item) => (
@@ -83,24 +87,22 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 							<Checkbox
 								id={item.id}
 								checked={selectedItems.includes(item?.id ?? "")}
-								onCheckedChange={() => toggleItem(item?.id ?? "")}
+								onChange={() => toggleItem(item?.id ?? "")}
 							/>
-							<Avatar>
-								{
-									<AvatarImage
-										src={
-											item?.avatar ||
-											(item?.type === "group"
-												? default_group.src
-												: item?.detailRoom?.[0]?.id === accountId
-													? item?.detailRoom?.[1]?.avatar
-													: item?.detailRoom?.[0]?.avatar) ||
-											default_group.src
-										}
-										alt={item.name}
-									/>
+
+							<Avatar
+								src={
+									item?.avatar ||
+									(item?.type === "group"
+										? default_group.src
+										: item?.detailRoom?.[0]?.id === accountId
+											? item?.detailRoom?.[1]?.avatar
+											: item?.detailRoom?.[0]?.avatar) ||
+									default_group.src
 								}
-							</Avatar>
+								alt={item.name}
+							/>
+
 							<label
 								htmlFor={item.id}
 								className="cursor-pointer text-sm"
@@ -124,9 +126,7 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 								{renderSticker({ url: content.sticker || "" })}
 							</div>
 						) : (
-							<p className={`text-sm text-text-seen`}>
-								{content.content}
-							</p>
+							<p className={`text-sm text-text-seen`}>{content.content}</p>
 						)}
 
 						{renderFiles({ message: content, isSender: false })}
@@ -139,7 +139,7 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
 				/>
 
-				<DialogFooter className="sm:justify-between">
+				<ModalFooter className="sm:justify-between">
 					<Button
 						variant="ghost"
 						onClick={() => onOpenChange(false)}
@@ -153,8 +153,8 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 					>
 						Chia sẻ
 					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 }

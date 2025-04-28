@@ -24,6 +24,10 @@ export const BodyOption = ({ onClick }: Props) => {
 	const handleDisbandGroup = async () => {
 		if (selectedRoom?.id) {
 			const data = await disbandGroup(selectedRoom?.id);
+			addToast({
+				title: "Nhóm đã bị giải tán",
+				color: "success",
+			});
 		}
 	};
 
