@@ -58,7 +58,7 @@ const RequestFriend = ({ data }: Props) => {
 	};
 
 	return (
-		<div className="flex h-fit w-[40%] flex-col gap-5 rounded-lg bg-slate-50 p-3">
+		<div className="flex h-fit sm:w-1/3 w-5/6 flex-col gap-5 rounded-lg bg-slate-50 p-3 ">
 			<div className="flex flex-row items-center justify-start gap-4">
 				<div className="flex items-center justify-center rounded-full border-4 border-primary-400">
 					<Image
@@ -70,7 +70,7 @@ const RequestFriend = ({ data }: Props) => {
 					/>
 				</div>
 				<div className="flex flex-col items-start justify-center">
-					<div className="text-center text-lg font-semibold">{data?.detail?.fullName}</div>
+					<div className="text-center text-lg font-semibold line-clamp-1">{data?.detail?.fullName}</div>
 					<div className="text-center text-sm">
 						{changeDateToString(data?.detail?.dateOfBirth ?? null)}
 					</div>

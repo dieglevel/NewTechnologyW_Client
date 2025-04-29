@@ -32,12 +32,12 @@ const ContactBar = () => {
 				</div>
 				<p className="font-bold">Lời mời kết bạn</p>
 			</div>
-			<div
+			{/* <div
 				className={`flex cursor-pointer items-center justify-start gap-4 border-b-1 bg-body px-4 py-4 hover:bg-primary-100 transition-all ${selected === ContactBarTypes.Blocked ? "bg-primary-200" : ""}`}
 				onClick={() => handleSelect(ContactBarTypes.Blocked)}
 			>
 				<p className="font-bold">Danh sách chặn</p>
-			</div>
+			</div> */}
 		</div>
 	);
 };

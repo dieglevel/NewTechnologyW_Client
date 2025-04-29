@@ -17,23 +17,8 @@ import { IRoom } from "@/types/implement/room.interface";
 import { Socket } from "socket.io-client";
 import { DisbandedGroup } from "./main-option/components/disband-group";
 
-// interface Props {
-// 	account_id: string;
-// }
 
 export const BodyView = () => {
-	// const [profile, setProfile] = useState<IDetailInformation>({} as IDetailInformation);
-	// useEffect(() => {
-	// 	const fetchDetailInformation = async () => {
-	// 		const
-	// 		const response = await getProfileFromAnotherUser(account_id);
-	// 		if (response.data) {
-	// 			setProfile(response.data);
-	// 		}
-	// 	};
-	// 	fetchDetailInformation();
-	// }, [account_id]);
-
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const dispatch = useDispatch<AppDispatch>();
 

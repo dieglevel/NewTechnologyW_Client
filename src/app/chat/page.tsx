@@ -12,12 +12,20 @@ import InformationModal from "@/containers/chat/sidebar/components/user/modal/in
 import { useOptionView } from "@/hooks/option-view";
 import { SideBarSelected } from "@/redux/store/ui";
 import { getListFriend, getListResponseFriend, getListSended } from "@/api";
-import { fetchRoom, initMyListFriend, initRequestFriend, initRoom, setMyListFriend, setRequestFriend } from "@/redux/store/models";
+import {
+	fetchRoom,
+	initMyListFriend,
+	initRequestFriend,
+	initRoom,
+	setMyListFriend,
+	setRequestFriend,
+} from "@/redux/store/models";
 import { ErrorResponse } from "@/lib/axios";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import { initSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
-import { getRoomList } from "./handle";
+import { getRoomList, SecondBarManager } from "./handle";
+import { useSecondBar } from "@/hooks/second-bar";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const dispatch = useDispatch<AppDispatch>();
@@ -25,8 +33,9 @@ const ChatPage = () => {
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
+	const { isOpenSecondBar } = useSecondBar();	
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
-	
+
 	useEffect(() => {
 		const fetch = async () => {
 			const token = localStorage.getItem(LocalStorage.token);
@@ -107,11 +116,10 @@ const ChatPage = () => {
 				const response = await getRoomList();
 				dispatch(initRoom(response));
 			} catch (error) {
-				const e = error as ErrorResponse;
+				error as ErrorResponse;
 			}
-		}
+		};
 		fetch();
-		
 	}, []);
 
 	useEffect(() => {
@@ -128,7 +136,10 @@ const ChatPage = () => {
 				<div className="flex h-screen min-w-[650px] flex-row">
 					<InformationModal />
 					<Sidebar />
-					<SecondBar />
+					<SecondBarManager />
+					<div className={`${isOpenSecondBar ? "block" : "hidden"}`}>
+						<SecondBar />
+					</div>
 					{selected === SideBarSelected.Chat ? (
 						<>
 							{selectedRoom?.id ? (
