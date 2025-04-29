@@ -50,7 +50,6 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 					messageId: content?._id,
 					roomId: item,
 				});
-				// console.log("TUuuuuuu do", item)
 			}
 		}
 		onOpenChange(false);

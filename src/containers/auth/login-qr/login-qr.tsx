@@ -33,12 +33,10 @@ export default function LoginQR() {
 			},
 		});
 
-		// console.log(socket)
 
 		socketRef.current = socket;
 
 		socket.on("LOGIN", () => {
-			// console.log("Socket connected with ID:", socket.id);
 		});
 
 		return socket;

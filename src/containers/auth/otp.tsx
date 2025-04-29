@@ -20,7 +20,6 @@ export const OTP = () => {
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
-		// console.log("identifier", identifier);
 		try {
 			if (type === "register") {
 				const response = await verifyAccount(identifier, otp);

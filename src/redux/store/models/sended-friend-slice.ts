@@ -25,7 +25,6 @@ export const fetchSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch
 });
 
 export const setSendedFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: ISendedFriend[]) => {
-  console.log("sendedFriend DB: ", friend);
   await idb.updateMany(friend);
   const sendedFriends = await idb.getAll();
   return sendedFriends; 

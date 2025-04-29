@@ -16,6 +16,8 @@ export interface IRoom {
 	avatar?: string;
 	isDisbanded?: boolean;
 	avatarUrl?: string;
+	updatedAt?: Date;
+	
 }
 
 export interface IDetailRoom  {

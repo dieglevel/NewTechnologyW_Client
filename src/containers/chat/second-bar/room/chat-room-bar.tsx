@@ -31,46 +31,7 @@ export const ChatRoom = ({ room }: Props) => {
 		dispatch(setSelectedRoom(room));
 	};
 
-	useEffect(() => {
-		socketService.on(SocketOn.getListRoom, async (data) => {
-			const { accountOwner, room, behavior } = data;
-			const newRoom = room as IRoom;
 
-			console.log("Sau khi update room", data)
-
-			if (accountOwner.avatar) {
-				newRoom.detailRoom = accountOwner;
-			}
-			console.log("Received data:", data, room)
-
-			switch (behavior) {
-				case "add":
-					// console.log("Biet day la data khong????", room);
-
-					await dispatch(setRoom([normalizeRoom(newRoom)]));
-					break;
-				case "update":
-					// addToast({
-					// 	classNames: { title: "font-bold", description: "text-sm" },
-					// 	variant: "solid",
-					// 	title: `${room.name} vừa thêm thành viên`,
-					// 	// description: "Nhóm đã được tạo thành công",
-					// 	color: "success",
-					// });
-					await dispatch(updateRoom([normalizeRoom(newRoom)]));
-					break;
-				case "delete":
-					await dispatch(setRoom([normalizeRoom(newRoom)]));
-					break;
-				case "disband":
-					await dispatch(updateRoom([normalizeRoom(newRoom)]));
-					dispatch(setSelectedRoom(newRoom))
-					break;
-				default:
-					break;
-			}
-		});
-	}, []);
 
 	return (
 		<div
@@ -108,7 +69,7 @@ export const ChatRoom = ({ room }: Props) => {
 								: "-"}
 					</p>
 					<p className="text-tiny font-semibold">
-						{caculateDuration(new Date(room.latestMessage?.createdAt || new Date()))}
+						{caculateDuration(new Date(room.updatedAt || new Date()))}
 					</p>
 				</div>
 

@@ -116,7 +116,7 @@ export const Message = ({ message, isSender }: Props) => {
 						{/* {!isSender && <Spinner className={`${isLoadingImageAvatar ? "block" : "hidden"}`} />} */}
 
 						<Image
-							onLoadingComplete={() => {
+							onLoad={() => {
 								setIsLoadingImageAvatar(false);
 							}}
 							loading="lazy"

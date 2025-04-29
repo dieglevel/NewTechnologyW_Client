@@ -56,7 +56,6 @@ export const FooterChat = () => {
 
 	const sendSticker = (sticker: string) => {
 		if (sticker.trim() === "") return;
-		// console.log("Sticker:", sticker);
 		handleSendMessage(sticker, "sticker");
 	};
 
@@ -69,7 +68,6 @@ export const FooterChat = () => {
 
 	const handleSendMessage = async (message: any, type: "mixed" | "sticker" | "call" = "mixed") => {
 		try {
-			console.log(file)
 			if (type === "sticker") {
 				await sendMessage({
 					accountId: localStorage.getItem(LocalStorage.userId) || "",
@@ -88,35 +86,9 @@ export const FooterChat = () => {
 				});
 			}
 		} catch (error) {
-			console.log(error)
 			// console.error("Lỗi gửi tin nhắn:", error);
 		}
-		// sendMessage({
-		// 	accountId: localStorage.getItem(LocalStorage.userId) || "",
-		// 	roomId: selectedRoomId || "",
-		// 	content: message,
-		// 	type: "text",
-		// });
 
-		// socketService.on(SocketOn.sendMessage, async (data) => {
-		// 	const { message, room } = data;
-
-		// 	console.log("data: ", data.message, data.room);
-		// 	console.log("message: ", message, "room: ", room);
-
-		// 	socketService.emit(SocketEmit.myListRoom, {
-		// 		lastUpdatedAt: message.createdAt,
-		// 	});
-
-		// 	socketService.on(SocketOn.myListRoom, async (data: IRoom[]) => {
-		// 		console.log("My list room updated:", data);
-		// 		await dispatch(setRoom(data));
-		// 	});
-
-		// 	const normalizedMessage = normalizeMessage(message);
-		// 	await dispatch(setMessage({ messages: [normalizedMessage], roomId: selectedRoomId || "" }));
-		// 	await dispatch(fetchMessageByRoomId(selectedRoomId || ""));
-		// });
 	};
 
 	return (

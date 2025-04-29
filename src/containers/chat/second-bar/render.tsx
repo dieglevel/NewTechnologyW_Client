@@ -4,18 +4,25 @@ import { findAccount } from "@/api";
 import { ChatRoom } from "@/containers/chat/second-bar/room";
 import { useSidebar } from "@/hooks/sidebar";
 import { ErrorResponse } from "@/lib/axios";
-import { RootState } from "@/redux/store";
+import { RootState, store } from "@/redux/store";
 import { SideBarSelected } from "@/redux/store/ui";
 import { ISearchAccount } from "@/types/implement/response";
 import { Skeleton } from "@heroui/skeleton";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ContactBar from "./contact/contact-bar";
 import AccountDetail from "./search/components/account-detail";
 import { SearchComponent } from "./search/search";
+import { socketService } from "@/lib/socket/socket";
+import { SocketOn } from "@/constants/socket";
+import { IRoom } from "@/types/implement/room.interface";
+import { normalizeRoom } from "@/utils";
+import { setRoom, updateRoom } from "@/redux/store/models";
 
 export const SecondBar = () => {
 	const divRef = useRef<HTMLDivElement>(null);
+
+	const dispatch = useDispatch();
 
 	const { selected, setSelect } = useSidebar();
 	const { room, status } = useSelector((state: RootState) => state.listRoom);
@@ -29,12 +36,10 @@ export const SecondBar = () => {
 			try {
 				const response = await findAccount(search);
 				if (response.statusCode === 200) {
-					// console.log("response: ", response.data);
 					setSearchResult(response.data);
 				}
 			} catch (error) {
 				const e = error as ErrorResponse;
-				// console.log("error: ", e.message);
 			}
 		};
 
@@ -51,19 +56,44 @@ export const SecondBar = () => {
 		};
 	}, [search]);
 
-	// useEffect(() => {
-	// 	console.log("Status: ", status);
-	// 	if (status === "succeeded") {
-	// 		console.log("Room: ", room);
-	// 		if (room) {
-	// 			setListRoom(room); // Assuming `id` is the string property you want
-	// 			console.log(room)
-	// 			console.log()
-	// 		} else {
-	// 			setListRoom([]);
-	// 		}
-	// 	}
-	// }, [ status]);
+	useEffect(() => {
+		socketService.on(SocketOn.getListRoom, async (data) => {
+			const { accountOwner, room, behavior } = data;
+			const newRoom = room as IRoom;
+
+			if (accountOwner.avatar) {
+				newRoom.detailRoom = accountOwner;
+			}
+
+			switch (behavior) {
+				case "add":
+
+					store.dispatch(setRoom([normalizeRoom(newRoom)]));
+					break;
+				case "update":
+					// addToast({
+					// 	classNames: { title: "font-bold", description: "text-sm" },
+					// 	variant: "solid",
+					// 	title: `${room.name} vừa thêm thành viên`,
+					// 	// description: "Nhóm đã được tạo thành công",
+					// 	color: "success",
+					// });
+					store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+					break;
+				case "delete":
+					store.dispatch(setRoom([normalizeRoom(newRoom)]));
+					break;
+				case "disband":
+					store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+					break;
+				default:
+					break;
+			}
+		});
+		return () => {
+			socketService.off(SocketOn.getListRoom);
+		};
+	}, []);
 
 	const renderContent = () => {
 		if (searchResult.length > 0) {

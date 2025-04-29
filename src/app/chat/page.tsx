@@ -28,10 +28,6 @@ const ChatPage = () => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	
 	useEffect(() => {
-		console.log(selectedRoom, "selected room");
-	}, [selectedRoom]);
-
-	useEffect(() => {
 		const fetch = async () => {
 			const token = localStorage.getItem(LocalStorage.token);
 			if (token) {
@@ -67,7 +63,6 @@ const ChatPage = () => {
 			try {
 				const response = await getListFriend();
 				if (response?.statusCode === 200) {
-					// console.log("response: ", response.data);
 					store.dispatch(initMyListFriend(response.data));
 				}
 			} catch (error) {
@@ -83,7 +78,6 @@ const ChatPage = () => {
 			try {
 				const response = await getListSended();
 				if (response?.statusCode === 200) {
-					// console.log("response: ", response.data);
 					store.dispatch(initSendedFriend(response.data));
 				}
 			} catch (error) {
@@ -98,7 +92,6 @@ const ChatPage = () => {
 			try {
 				const response = await getListResponseFriend();
 				if (response?.statusCode === 200) {
-					// console.log("response: ", response.data);
 					store.dispatch(initRequestFriend(response.data));
 				}
 			} catch (error) {
@@ -112,7 +105,6 @@ const ChatPage = () => {
 		const fetch = async () => {
 			try {
 				const response = await getRoomList();
-				// console.log(response)
 				dispatch(initRoom(response));
 			} catch (error) {
 				const e = error as ErrorResponse;

@@ -46,7 +46,6 @@ export function AddMemberModal({ open, onOpenChangeAction, selectedRoom }: Props
 	};
 
 	const handleAddMember = async () => {
-		// console.log(selectedItems,  "heheheheh")
 		await addMember({
 			roomId: selectedRoom.id || "",
 			listAccount: selectedItems,
@@ -65,7 +64,6 @@ export function AddMemberModal({ open, onOpenChangeAction, selectedRoom }: Props
 		}
 		isInRoom.push(accountId || "");
 
-		console.log(isInRoom, "isInRoom");	
 		setIsInRoom(isInRoom);
 	}, [selectedRoom, open]);
 

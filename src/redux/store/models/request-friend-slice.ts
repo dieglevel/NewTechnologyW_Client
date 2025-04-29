@@ -27,7 +27,6 @@ export const fetchRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetc
 export const setRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.set}${thunkName}`, async (friend: IRequestFriend[]) => {
   await idb.updateMany(friend);
   const requestFriends = await idb.getAll();
-  console.log("requestFriends DB: ", requestFriends);
   return requestFriends;
 });
 

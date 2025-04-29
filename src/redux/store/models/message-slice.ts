@@ -38,7 +38,6 @@ export const setMessage = createAsyncThunk(
 			await idb.updateMany(messages);
 			return messages;
 		} catch (error) {
-			console.log("error", error);
 			return [];
 		}
 	},
@@ -51,13 +50,11 @@ export const setOneMessage = createAsyncThunk(
 			await idb.update(message);
 			return message;
 		} catch (error) {
-			console.log("error", error);
 		}
 	},
 );
 
 export const deleteMessage = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thunkName}`, async (id: string) => {
-	console.log("delete id: ", id);
 	await idb.delete(id);
 	return id;
 });

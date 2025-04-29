@@ -140,7 +140,6 @@ const roomSlice = createSlice({
 			})
 			.addCase(initRoom.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
 				state.status = "succeeded";
-				console.log("action.payload: ", action.payload);
 				state.room = action.payload;
 			})
 			.addCase(initRoom.rejected, (state) => {
