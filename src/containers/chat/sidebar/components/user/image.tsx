@@ -15,12 +15,12 @@ export const ImageRender = () => {
 			) : (
 				<>				
 					<Image
-					className="aspect-square"
-						src={detailInformation?.avatarUrl ?? avatarDefault}
-						alt="Avatar"
-						width={60}
-						height={60}
-						priority
+						className="aspect-square"
+							src={detailInformation?.avatarUrl ?? avatarDefault}
+							alt="Avatar"
+							width={60}
+							height={60}
+							priority
 					/>
 				</>
 
