@@ -13,10 +13,11 @@ interface Props {
 }
 
 const RequestFriend = ({ data }: Props) => {
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const [isSubmittingAccept, setIsSubmittingAccept] = useState<boolean>(false);
+	const [isSubmittingReject, setIsSumbmittingReject ] = useState<boolean>(false)
 
 	const handleAcceptFriend = async () => {
-		setIsSubmitting(true);
+		setIsSubmittingAccept(true);
 		try {
 			const response = await acceptRequestFriend(data.requestId ?? "");
 			if (response.statusCode === 200) {
@@ -32,12 +33,12 @@ const RequestFriend = ({ data }: Props) => {
 				title: "Có lỗi xảy ra khi chấp nhận lời mời kết bạn",
 			});
 		} finally {
-			setIsSubmitting(false);
+			setIsSubmittingAccept(false);
 		}
 	};
 
 	const handleRejectFriend = async () => {
-		setIsSubmitting(true);
+		setIsSumbmittingReject(true);
 		try {
 			const response = await rejectRequestFriend(data.requestId ?? "");
 			if (response.statusCode === 200) {
@@ -53,7 +54,7 @@ const RequestFriend = ({ data }: Props) => {
 				title: "Có lỗi xảy ra khi từ chối lời mời kết bạn",
 			});
 		} finally {
-			setIsSubmitting(false);
+			setIsSumbmittingReject(false);
 		}
 	};
 
@@ -83,16 +84,16 @@ const RequestFriend = ({ data }: Props) => {
 
 			<div className="flex flex-row items-center justify-center gap-4">
 				<Button
-					disabled={isSubmitting}
-					isLoading={isSubmitting}
+					disabled={isSubmittingAccept || isSubmittingReject}
+					isLoading={isSubmittingReject}
 					className="w-full rounded-lg bg-slate-200 font-bold text-black hover:bg-slate-500"
 					onPress={handleRejectFriend}
 				>
 					Từ chối
 				</Button>
 				<Button
-					disabled={isSubmitting}
-					isLoading={isSubmitting}
+					disabled={isSubmittingAccept || isSubmittingReject}
+					isLoading={isSubmittingAccept}
 					className="w-full rounded-lg bg-primary-400 font-bold text-white hover:bg-primary-500"
 					onPress={handleAcceptFriend}
 				>

@@ -201,11 +201,11 @@ export class IDBManager<T extends { [key: string]: any }> {
 			});
 
 			const newData = existingData
-				? { ...existingData, ...data } 
+				? { ...existingData, ...data }
 				: data;
 
 			await new Promise<void>((resolve, reject) => {
-				const request = store.put(newData); 
+				const request = store.put(newData);
 				request.onsuccess = () => resolve();
 				request.onerror = () => {
 					reject(request.error);

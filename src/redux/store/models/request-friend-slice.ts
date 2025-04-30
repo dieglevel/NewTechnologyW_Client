@@ -20,7 +20,6 @@ const idb = new IDBManager<IRequestFriend>(storeName, "sender_id");
 
 export const fetchRequestFriend = createAsyncThunk(`${thunkDB}${thunkAction.fetch}${thunkName}`, async (): Promise<IRequestFriend[]> => {
   const requestFriends = await idb.getAll();
-  // console.log("requestFriends DB: ", requestFriends);
   return requestFriends || null;
 });
 
