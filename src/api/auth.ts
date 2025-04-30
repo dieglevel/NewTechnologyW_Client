@@ -6,7 +6,19 @@ import { ISearchAccount } from "@/types/implement/response";
 
 export const loginApi = async (identifier: string, password: string) => {
 	try {
-		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier: identifier.toLowerCase(), password });
+		const isPhone = identifier.match(/^\d{10}$/);
+		if (isPhone) {
+			const phone84 = identifier.replace(/^0/, "+84");
+			const response = await api.post<BaseResponse<IAuth>>("/auth/login", {
+				identifier: phone84,
+				password,
+			});
+
+			localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
+			localStorage.setItem(LocalStorage.userId, response.data.data.userId);
+			return response.data;
+		}
+		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
 		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 		localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 		return response.data;
@@ -30,13 +42,24 @@ export const getAccountApi = async () => {
 	}
 };
 
+export const getInformationVerifyApi = async () => {
+	try {
+		const response = await api.get<BaseResponse<IAuth>>("/auth/my-account");
+
+		return response.data;
+	} catch (e) {
+		throw e as ErrorResponse;
+	}
+};
+
 export const registerApi = async (identifier: string, password: string) => {
 	try {
 		const isPhoneNumber = identifier.match(/^\d{10}$/);
 		if (isPhoneNumber) {
+			const phone84 = identifier.replace(/^0/, "+84");
 			const response = await api.post<BaseResponse<IAuth>>("/auth/register", {
 				email: "",
-				phone: identifier,
+				phone: phone84,
 				password,
 			});
 			return response.data;
@@ -63,8 +86,9 @@ export const forgetApi = async (identifier: string) => {
 		const isEmail = identifier.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
 		if (isPhoneNumber || isEmail) {
+			const phone84 = identifier.replace(/^0/, "+84");
 			const response = await api.post<BaseResponse<IAuth>>("/auth/send-otp-forget", {
-				identifier: identifier.toLowerCase(),
+				identifier: isPhoneNumber ? phone84 : identifier,
 			});
 			return response.data;
 		}
@@ -77,14 +101,14 @@ export const updatePasswordApi = async (identifier: string, password: string) =>
 	try {
 		const isPhoneNumber = identifier.match(/^\d{10}$/);
 		if (isPhoneNumber) {
+			const phone84 = identifier.replace(/^0/, "+84");
 			const response = await api.post<BaseResponse<IAuth>>("/auth/update-password-forget", {
-				identifier: identifier.toLowerCase(),
+				identifier: phone84,
 				newPassword: password,
 			});
 			return response.data;
 		}
 
-		// check if email === true
 		const isEmail = identifier.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 		if (isEmail) {
 			const response = await api.post<BaseResponse<IAuth>>("/auth/update-password-forget", {
@@ -100,7 +124,14 @@ export const updatePasswordApi = async (identifier: string, password: string) =>
 
 export const verifyAccount = async (identifier: string, otp: string) => {
 	try {
-		const response = await api.post<BaseResponse<null>>("/auth/verify-otp", { identifier: identifier.toLowerCase(), otp });
+		const isPhoneNumber = identifier.match(/^\d{10}$/);
+		if (isPhoneNumber) {
+			const phone84 = identifier.replace(/^0/, "+84");
+			const response = await api.post<BaseResponse<null>>("/auth/verify-otp", { identifier: phone84, otp });
+
+			return response.data;
+		}
+		const response = await api.post<BaseResponse<null>>("/auth/verify-otp", { identifier, otp });
 
 		return response.data;
 	} catch (e) {
@@ -110,8 +141,54 @@ export const verifyAccount = async (identifier: string, otp: string) => {
 
 export const verifyForgetPassword = async (identifier: string, otp: string) => {
 	try {
-		const response = await api.post<BaseResponse<null>>("/auth/verify-otp-forget", { identifier: identifier.toLowerCase(), otp });
+		const isPhoneNumber = identifier.match(/^\d{10}$/);
+		if (isPhoneNumber) {
+			const phone84 = identifier.replace(/^0/, "+84");
+			const response = await api.post<BaseResponse<null>>("/auth/verify-otp-forget", {
+				identifier: phone84,
+				otp,
+			});
 
+			return response.data;
+		}
+		const response = await api.post<BaseResponse<null>>("/auth/verify-otp-forget", { identifier, otp });
+
+		return response.data;
+	} catch (e) {
+		throw e as ErrorResponse;
+	}
+};
+
+export const verifyUpdtateAccount = async (otp: string) => {
+	try {
+		const response = await api.put<BaseResponse<null>>("/auth/verify-update-account", { otp });
+
+		return response.data;
+	} catch (e) {
+		throw e as ErrorResponse;
+	}
+};
+
+export const changePasswordApi = async (oldPassword: string, newPassword: string) => {
+	try {
+		const response = await api.put<BaseResponse<IAuth>>("/auth/update-password", {
+			currentPassword: oldPassword,
+			newPassword: newPassword,
+		});
+		return response.data;
+	} catch (e) {
+		throw e as ErrorResponse;
+	}
+};
+
+export const changeEmailApi = async (email: string, phone: string, typeSend: string) => {
+	try {
+		const phone84 = phone.replace(/^0/, "+84");
+		const response = await api.put<BaseResponse<boolean>>("/auth/update-account", {
+			email: email,
+			phone: phone84,
+			typeSend: typeSend,
+		});
 		return response.data;
 	} catch (e) {
 		throw e as ErrorResponse;

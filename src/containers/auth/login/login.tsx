@@ -48,18 +48,7 @@ export const Login = () => {
 							isDisabled={isLoading}
 							value={identifier}
 							onChange={(e) => setIdentifier(e.target.value)}
-							startContent={
-								<div className="flex flex-row gap-4">
-									<PhoneIcon className="size-5 text-icon" />
-									<select
-										name=""
-										id=""
-									>
-										<option value="84">+84</option>
-										<option value="1">+1</option>
-									</select>
-								</div>
-							}
+							
 							variant="underlined"
 							size="sm"
 							placeholder="Số điện thoại hoặc email"
@@ -71,7 +60,6 @@ export const Login = () => {
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							startContent={<LockIcon className="size-5" />}
 							placeholder="Mật khẩu"
 							size="sm"
 							variant="underlined"

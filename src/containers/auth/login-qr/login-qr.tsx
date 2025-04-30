@@ -7,6 +7,9 @@ import StyledQRCode from "@/components/ui/styled-QR-code";
 import { getIpDeviceApi } from "@/api";
 import { formatTime, handleGenerateQR } from "./handle";
 import io from "socket.io-client";
+import { IAuth } from "@/types/implement";
+import { BaseResponse } from "@/types";
+import { LocalStorage } from "@/lib/local-storage";
 
 export default function LoginQR() {
 	const [qrValue, setQrValue] = useState<string>("");
@@ -18,25 +21,26 @@ export default function LoginQR() {
 	const QR_EXPIRY_TIME = 300;
 
 	const connectSocket = (ipDevice: string, userAgent: string) => {
-
-
-
 		if (socketRef.current) {
 			socketRef.current.disconnect();
 		}
 
 		const socket = io(process.env.NEXT_PUBLIC_SOCKET_LOGINQR_URL, {
-			autoConnect:true,
+			autoConnect: true,
 			extraHeaders: {
 				ipDevice: `${ipDevice}`,
 				userAgent: `${userAgent}`,
 			},
 		});
 
-
 		socketRef.current = socket;
 
-		socket.on("LOGIN", () => {
+		socket.on("LOGIN", (data: { account: IAuth; device: { ipDevice: string } }) => {
+			console.log(data);
+			localStorage.setItem(LocalStorage.token, data.account.accessToken);
+			localStorage.setItem(LocalStorage.userId, data.account.userId);
+			localStorage.setItem(LocalStorage.ipDevice, data.device.ipDevice);
+			window.location.href = "/chat";
 		});
 
 		return socket;
@@ -64,12 +68,6 @@ export default function LoginQR() {
 
 	useEffect(() => {
 		handleQRCodeGeneration();
-
-		return () => {
-			if (socketRef.current) {
-				socketRef.current.disconnect();
-			}
-		};
 	}, []);
 
 	useEffect(() => {
