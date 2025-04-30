@@ -1,7 +1,7 @@
 import { acceptRequestFriend, rejectRequestFriend } from "@/api";
 import { avatarDefault } from "@/assets/images";
 import { ErrorResponse } from "@/lib/axios";
-import { IRequestFriend } from "@/types/implement";
+import { IRequestFriend } from "@/types/implement/response/request-friend";
 import { changeDateToString } from "@/utils";
 import { Button } from "@heroui/button";
 import { addToast } from "@heroui/toast";

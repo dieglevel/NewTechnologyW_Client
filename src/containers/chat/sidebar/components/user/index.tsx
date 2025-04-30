@@ -13,7 +13,6 @@ import { ImageRender } from "./image";
 export const User = () => {
 	const [openDropdown, setOpenDropdown] = useState(false);
 
-	const { isOpen: isOpenModal, type } = useSelector((state: RootState) => state.modal);
 
 	const dispatch = useDispatch();
 

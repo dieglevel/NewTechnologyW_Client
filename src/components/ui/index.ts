@@ -1,2 +1,2 @@
-export * from "./Button"
-export * from  "./StyledQRCode"
+export * from "./button"
+export * from  "./styled-QR-code"

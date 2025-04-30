@@ -1,4 +1,3 @@
-import { Register } from "@/containers/auth";
 import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { BaseResponse } from "@/types";

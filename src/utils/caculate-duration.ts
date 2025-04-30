@@ -15,6 +15,6 @@ export function caculateDuration(timeSent: Date): string {
    } else if (minutes > 0) {
       return `${minutes} phút trước`;
    } else {
-      return `${seconds} giây trước`;
+      return `Vài giây`;
    }
 }

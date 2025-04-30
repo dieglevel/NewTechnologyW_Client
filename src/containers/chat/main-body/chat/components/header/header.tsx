@@ -16,7 +16,7 @@ interface Props {
 
 export const HeaderChat = ({ imageUrl }: Props) => {
 
-	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const accountId = localStorage.getItem(LocalStorage.userId) || "";
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
@@ -91,14 +91,13 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 						(isOpen ? "bg-icon-inactive hover:bg-icon-active" : "bg-body hover:bg-[#ccc]") +
 						` flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm`
 					}
-					onClick={handleToggle}
 				>
 					<ColumnIcon
 						className={isOpen ? "stroke-icon-active" : "stroke-icon-second " + ` size-5 stroke-1`}
 					/>
 				</div>
 
-				{selectedRoom && isOpen && (
+				{selectedRoom  && (
 					<AddMemberModal
 						open={isOpen}
 						onOpenChangeAction={onOpenChange}

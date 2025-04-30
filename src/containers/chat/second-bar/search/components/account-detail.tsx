@@ -122,14 +122,14 @@ const AccountDetail = ({ data }: Props) => {
 													<div className="relative flex items-center justify-center">
 														<ImageViewer
 															src={
-																data.detailInformation?.avatar ??
+																data.detailInformation?.avatarUrl ??
 																avatarDefault
 															}
 														>
 															<Image
 																src={
 																	data.detailInformation
-																		?.avatar ?? avatarDefault
+																		?.avatarUrl ?? avatarDefault
 																}
 																alt="Avatar"
 																className="max-h-20 min-h-20 min-w-20 max-w-20 cursor-pointer rounded-full border-4 border-solid border-blue-600 object-cover shadow-md"

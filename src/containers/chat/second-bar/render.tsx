@@ -57,7 +57,7 @@ export const SecondBar = () => {
 	}, [search]);
 
 	useEffect(() => {
-		socketService.on(SocketOn.getListRoom, async (data) => {
+		socketService.on(SocketOn.myListRoom, async (data) => {
 			const { accountOwner, room, behavior } = data;
 			const newRoom = room as IRoom;
 
@@ -91,7 +91,7 @@ export const SecondBar = () => {
 			}
 		});
 		return () => {
-			socketService.off(SocketOn.getListRoom);
+			socketService.off(SocketOn.myListRoom);
 		};
 	}, []);
 
@@ -111,7 +111,7 @@ export const SecondBar = () => {
 			switch (selected) {
 				case SideBarSelected.Chat:
 					return (
-						<div className="flex flex-col gap-1">
+						<div className="flex flex-col gap-1 ">
 							{status ? (
 								room?.map((item, index) => (
 									<ChatRoom

@@ -8,11 +8,6 @@ import { useSelector } from "react-redux";
 export const ImageRender = () => {
 	const { detailInformation, status } = useSelector((state: RootState) => state.detailInformation);
 
-	// useEffect(() => {
-	// 	if (status === "succeeded") {
-	// 	}
-	// }, [status]);
-
 	return (
 		<>
 			{(status === "loading" || status === "idle") ? (
@@ -20,6 +15,7 @@ export const ImageRender = () => {
 			) : (
 				<>				
 				<Image
+				className="object-cover"
 					src={detailInformation?.avatarUrl ?? avatarDefault}
 					alt="Avatar"
 					width={48}

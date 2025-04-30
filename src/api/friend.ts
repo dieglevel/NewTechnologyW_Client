@@ -1,7 +1,7 @@
 import { api, ErrorResponse } from "@/lib/axios"
 import { BaseResponse } from "@/types"
-import { IFriend, IRequestFriend, ISendedFriend } from "@/types/implement"
-import { access } from "fs"
+import { IFriend, ISendedFriend } from "@/types/implement"
+import { IRequestFriend } from "@/types/implement/response/request-friend"
 
 export const getListFriend = async () => {
    try {

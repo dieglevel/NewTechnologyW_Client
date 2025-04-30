@@ -34,7 +34,7 @@ export function AddMemberModal({ open, onOpenChangeAction, selectedRoom }: Props
 	const accountId = localStorage.getItem(LocalStorage.userId);
 
 	const toggleItem = (id: string) => {
-		if (isInRoom.includes(id)){
+		if (isInRoom.includes(id)) {
 			return;
 		}
 
@@ -67,66 +67,81 @@ export function AddMemberModal({ open, onOpenChangeAction, selectedRoom }: Props
 		setIsInRoom(isInRoom);
 	}, [selectedRoom, open]);
 
+	useEffect(() => {
+		if (open === false) {
+			setSelectedItems([]);
+			setIsInRoom([]);
+			setSearch("");
+		}
+	}, [open]);
+
 	return (
 		<Modal
 			isOpen={open}
 			onOpenChange={onOpenChangeAction}
 		>
 			<ModalContent>
-				<ModalHeader>Thêm thành viên nhóm</ModalHeader>
-				<div className="flex w-full flex-col items-center justify-center px-4 py-2">
-					<Input
-						placeholder="Tìm kiếm"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						startContent={
-							<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
-						}
-						variant="bordered"
-						classNames={{
-							input: "bg-background placeholder:text-second placeholder:font-semibold",
-							inputWrapper: ["border", "shadow-none", "bg-body"],
-						}}
-					/>
+				{(onClose) => (
+					<>
+						<ModalHeader>Thêm thành viên nhóm</ModalHeader>
+						<div className="flex w-full flex-col items-center justify-center px-4 py-2">
+							<Input
+								placeholder="Tìm kiếm"
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+								startContent={
+									<SearchIcon className="size-8 fill-icon-second stroke-icon-second stroke-[0.1]" />
+								}
+								variant="bordered"
+								classNames={{
+									input: "bg-background placeholder:text-second placeholder:font-semibold",
+									inputWrapper: ["border", "shadow-none", "bg-body"],
+								}}
+							/>
 
-					<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
-						{myListFriend?.map((item) => (
-							<div
-								key={item.accountId}
-								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background ${
-									isInRoom.includes(item.accountId ?? "") ? "opacity-50" : ""}`}
-								onClick={() => toggleItem(item.accountId ?? "")}
-							>
-								<Checkbox
-									id={item.accountId}
-									checked={false}
-									isSelected={selectedItems.includes(item.accountId ?? "")}
-									disabled={isInRoom.includes(item.accountId ?? "")}
-								/>
-								<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
-								<p className="font-bold text-md">{item?.detail?.fullName || "-"}</p>
+							<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
+								{myListFriend?.map((item) => (
+									<div
+										key={item.accountId}
+										className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background ${
+											isInRoom.includes(item.accountId ?? "") ? "opacity-50" : ""
+										}`}
+										onClick={() => toggleItem(item.accountId ?? "")}
+									>
+										<Checkbox
+											id={item.accountId}
+											isSelected={
+												selectedItems.includes(item.accountId ?? "") ||
+												isInRoom.includes(item.accountId ?? "")
+											}
+											onValueChange={() => toggleItem(item.accountId ?? "")}
+										/>
+										<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
+										<p className="text-md font-bold">{item?.detail?.fullName || "-"}</p>
+									</div>
+								))}
 							</div>
-						))}
-					</div>
-				</div>
+						</div>
 
-				<ModalFooter>
-					<Button
-						variant="ghost"
-						onPress={() => onOpenChangeAction(false)}
-						className="mr-2"
-					>
-						Hủy
-					</Button>
-					<Button
-						type="button"
-						onPress={handleAddMember}
-						className="bg-primary text-white hover:bg-primary/80"
-						disabled={selectedItems.length === 0}
-					>
-						Thêm thành viên
-					</Button>
-				</ModalFooter>
+						<ModalFooter>
+							<Button
+								variant="ghost"
+								onPress={() => onOpenChangeAction(false)}
+								className="mr-2"
+							>
+								Hủy
+							</Button>
+							<Button
+								type="button"
+								onPress={handleAddMember}
+								className="bg-primary text-white hover:bg-primary/80"
+								disabled={selectedItems.length === 0}
+							>
+								Thêm thành viên
+							</Button>
+						</ModalFooter>
+					</>
+				)}
 			</ModalContent>
 		</Modal>
 	);

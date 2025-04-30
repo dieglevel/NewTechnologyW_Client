@@ -2,25 +2,20 @@
 
 import { getAccountApi } from "@/api/auth";
 import { BodyView, OptionView, SecondBar, Sidebar } from "@/containers/chat";
-import { use, useEffect, useState } from "react";
-import Loading from "../loading";
-import { LocalStorage } from "@/lib/local-storage";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState, store } from "@/redux/store";
-import { socketService } from "@/lib/socket/socket";
+import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
+import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
+import { LocalStorage } from "@/lib/local-storage";
+import { socketService } from "@/lib/socket/socket";
+import { AppDispatch, RootState } from "@/redux/store";
 import { SideBarSelected } from "@/redux/store/ui";
-import { getListFriend, getListResponseFriend, getListSended } from "@/api";
-import { fetchRoom, initMyListFriend, initRequestFriend, initRoom, setMyListFriend, setRequestFriend } from "@/redux/store/models";
-import { ErrorResponse } from "@/lib/axios";
-import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
-import { initSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
-import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
-import { getRoomList } from "./handle";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../loading";
+import { initialDataPage } from "./handle-initital-page";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const dispatch = useDispatch<AppDispatch>();
 
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
@@ -34,13 +29,11 @@ const ChatPage = () => {
 				const data = await getAccountApi();
 
 				if (data) {
-					socketService.connect();
-
 					if (data.statusCode === 200) {
 						const detailInformation = data.data.detailInformation;
 						if (
 							!detailInformation.fullName &&
-							!detailInformation.avatar &&
+							!detailInformation.avatarUrl &&
 							!detailInformation.gender &&
 							!detailInformation.dateOfBirth
 						) {
@@ -59,60 +52,9 @@ const ChatPage = () => {
 	}, []);
 
 	useEffect(() => {
-		const fetch = async () => {
-			try {
-				const response = await getListFriend();
-				if (response?.statusCode === 200) {
-					store.dispatch(initMyListFriend(response.data));
-				}
-			} catch (error) {
-				const e = error as ErrorResponse;
-			}
-		};
-
-		fetch();
+		initialDataPage()
 	}, []);
 
-	useEffect(() => {
-		const fetch = async () => {
-			try {
-				const response = await getListSended();
-				if (response?.statusCode === 200) {
-					store.dispatch(initSendedFriend(response.data));
-				}
-			} catch (error) {
-				const e = error as ErrorResponse;
-			}
-		};
-		fetch();
-	}, []);
-
-	useEffect(() => {
-		const fetch = async () => {
-			try {
-				const response = await getListResponseFriend();
-				if (response?.statusCode === 200) {
-					store.dispatch(initRequestFriend(response.data));
-				}
-			} catch (error) {
-				const e = error as ErrorResponse;
-			}
-		};
-		fetch();
-	}, []);
-
-	useEffect(() => {
-		const fetch = async () => {
-			try {
-				const response = await getRoomList();
-				dispatch(initRoom(response));
-			} catch (error) {
-				const e = error as ErrorResponse;
-			}
-		}
-		fetch();
-		
-	}, []);
 
 	useEffect(() => {
 		if (detailInformationStatus === "succeeded") {

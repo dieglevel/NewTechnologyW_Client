@@ -1,6 +1,6 @@
 // idbSlice.ts
 import { IDBManager } from "@/lib/idb";
-import { IRequestFriend } from "@/types/implement";
+import { IRequestFriend } from "@/types/implement/response/request-friend";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 

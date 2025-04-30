@@ -1,6 +1,5 @@
 
 
-import { Register } from "@/containers/auth";
 import { UpdatePassword } from "@/containers/auth/update-password/update-password";
 import { Metadata } from "next";
 

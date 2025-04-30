@@ -3,7 +3,7 @@
 import { Button } from "@heroui/button";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import StyledQRCode from "@/components/ui/StyledQRCode";
+import StyledQRCode from "@/components/ui/styled-QR-code";
 import { getIpDeviceApi } from "@/api";
 import { formatTime, handleGenerateQR } from "./handle";
 import io from "socket.io-client";

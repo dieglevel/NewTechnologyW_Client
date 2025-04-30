@@ -24,7 +24,7 @@ interface IAssignSubAdmin {
 
 export const getRoom = async () => {
 	try {
-		const response = await api.get<BaseResponse<IRoom[]>>(`/chatroom-merge/my-list-room`);
+		const response = await api.get<BaseResponse<{ listRoomResponse: IRoom[] }>>(`/chatroom-merge/my-list-room`);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
@@ -83,7 +83,7 @@ export const disbandGroup = async (data: string) => {
 
 export const assignSubAdmin = async (data: IAssignSubAdmin) => {
 	try {
-		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, {data});
+		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, { data });
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
