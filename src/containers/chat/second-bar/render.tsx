@@ -78,7 +78,9 @@ export const SecondBar = () => {
 					// 	// description: "Nhóm đã được tạo thành công",
 					// 	color: "success",
 					// });
-					store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+					if(data?.roomId || data?.room_id) {
+						store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+					}
 					break;
 				case "delete":
 					store.dispatch(setRoom([normalizeRoom(newRoom)]));

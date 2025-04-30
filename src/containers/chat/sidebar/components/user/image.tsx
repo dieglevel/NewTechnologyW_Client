@@ -14,14 +14,14 @@ export const ImageRender = () => {
 				<Spinner color="white"/>
 			) : (
 				<>				
-				<Image
-				className="object-cover"
-					src={detailInformation?.avatarUrl ?? avatarDefault}
-					alt="Avatar"
-					width={48}
-					height={48}
-					priority
-				/>
+					<Image
+					className="aspect-square"
+						src={detailInformation?.avatarUrl ?? avatarDefault}
+						alt="Avatar"
+						width={60}
+						height={60}
+						priority
+					/>
 				</>
 
 			)}

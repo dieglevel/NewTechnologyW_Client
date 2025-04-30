@@ -45,25 +45,25 @@ const InformationModal = ({}: Props) => {
 								<Spinner className="h-64" />
 							) : (
 								<>
-									<ModalBody>
+									<ModalBody className="py-4">
 										<div className="relative my-4 flex flex-col gap-4">
 											<div className="relative flex h-36 w-full select-none items-center justify-center rounded-lg bg-slate-100 shadow-md">
-												<div className="w-full">
+												<div className="w-full h-fit">
 													<ImageViewer src={detailInformation?.thumbnailUrl ?? defaultBackground}>
-													<Image
-														src={
-															detailInformation?.thumbnailUrl ??
-															defaultBackground
-														}
-														alt="Thumbnail"
-														className="h-auto w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md"
-														width={240}
-														height={60}
-														priority
-													/>
+														<Image
+															src={
+																detailInformation?.thumbnailUrl ??
+																defaultBackground
+															}
+															alt="Thumbnail"
+															className="w-full rounded-lg border-2 border-solid border-slate-100 aspect-[9/4] shadow-md"
+															width={240}
+															height={60}
+															priority
+														/>
 													</ImageViewer>
 												</div>
-												<div className="absolute left-0 top-36 flex flex-row items-center justify-center gap-2 py-4">
+												<div className="absolute left-0 top-32 flex flex-row items-center justify-center gap-2 py-4">
 													<div className="relative flex items-center justify-center">
 														<ImageViewer src={detailInformation?.avatarUrl ?? avatarDefault}>
 														<Image
