@@ -118,7 +118,7 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						{myListFriend?.map((item) => (
 							<div
 								key={item.accountId}
-								className={`border-b-border-second $ flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
+								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
 								onClick={() => toggleItem(item.accountId ?? "")}
 							>
 								<Checkbox

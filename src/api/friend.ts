@@ -42,6 +42,7 @@ export const getListResponseFriend = async () => {
 
 export const acceptRequestFriend = async (requestId: string) => {
    try {
+      console.log(requestId, "requestId")
       const response = await api.put<BaseResponse<IFriend>>("/request-friend/respond", { requestId, status: true })
       return response.data;
    } catch (error) {

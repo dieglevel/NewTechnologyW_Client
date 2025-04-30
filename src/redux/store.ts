@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { SideBarReducer } from "./store/ui/sidebar";
 import { DetailInformationReducer } from "./store/models/detail-information-slice";
 import { modalReducer } from "./store/ui/modal";
-import { ContactBarReducer, OptionViewReducer } from "./store/ui";
+import { ContactBarReducer, OptionViewReducer, SecondBarReducer } from "./store/ui";
 import { MyListFriendReducer, RequestFriendReducer } from "./store/models";
 import { RoomReducer } from "./store/models";
 import { SendedFriendReducer } from "./store/models/sended-friend-slice";
@@ -22,6 +22,7 @@ export const store = configureStore({
 		sendedFriend: SendedFriendReducer,
 		selectedRoom: SelectedRoomReducer,
 		message: MessageReducer,
+		secondBar: SecondBarReducer,
 	},
 });
 

@@ -20,8 +20,9 @@ const ChatPage = () => {
 	const { status: detailInformationStatus } = useSelector((state: RootState) => state.detailInformation);
 	const { selected } = useSelector((state: RootState) => state.sidebar);
 	const { isOpen } = useOptionView();
+	const { isOpenSecondBar } = useSecondBar();	
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
-	
+
 	useEffect(() => {
 		const fetch = async () => {
 			const token = localStorage.getItem(LocalStorage.token);
@@ -70,7 +71,10 @@ const ChatPage = () => {
 				<div className="flex h-screen min-w-[650px] flex-row">
 					<InformationModal />
 					<Sidebar />
-					<SecondBar />
+					<SecondBarManager />
+					<div className={`${isOpenSecondBar ? "block" : "hidden"}`}>
+						<SecondBar />
+					</div>
 					{selected === SideBarSelected.Chat ? (
 						<>
 							{selectedRoom?.id ? (
