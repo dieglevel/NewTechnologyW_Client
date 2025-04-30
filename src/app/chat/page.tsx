@@ -6,13 +6,14 @@ import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";
 import ContactBody from "@/containers/chat/main-body/contact/contact-body/page";
 import InformationModal from "@/containers/chat/sidebar/components/user/modal/information-modal";
 import { useOptionView } from "@/hooks/option-view";
+import { useSecondBar } from "@/hooks/second-bar";
 import { LocalStorage } from "@/lib/local-storage";
-import { socketService } from "@/lib/socket/socket";
-import { AppDispatch, RootState } from "@/redux/store";
+import { RootState } from "@/redux/store";
 import { SideBarSelected } from "@/redux/store/ui";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Loading from "../loading";
+import { SecondBarManager } from "./handle";
 import { initialDataPage } from "./handle-initital-page";
 const ChatPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
