@@ -21,7 +21,7 @@ const secondBarSlice = createSlice({
 		},
 		setSecondBarAuto: (state, action: PayloadAction<boolean>) => {
 			state.isOpenSecondBar = action.payload;
-			state.isAutoControlled = true; // auto điều khiển lại
+			state.isAutoControlled = true; 
 		},
 	},
 });
