@@ -14,6 +14,7 @@ export const getRoomList = async () => {
 	}
 };
 
+// Điều khiển second bar
 export const SecondBarManager = () => {
 	const { autoControl } = useSecondBar();
 
