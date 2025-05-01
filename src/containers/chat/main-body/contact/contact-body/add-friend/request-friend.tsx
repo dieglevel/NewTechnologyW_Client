@@ -86,6 +86,7 @@ const RequestFriend = ({ data }: Props) => {
 				<Button
 					disabled={isSubmittingAccept || isSubmittingReject}
 					isLoading={isSubmittingReject}
+					spinnerPlacement="end"
 					className="w-full rounded-lg bg-slate-200 font-bold text-black hover:bg-slate-500"
 					onPress={handleRejectFriend}
 				>
@@ -94,6 +95,7 @@ const RequestFriend = ({ data }: Props) => {
 				<Button
 					disabled={isSubmittingAccept || isSubmittingReject}
 					isLoading={isSubmittingAccept}
+					spinnerPlacement="end"
 					className="w-full rounded-lg bg-primary-400 font-bold text-white hover:bg-primary-500"
 					onPress={handleAcceptFriend}
 				>

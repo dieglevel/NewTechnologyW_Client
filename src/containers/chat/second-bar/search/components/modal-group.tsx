@@ -139,6 +139,7 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						onPress={() => onOpenChange(false)}
 						className="mr-2"
 						disabled={isLoading}
+						spinnerPlacement="end"
 					>
 						Hủy
 					</Button>
@@ -148,6 +149,7 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						className="bg-primary text-white hover:bg-primary/80"
 						disabled={selectedItems.length === 0 || isLoading}
 						isLoading={isLoading}
+						spinnerPlacement="end"
 					>
 						Thêm thành viên
 					</Button>

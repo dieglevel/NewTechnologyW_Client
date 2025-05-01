@@ -161,6 +161,7 @@ export const Register = () => {
 					</div>
 					<Button
 						isLoading={loading}
+						spinnerPlacement="end"
 						disabled={loading}
 						onPress={() => handleSubmit()}
 						size="md"

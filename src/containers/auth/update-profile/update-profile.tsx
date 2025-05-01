@@ -1,28 +1,26 @@
 "use client";
 
-import { getProfile, uploadSingleImageApi } from "@/api";
+import { getProfile } from "@/api";
+import Loading from "@/app/loading";
 import { avatarDefault, defaultBackground } from "@/assets/images";
-import { CalendarIcon, EditIcon, PhoneIcon } from "@/assets/svgs";
+import { EditIcon } from "@/assets/svgs";
 import { ErrorResponse } from "@/lib/axios";
+import { socketService } from "@/lib/socket/socket";
 import { Button } from "@heroui/button";
+import { DateInput } from "@heroui/date-input";
 import { Input } from "@heroui/input";
 import { Radio, RadioGroup } from "@heroui/radio";
 import { Spinner } from "@heroui/spinner";
 import { addToast } from "@heroui/toast";
+import {
+	DateValue,
+	getLocalTimeZone,
+	now,
+	parseAbsoluteToLocal
+} from "@internationalized/date";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { handleCheckBirth, handleImageChange, handleThumbnailChange, handleUpdateProfile } from "./handle";
-import Loading from "@/app/loading";
-import { socketService } from "@/lib/socket/socket";
-import {
-	getLocalTimeZone,
-	now,
-	parseAbsoluteToLocal,
-	parseDate,
-	parseDateTime,
-	ZonedDateTime,
-} from "@internationalized/date";
-import { DateInput } from "@heroui/date-input";
 
 export const UpdateProfile = () => {
 	const [idDetailInformation, setIdDetailInformation] = useState<string | null>(null);
@@ -36,7 +34,7 @@ export const UpdateProfile = () => {
 	const avatarlRef = useRef<HTMLInputElement>(null);
 
 	const [fullName, setFullName] = useState<string>("");
-	const [dateOfBirth, setDateOfBirth] = useState<ZonedDateTime>(now(getLocalTimeZone()));
+	const [dateOfBirth, setDateOfBirth] = useState<DateValue>(now(getLocalTimeZone()));
 	const [gender, setGender] = useState<boolean>(true);
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -80,7 +78,7 @@ export const UpdateProfile = () => {
 		setFullName(e.target.value);
 	};
 
-	const handleChangeDateOfBirth = (e: ZonedDateTime | null) => {
+	const handleChangeDateOfBirth = (e: DateValue | null) => {
 		if (e) {
 			setDateOfBirth(e);
 		}
@@ -106,14 +104,10 @@ export const UpdateProfile = () => {
 				<div className="flex h-screen flex-col items-center gap-6 pt-14">
 					<div className="flex flex-col items-center gap-6">
 						<h1 className="text-6xl font-bold text-primary">Zalo</h1>
-						<div className="flex flex-col items-center">
-							<span className="">Đăng ký tài khoản Zalo</span>
-							<span className="">Để kết nối với ứng dụng Zalo Web</span>
-						</div>
 					</div>
 					<div className="flex flex-col items-center rounded-lg border bg-white">
 						<div className="flex w-full flex-col items-center p-4">
-							<span className="text-md font-semibold">Đăng ký tài khoản Zalo</span>
+							<span className="text-md font-semibold">Cập nhập tài khoản Zalo</span>
 							<hr className="mt-2 flex border-gray-300" />
 						</div>
 						<div className="flex w-full flex-col items-center justify-center gap-6 px-10 pb-10">
@@ -212,7 +206,7 @@ export const UpdateProfile = () => {
 									variant="underlined"
 									isDisabled={isLoadingSubmit}
 									granularity="day"
-									value={parseDateTime(dateOfBirth.toString())}
+									value={dateOfBirth}
 									onChange={handleChangeDateOfBirth}
 								/>
 							</div>
@@ -241,7 +235,7 @@ export const UpdateProfile = () => {
 										await handleUpdateProfile(idDetailInformation, {
 											gender,
 											fullName,
-											dateOfBirth: dateOfBirth.toDate(),
+											dateOfBirth: dateOfBirth?.toDate("vn-VN"),
 										});
 										setUpLoading(false);
 										setUpLoadingThumbnailUrl(false);
@@ -250,6 +244,7 @@ export const UpdateProfile = () => {
 								}}
 								isLoading={isLoadingSubmit}
 								isDisabled={isLoadingSubmit}
+								spinnerPlacement="end"
 							>
 								Xác nhận
 							</Button>

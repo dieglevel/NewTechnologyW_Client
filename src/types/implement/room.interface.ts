@@ -12,7 +12,7 @@ export interface IRoom {
 	type?: "group" | "single" | "channel" | "cloud"; 
 	isDelete?: boolean;
 	isLoad?: boolean;
-	detailRoom?: IDetailRoom[];
+	detailRoom?: IDetailAccountRoom[];
 	avatar?: string;
 	isDisbanded?: boolean;
 	avatarUrl?: string;
@@ -20,9 +20,8 @@ export interface IRoom {
 	
 }
 
-export interface IDetailRoom  {
+export interface IDetailAccountRoom  {
 	id?: string;
 	fullName?: string;
 	avatar?: string;
-	avatarUrl?: string;
 }

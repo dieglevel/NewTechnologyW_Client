@@ -34,7 +34,7 @@ export const User = () => {
 				className="w-full"
 			>
 				<DropdownTrigger>
-					<div className="flex aspect-square h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-full border-2 border-white shadow-md">
+					<div className="flex h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-full border-2 border-white shadow-md">
 						<ImageRender />
 					</div>
 				</DropdownTrigger>

@@ -80,6 +80,7 @@ export const Login = () => {
 					<Button
 						isDisabled={isLoading}
 						isLoading={isLoading}
+						spinnerPlacement="end"
 						size="md"
 						className="w-full bg-primary text-white"
 						onPress={async () => {

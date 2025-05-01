@@ -15,7 +15,7 @@ export const ImageRender = () => {
 			) : (
 				<>				
 				<Image
-				className="object-cover"
+				className="object-cover w-full h-full"
 					src={detailInformation?.avatarUrl ?? avatarDefault}
 					alt="Avatar"
 					width={48}
