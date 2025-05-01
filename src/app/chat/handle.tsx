@@ -9,10 +9,10 @@ export const SecondBarManager = () => {
 	useEffect(() => {
 		const handleResize = () => {
 			const isMobile = window.innerWidth < 640;
-			autoControl(!isMobile); // Dùng autoControl thay vì dispatch trực tiếp
+			autoControl(!isMobile);
 		};
 
-		handleResize(); // chạy lần đầu
+		handleResize();
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, [autoControl]);

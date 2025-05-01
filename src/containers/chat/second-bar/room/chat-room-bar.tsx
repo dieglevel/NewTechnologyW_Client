@@ -43,7 +43,7 @@ export const ChatRoom = ({ room }: Props) => {
 					loading="lazy"
 					src={
 						room.avatar ||
-						room.avatarUrl ||
+						room.avatarUrl || 
 						(room.type === "group"
 							? default_group
 							: room.detailRoom?.[0]?.id === account_id

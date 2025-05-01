@@ -50,10 +50,8 @@ export const deleteRoom = createAsyncThunk(`${thunkDB}${thunkAction.delete}${thu
 
 export const initRoom = createAsyncThunk(`${thunkDB}${thunkAction.init}${thunkName}`, async (rooms: IRoom[]): Promise<IRoom[]> => {
 	await idb.clear();
-	// console.log("aaa", rooms);
 	await idb.updateMany(rooms);
 	const room = await idb.getAllByIndex()
-	// console.log("room: ", room);
 	return room;
 });
 

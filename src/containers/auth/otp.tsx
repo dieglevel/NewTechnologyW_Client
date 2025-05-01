@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyAccount, verifyForgetPassword } from "@/api/auth";
+import { verifyAccount, verifyForgetPassword, verifyUpdtateAccount } from "@/api/auth";
 import { REGEX_EMAIL } from "@/utils";
 import { Button } from "@heroui/button";
 import { InputOtp } from "@heroui/input-otp";
@@ -38,6 +38,15 @@ export const OTP = () => {
 						color: "success",
 					});
 					router.push("/update-password?identifier="+identifier);
+				}
+			} else if(type === "update"){
+				const response = await verifyUpdtateAccount(otp);
+				if (response?.statusCode === 201 || response?.statusCode === 200) {
+					addToast({
+						description: "Đổi thông tin xác thực thành công",
+						color: "success",
+					});
+					router.push("/change-mail");
 				}
 			}
 		} catch (error) {

@@ -6,7 +6,7 @@ import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { createRoom, addMember } from "@/api";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Divider } from "@heroui/divider";
@@ -15,6 +15,8 @@ import { Avatar } from "@heroui/avatar";
 import ImagePickerButton from "@/components/ui/image-picker";
 import { addToast } from "@heroui/toast";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { filterFriend } from "./handle";
+import { Spinner } from "@heroui/spinner";
 
 interface ShareModalProps {
 	open: boolean;
@@ -38,6 +40,10 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 	const handleFileSelected = (file: File) => {
 		setAvatar(file);
 	};
+
+	const filteredFriends = useMemo(() => {
+		return filterFriend(myListFriend || [], search);
+	}, [myListFriend, search]);
 
 	const handleCreateGroup = async () => {
 		setIsLoading(true);
@@ -115,7 +121,7 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 					</div>
 
 					<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
-						{myListFriend?.map((item) => (
+						{filteredFriends?.map((item) => (
 							<div
 								key={item.accountId}
 								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
@@ -151,7 +157,11 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						isLoading={isLoading}
 						spinnerPlacement="end"
 					>
-						Thêm thành viên
+						{
+							isLoading ? (
+								<Spinner color="white" size="sm"/>
+							) : "Thêm thành viên"
+						}
 					</Button>
 				</ModalFooter>
 			</ModalContent>

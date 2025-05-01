@@ -17,7 +17,8 @@ export const IntroduceView = () => {
 						alt="Background"
 						width={300}
 						height={300}
-						className="mx-auto "
+						className="mx-auto"
+						priority
 					/>
 					<p className="mb-8 text-gray-600">
 						💬 Zalo Clone - Kết Nối Mọi Khoảnh Khắc Chào mừng bạn đến với Zalo Clone – nền tảng nhắn

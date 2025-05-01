@@ -107,11 +107,11 @@ export const UpdateProfile = () => {
 					</div>
 					<div className="flex flex-col items-center rounded-lg border bg-white">
 						<div className="flex w-full flex-col items-center p-4">
-							<span className="text-md font-semibold">Cập nhập tài khoản Zalo</span>
+							<span className="text-md font-semibold">Thông tin tài khoản</span>
 							<hr className="mt-2 flex border-gray-300" />
 						</div>
-						<div className="flex w-full flex-col items-center justify-center gap-6 px-10 pb-10">
-							<div className="relative flex w-full flex-col items-center justify-center gap-2">
+						<div className="flex w-full min-w-[540] flex-col items-center justify-center gap-6 px-10 pb-10 overflow-hidden border">
+							<div className="relative flex w-full min-w-[540] flex-col items-center justify-center gap-2">
 								<div
 									className="flex cursor-pointer items-center justify-center"
 									onClick={handleChangeThumbnail}
@@ -126,7 +126,7 @@ export const UpdateProfile = () => {
 									<Image
 										src={previewUrlThumbnailUrl ?? defaultBackground}
 										alt="Thumbnail"
-										className={`h-60 w-full rounded-lg border-2 border-solid border-slate-100 object-fill shadow-md ${upLoadingThumbnailUrl && "brightness-75"}`}
+										className={`w-full rounded-lg border-2 border-solid border-slate-100 object-cover shadow-md ${upLoadingThumbnailUrl && "brightness-75"}`}
 										width={240}
 										height={60}
 										priority

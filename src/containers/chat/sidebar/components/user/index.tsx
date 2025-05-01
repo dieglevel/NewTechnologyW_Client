@@ -20,9 +20,19 @@ export const User = () => {
 		setOpenDropdown(!openDropdown);
 	};
 
-	const handleOpenModel = () => {
+	const handleOpenModelDetailInformation = () => {
 		setOpenDropdown(false);
 		dispatch(openModal({ isOpen: true, type: "detailInformation" }));
+	};
+
+	const handleOpenModelPassword = () => {
+		setOpenDropdown(false);
+		window.location.href = "/change-password";
+	};
+
+	const handleOpenModelEmail = () => {
+		setOpenDropdown(false);
+		window.location.href = "/change-mail";
 	};
 
 	return (
@@ -46,11 +56,27 @@ export const User = () => {
 					>
 						<DropdownItem
 							key={"detail-information"}
-							onPress={handleOpenModel}
+							onPress={handleOpenModelDetailInformation}
 							className="font-bold"
 							textValue="Thông tin cá nhân"
 						>
 							<p className="font-bold">Thông tin cá nhân</p>
+						</DropdownItem>
+						<DropdownItem
+							key={"update-account"}
+							onPress={handleOpenModelPassword}
+							className="font-bold"
+							textValue="Cập nhật mật khẩu"
+						>
+							<p className="font-bold">Cập nhật mật khẩu</p>
+						</DropdownItem>
+						<DropdownItem
+							key={"change-mail"}
+							onPress={handleOpenModelEmail}
+							className="font-bold"
+							textValue="Thông tin xác thực"
+						>
+							<p className="font-bold">Thông tin xác thực</p>
 						</DropdownItem>
 					</DropdownSection>
 				</DropdownMenu>

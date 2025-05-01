@@ -9,12 +9,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { fetchMessageByRoomId, setMessage, setOneMessage } from "@/redux/store/models/message-slice";
 import { socketService } from "@/lib/socket/socket";
 import { SocketEmit, SocketOn } from "@/constants/socket";
-import Loading from "@/app/loading";
 import { Spinner } from "@heroui/spinner";
-import { setRoom } from "@/redux/store/models";
-import { normalizeMessage, normalizeRoom } from "@/utils";
-import { IRoom } from "@/types/implement/room.interface";
-import { Socket } from "socket.io-client";
 import { DisbandedGroup } from "./main-option/components/disband-group";
 
 

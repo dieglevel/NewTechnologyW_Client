@@ -72,18 +72,7 @@ export const ForgotPassword = () => {
 				<div className="flex w-full flex-col items-center justify-center gap-8 px-20">
 					<div className="flex w-full flex-row items-center justify-center gap-2">
 						<Input
-							startContent={
-								<div className="flex flex-row gap-4">
-									<PhoneIcon className="size-5" />
-									<select
-										name=""
-										id=""
-									>
-										<option value="84">+84</option>
-										<option value="1">+1</option>
-									</select>
-								</div>
-							}
+							
 							value={identify}
 							onChange={handleChangeIdentify}
 							variant="underlined"
