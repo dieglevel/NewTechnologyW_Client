@@ -181,7 +181,6 @@ export class IDBManager<T extends { [key: string]: any }> {
 				};
 				request.onerror = () => reject(request.error);
 			} catch (error) {
-				// console.log("error", error);
 				reject(error);
 			}
 		});
@@ -222,7 +221,6 @@ export class IDBManager<T extends { [key: string]: any }> {
 			let count = 0;
 			data.forEach((item) => {
 				const request = store.put(item);
-				// console.log(item)
 				request.onsuccess = () => {
 					count++;
 					if (count === data.length) resolve();

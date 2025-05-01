@@ -61,7 +61,7 @@ export const SecondBar = () => {
 			const { accountOwner, room, behavior } = data;
 			const newRoom = room as IRoom;
 
-			if (accountOwner.avatar) {
+			if (accountOwner[0]?.avatar || accountOwner[0]?.avatarUrl) {
 				newRoom.detailRoom = accountOwner;
 			}
 
@@ -78,7 +78,7 @@ export const SecondBar = () => {
 					// 	// description: "Nhóm đã được tạo thành công",
 					// 	color: "success",
 					// });
-					if(data?.roomId || data?.room_id) {
+					if( newRoom?.id || data.room?.room_id || data.room?.roomId) {
 						store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 					}
 					break;

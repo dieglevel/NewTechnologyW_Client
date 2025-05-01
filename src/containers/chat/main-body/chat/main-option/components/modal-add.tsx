@@ -47,7 +47,6 @@ export function ModalAddMember({ open, onOpenChange, selectedRoom }: ShareModalP
 	};
 
 	const handleAddMember = async () => {
-		// console.log(selectedItems,  "heheheheh")
 		await addMember({
 			roomId: selectedRoom.id || "",
 			listAccount: selectedItems,
@@ -55,10 +54,6 @@ export function ModalAddMember({ open, onOpenChange, selectedRoom }: ShareModalP
 
 		onOpenChange(false);
 	};
-
-	// useEffect(() => {
-	// 	console.log("Name group: ", nameGroup);
-	// }, [nameGroup]);
 
 	return (
 		<Modal

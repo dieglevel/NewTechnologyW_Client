@@ -36,7 +36,6 @@ export default function LoginQR() {
 		socketRef.current = socket;
 
 		socket.on("LOGIN", (data: { account: IAuth; device: { ipDevice: string } }) => {
-			console.log(data);
 			localStorage.setItem(LocalStorage.token, data.account.accessToken);
 			localStorage.setItem(LocalStorage.userId, data.account.userId);
 			localStorage.setItem(LocalStorage.ipDevice, data.device.ipDevice);

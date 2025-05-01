@@ -1,6 +1,6 @@
 import { disbandGroup } from "@/api";
 import { default_group } from "@/assets/images";
-import { AddGroupIcon, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
+import { AddGroupIcon, Bin, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
+import { Divider } from "@heroui/divider";
 
 interface Props {
 	onClick?: () => void;
@@ -23,7 +24,7 @@ export const BodyOption = ({ onClick }: Props) => {
 
 	const handleDisbandGroup = async () => {
 		if (selectedRoom?.id) {
-			const data = await disbandGroup(selectedRoom?.id);
+			await disbandGroup(selectedRoom?.id);
 			addToast({
 				title: "Nhóm đã bị giải tán",
 				color: "success",
@@ -82,7 +83,9 @@ export const BodyOption = ({ onClick }: Props) => {
 					<p className="text-center text-xs font-semibold">Tạo nhóm trò chuyện</p>
 				</div>
 
-				<div className={`flex max-w-20 flex-col items-center justify-center gap-1 ${selectedRoom?.leader_account_id !== account_id ? "hidden" : "block"}`}>
+				<div
+					className={`flex max-w-20 flex-col items-center justify-center gap-1 ${selectedRoom?.leader_account_id !== account_id ? "hidden" : "block"}`}
+				>
 					<div
 						className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active"
 						onClick={() => setOpenMenu(!openMenu)}
@@ -111,15 +114,28 @@ export const BodyOption = ({ onClick }: Props) => {
 					/>
 				</div>
 			</div>
-			<div className="flex flex-col justify-center gap-1">
-				<p className="text-base font-semibold">Thành viên nhóm</p>
-				<button
-					className="mt-3 flex items-center gap-1"
-					onClick={onClick}
-				>
-					<AddGroupIcon className="h-5 w-5" />
-					<p className="text-xs">{selectedRoom?.detailRoom?.length} thành viên</p>
-				</button>
+			<div className={`${selectedRoom?.type !== 'group' ? "hidden" : "block"}`}>
+				<div className="flex flex-col justify-center gap-1">
+					<p className="text-base font-semibold">Thành viên nhóm</p>
+					<button
+						className="mt-3 flex items-center gap-1"
+						onClick={onClick}
+					>
+						<AddGroupIcon className="h-5 w-5" />
+						<p className="text-xs">{selectedRoom?.detailRoom?.length} thành viên</p>
+					</button>
+				</div>
+				<Divider />
+				<div className={`flex flex-col justify-center gap-1`}>
+					{/* <p className="text-base font-semibold">Thành viên nhóm</p> */}
+					<button
+						className="mt-3 flex items-center gap-1"
+						onClick={() => setOpenModal(true)}
+					>
+						<Bin className="h-5 w-5 fill-red-500" />
+						<p className="text-xs text-red-500">Giải tán nhóm</p>
+					</button>
+				</div>
 			</div>
 		</div>
 	);

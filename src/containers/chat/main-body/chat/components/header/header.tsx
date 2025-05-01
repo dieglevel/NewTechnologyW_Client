@@ -70,9 +70,9 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 									: selectedRoom.detailRoom[0]?.fullName || "-"
 								: "-"}
 					</p>
-					<div className="flex flex-row items-center gap-1">
-						<UserIcon className="size-4 font-bold" />
-						<p className="text-sm font-light text-gray-500">{selectedRoom?.detailRoom?.length}</p>
+					<div className="flex flex-row h-fit items-center gap-1">
+						<UserIcon className="size-5 font-bold" />
+						<p className="text-sm font-light text-gray-500">{selectedRoom?.detailRoom?.length} thành viên</p>
 					</div>
 				</div>
 			</div>

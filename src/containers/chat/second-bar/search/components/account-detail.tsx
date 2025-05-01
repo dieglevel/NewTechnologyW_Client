@@ -60,7 +60,6 @@ const AccountDetail = ({ data }: Props) => {
 		if (sendedFriends) {
 			const sendedFriend = sendedFriends.find((friend) => friend.receiver_id === data.id);
 			if (sendedFriend) {
-				// console.log("Sended friend: ", sendedFriend, "ID: ", data.id);
 				return true;
 			}
 		}
@@ -68,7 +67,6 @@ const AccountDetail = ({ data }: Props) => {
 		if (myListFriend) {
 			const myFriend = myListFriend.find((friend) => friend.accountId === data.id);
 			if (myFriend) {
-				// console.log("My friend: ", myFriend, "ID: ", data.id);
 				return true;
 			}
 		}

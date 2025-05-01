@@ -139,7 +139,6 @@ export const ChangeMail = () => {
 					color: "success",
 				});
 				const isSuccess = await changeEmailApi(newEmail, newPhone, sendMethod)
-				console.log("second")
 				if(isSuccess)
 					router.push(`/otp?identifier=${sendMethod==="email"?email:phone}&type=update`);
 			} catch (e) {
