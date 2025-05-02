@@ -16,6 +16,7 @@ import { normalizeMessage, normalizeRoom } from "@/utils";
 import { IRoom } from "@/types/implement/room.interface";
 import { X } from "lucide-react";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { EmojiForm } from "./components/emoji-form";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -119,12 +120,7 @@ export const FooterChat = () => {
 					onKeyDown={handleKeyDown}
 					classNames={{ input: ["bg-body"], inputWrapper: ["border-none", "shadow-none"] }}
 				/>
-				<div
-					className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background"
-					onClick={() => setShowPicker((val) => !val)}
-				>
-					<EmojiIcon className="size-6 stroke-icon-second stroke-2" />
-				</div>
+				<EmojiForm onSelectEmoji={onEmojiClick} />
 				<div
 					onClick={() => addMessage(message)}
 					className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background"

@@ -1,7 +1,6 @@
 "use client";
 import { avatar } from "@/assets/images";
 import { ChatIcon, CloudIcon, ContactIcon, SettingIcon } from "@/assets/svgs";
-import { SVGButton } from "@/components/ui";
 import { useSidebar } from "@/hooks/sidebar";
 import { AppDispatch, RootState } from "@/redux/store";
 import { SideBarSelected } from "@/redux/store/ui/sidebar";
@@ -10,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { User } from "./components/user";
 import Setting from "./components/setting/setting";
+import { SVGButton } from "@/components/ui";
 
 export const Sidebar = () => {
 	const { selected, setSelect } = useSidebar();
