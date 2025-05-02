@@ -9,6 +9,7 @@ import { LocalStorage } from "@/lib/local-storage";
 import { useEffect, useState } from "react";
 import { AddMemberModal } from "./components/modal-add";
 import { useDisclosure } from "@heroui/modal";
+import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
 
 interface Props {
 	imageUrl: string;
@@ -98,10 +99,11 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 				</div>
 
 				{selectedRoom  && (
-					<AddMemberModal
+					<GroupModal
 						open={isOpen}
-						onOpenChangeAction={onOpenChange}
+						onOpenChange={onOpenChange}
 						selectedRoom={selectedRoom}
+						isRoom={true}
 					/>
 				)}
 			</div>
