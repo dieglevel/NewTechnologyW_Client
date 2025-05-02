@@ -1,25 +1,20 @@
-import { deleteMessageById, getProfileFromAnotherUser, revokeMessage } from "@/api";
+import { deleteMessageById, revokeMessage } from "@/api";
+import { avatarDefault } from "@/assets/images";
+import { More } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
 import { LocalStorage } from "@/lib/local-storage";
+import { AppDispatch, RootState } from "@/redux/store";
+import { deleteMessage, fetchMessageByRoomId } from "@/redux/store/models/message-slice";
 import { IDetailInformation } from "@/types/implement";
 import { IMessage } from "@/types/implement/message.interface";
-import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
-import { socketService } from "@/lib/socket/socket";
-import { SocketEmit, SocketOn } from "@/constants/socket";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
-import { deleteMessage, fetchMessageByRoomId, setOneMessage } from "@/redux/store/models/message-slice";
-import { normalizeMessage } from "@/utils";
-import { setRoom } from "@/redux/store/models";
 import { Spinner } from "@heroui/spinner";
-import { avatarDefault } from "@/assets/images";
-import Loading from "@/app/loading";
-import { q } from "framer-motion/dist/types.d-B50aGbjN";
-import { More } from "@/assets/svgs";
-import { ShareModal } from "./rooms-forward";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import renderFiles from "./render-files";
 import renderSticker from "./render-sticker";
+import { ShareModal } from "./rooms-forward";
+import { IDetailAccountRoom } from "@/types/implement/room.interface";
 
 interface Props {
 	message: IMessage;
@@ -36,9 +31,9 @@ export const Message = ({ message, isSender }: Props) => {
 	const [showOnTop, setShowOnTop] = useState(false);
 	const [isLoadingImageAvatar, setIsLoadingImageAvatar] = useState<boolean>(true);
 	const accountId = localStorage.getItem(LocalStorage.userId);
-	const [detailUser, setDetailUser] = useState<IDetailInformation | null>(() => {
+	const [detailUser, setDetailUser] = useState<IDetailAccountRoom | null>(() => {
 		const user = selectedRoom?.detailRoom?.find((user) => user.id === message.accountId);
-		return user ? (user as IDetailInformation) : null;
+		return user || null;
 	});
 
 	
@@ -223,7 +218,7 @@ export const Message = ({ message, isSender }: Props) => {
 					{showForward && (
 						<ShareModal
 							open={showForward}
-							onOpenChange={setShowForward}
+							onOpenChangeAction={setShowForward}
 							content={message}
 						/>
 					)}

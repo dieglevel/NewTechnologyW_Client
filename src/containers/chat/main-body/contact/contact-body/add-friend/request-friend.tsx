@@ -89,8 +89,10 @@ const RequestFriend = ({ data }: Props) => {
 			<div className="flex-row mt-3 flex items-center justify-center gap-2 sm:mt-4 sm:gap-4">
 				<Button
 					disabled={isSubmittingAccept || isSubmittingReject}
-					className="w-full rounded-lg bg-slate-200 py-1.5 text-sm font-bold text-black transition-all duration-200 hover:bg-slate-300 sm:py-2 sm:text-base"
-					onClick={handleRejectFriend}
+					isLoading={isSubmittingReject}
+					spinnerPlacement="end"
+					className="w-full rounded-lg bg-slate-200 font-bold text-black hover:bg-slate-500"
+					onPress={handleRejectFriend}
 				>
 					{isSubmittingReject ? (
 						<span className="flex items-center justify-center">
@@ -103,8 +105,10 @@ const RequestFriend = ({ data }: Props) => {
 				</Button>
 				<Button
 					disabled={isSubmittingAccept || isSubmittingReject}
-					className="w-full rounded-lg bg-primary-400 py-1.5 text-sm font-bold text-white transition-all duration-200 hover:bg-primary-500 sm:py-2 sm:text-base"
-					onClick={handleAcceptFriend}
+					isLoading={isSubmittingAccept}
+					spinnerPlacement="end"
+					className="w-full rounded-lg bg-primary-400 font-bold text-white hover:bg-primary-500"
+					onPress={handleAcceptFriend}
 				>
 					{isSubmittingAccept ? (
 						<span className="flex items-center justify-center">

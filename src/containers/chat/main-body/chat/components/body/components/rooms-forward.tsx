@@ -27,13 +27,13 @@ interface ShareItem {
 
 interface ShareModalProps {
 	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	onOpenChangeAction: (open: boolean) => void;
 	onShare?: (selectedItems: string[], message: string, file?: File) => void;
 	items?: ShareItem[];
 	content?: IMessage;
 }
 
-export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalProps) {
+export function ShareModal({ open, onOpenChangeAction, onShare, content }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [message, setMessage] = useState("");
 	const { room, status } = useSelector((state: RootState) => state.listRoom);
@@ -52,13 +52,13 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 				});
 			}
 		}
-		onOpenChange(false);
+		onOpenChangeAction(false);
 	};
 
 	return (
 		<Modal
 			isOpen={open}
-			onOpenChange={onOpenChange}
+			onOpenChange={onOpenChangeAction}
 		>
 			<ModalContent className="space-y-4 bg-white sm:max-w-md">
 				<ModalHeader>
@@ -141,7 +141,7 @@ export function ShareModal({ open, onOpenChange, onShare, content }: ShareModalP
 				<ModalFooter className="sm:justify-between">
 					<Button
 						variant="ghost"
-						onClick={() => onOpenChange(false)}
+						onClick={() => onOpenChangeAction(false)}
 					>
 						Hủy
 					</Button>

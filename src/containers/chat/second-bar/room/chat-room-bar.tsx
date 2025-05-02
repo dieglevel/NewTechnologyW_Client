@@ -7,7 +7,7 @@ import { socketService } from "@/lib/socket/socket";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setSelectedRoom } from "@/redux/store/ui/selected-room-slice";
 import { IDetailInformation } from "@/types/implement";
-import { IDetailRoom, IRoom } from "@/types/implement/room.interface";
+import { IDetailAccountRoom, IRoom } from "@/types/implement/room.interface";
 import { caculateDuration } from "@/utils/caculate-duration";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
@@ -23,7 +23,7 @@ interface Props {
 
 export const ChatRoom = ({ room }: Props) => {
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
-	const [newAccountOwner, setNewAccountOwner] = useState<IDetailRoom[]>();
+	const [newAccountOwner, setNewAccountOwner] = useState<IDetailAccountRoom[]>();
 
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -47,8 +47,8 @@ export const ChatRoom = ({ room }: Props) => {
 						(room.type === "group"
 							? default_group
 							: room.detailRoom?.[0]?.id === account_id
-								? room.detailRoom?.[1]?.avatar || room.detailRoom?.[1]?.avatarUrl
-								: room.detailRoom?.[0]?.avatar || room.detailRoom?.[0]?.avatarUrl) ||
+								? room.detailRoom?.[1]?.avatar || room.detailRoom?.[1]?.avatar
+								: room.detailRoom?.[0]?.avatar || room.detailRoom?.[0]?.avatar) ||
 						default_group
 					}
 					width={50}

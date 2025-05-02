@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 const APP_NAME = "Zalo";
 const APP_DEFAULT_TITLE = "Zalo";
-const APP_TITLE_TEMPLATE = "%s - PWA App";
-const APP_DESCRIPTION = "Best PWA app in the world!";
+const APP_TITLE_TEMPLATE = "";
+const APP_DESCRIPTION = "";
 
 export const metadata: Metadata = {
 	applicationName: APP_NAME,

@@ -2,6 +2,8 @@ import { getIpDeviceApi } from "@/api/ip-device";
 import axios from "axios";
 import { LocalStorage } from "../local-storage";
 import { addToast } from "@heroui/toast";
+import { deleteDB } from "idb";
+import { dbName } from "../idb";
 
 export interface ErrorResponse {
 	error: string;
@@ -76,7 +78,10 @@ api.interceptors.response.use(
 				description: "Vui lòng đăng nhập lại",
 				color: "danger",
 			});
+			localStorage.removeItem(LocalStorage.ipDevice);
 			localStorage.removeItem(LocalStorage.token);
+			localStorage.removeItem(LocalStorage.userId);
+			deleteDB(dbName)
 			window.location.href = "/login";
 		}
 

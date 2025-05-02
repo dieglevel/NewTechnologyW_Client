@@ -143,6 +143,7 @@ export const UpdatePassword = () => {
 					<Button
 						isLoading={loading}
 						disabled={loading}
+						spinnerPlacement="end"
 						onPress={() => handleSubmit()}
 						size="md"
 						className="w-full bg-primary text-xl font-bold text-white"

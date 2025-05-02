@@ -89,6 +89,7 @@ export const OTP = () => {
 						size="md"
 						className="w-full bg-primary text-white"
 						isLoading={isLoading}
+						spinnerPlacement="end"
 						disabled={isLoading || otp.length < 6}
 					>
 						Tiếp tục

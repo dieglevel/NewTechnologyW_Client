@@ -1,14 +1,12 @@
-import { updateProfile, UpdateProfileRequest, uploadSingleImageApi } from "@/api";
+import { UpdateProfileRequest, uploadSingleImageApi } from "@/api";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { socketService } from "@/lib/socket/socket";
 import { IDetailInformation } from "@/types/implement";
 import { addToast } from "@heroui/toast";
-import { ZonedDateTime } from "@internationalized/date";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { DateValue, ZonedDateTime } from "@internationalized/date";
 import { Dispatch, SetStateAction } from "react";
-import { Socket } from "socket.io-client";
 
 export const handleImageChange = async (
 	id: string | null,
@@ -166,7 +164,7 @@ export const handleUpdateProfile = async (userId: string | null, profile: Update
 	}
 };
 
-export const handleCheckBirth = async (dateOfBirth: ZonedDateTime | null) => {
+export const handleCheckBirth = async (dateOfBirth: DateValue | null) => {
 	if (!dateOfBirth) {
 		addToast({
 			classNames: { title: "font-bold", description: "text-sm" },

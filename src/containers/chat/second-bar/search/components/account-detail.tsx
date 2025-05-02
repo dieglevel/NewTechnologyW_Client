@@ -187,6 +187,7 @@ const AccountDetail = ({ data }: Props) => {
 													<Button
 														color="primary"
 														onPress={handleSubmit}
+														spinnerPlacement="end"
 														isLoading={isSubmitting}
 														isDisabled={isSubmitting}
 														className="w-full text-lg font-bold"
