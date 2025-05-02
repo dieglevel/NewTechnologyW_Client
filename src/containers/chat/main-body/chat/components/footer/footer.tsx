@@ -20,16 +20,23 @@ import { EmojiForm } from "./components/emoji-form";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
+	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
-	const [showPicker, setShowPicker] = useState(false);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	// const dispatch = useDispatch<AppDispatch>();
 
-	const handleClick = () => {
+	const handleClickFile = () => {
 		if (inputRef.current) {
 			inputRef.current.click();
+		}
+	};
+
+	
+	const handleClickImage = () => {
+		if (inputImageRef.current) {
+			inputImageRef.current.click();
 		}
 	};
 
@@ -89,18 +96,20 @@ export const FooterChat = () => {
 		} catch (error) {
 			// console.error("Lỗi gửi tin nhắn:", error);
 		}
-
 	};
 
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
 			<div className="flex gap-4 px-2 py-2">
 				<StickerForm onSelectSticker={sendSticker} />
-				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background">
+				<div
+					onClick={handleClickImage}
+					className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background"
+				>
 					<ImageIcon className="size-6 stroke-icon-second" />
 				</div>
 				<div
-					onClick={handleClick}
+					onClick={handleClickFile}
 					className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background"
 				>
 					<FileIcon className="size-6 stroke-icon-second" />
@@ -137,6 +146,15 @@ export const FooterChat = () => {
 				onChange={handleChange}
 			/>
 
+			<Input
+				ref={inputImageRef}
+				type="file"
+				multiple
+				className="hidden"
+				onChange={handleChange}
+				accept="image/*"
+			/>
+
 			{file.length > 0 && (
 				<div className="flex w-full items-center gap-3 border-t-1 px-5">
 					<FilePreviewer
@@ -144,12 +162,6 @@ export const FooterChat = () => {
 						onClear={() => setFile([])}
 						onRemoveFile={handleRemoveFile}
 					/>
-				</div>
-			)}
-
-			{showPicker && (
-				<div className="absolute bottom-12 right-24 z-10">
-					<EmojiPicker onEmojiClick={onEmojiClick} />
 				</div>
 			)}
 		</div>
