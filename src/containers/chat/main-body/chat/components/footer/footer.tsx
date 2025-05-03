@@ -1,21 +1,13 @@
-import { EmojiIcon, FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
+import { FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 import { StickerForm } from "./components";
 import { useRef, useState } from "react";
 import FilePreviewer from "./components/preview-file";
-import { socketService } from "@/lib/socket/socket";
-import { SocketEmit, SocketOn } from "@/constants/socket";
 import { LocalStorage } from "@/lib/local-storage";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
-import { setRoom } from "@/redux/store/models";
-import { fetchMessageByRoomId, setMessage, setOneMessage } from "@/redux/store/models/message-slice";
-import { api } from "@/lib/axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import { sendMessage } from "@/api";
-import { normalizeMessage, normalizeRoom } from "@/utils";
-import { IRoom } from "@/types/implement/room.interface";
-import { X } from "lucide-react";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { EmojiClickData } from "emoji-picker-react";
 import { EmojiForm } from "./components/emoji-form";
 
 export const FooterChat = () => {
@@ -69,7 +61,7 @@ export const FooterChat = () => {
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
-			e.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter
+			e.preventDefault();
 			addMessage(message);
 		}
 	};
