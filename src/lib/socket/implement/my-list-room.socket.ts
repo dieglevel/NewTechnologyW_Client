@@ -14,8 +14,6 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 			newRoom.detailRoom = accountOwner;
 		}
 
-      console.log("t goi m may lan")
-
 		switch (behavior) {
 			case "add":
 				store.dispatch(setRoom([normalizeRoom(newRoom)]));

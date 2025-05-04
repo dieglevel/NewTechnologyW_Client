@@ -7,6 +7,7 @@ import { IMessage } from "@/types/implement/message.interface";
 import { socketService } from "@/lib/socket/socket";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { LocalStorage } from "@/lib/local-storage";
+import { Virtuoso } from "react-virtuoso";
 
 export const BodyChat = () => {
 	const divRef = useRef<HTMLDivElement>(null);
@@ -15,47 +16,94 @@ export const BodyChat = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const userId = localStorage.getItem(LocalStorage.userId);
+	const [paginatedMessages, setPaginatedMessages] = useState<IMessage[]>([]);
 
-	const { ref: topRef, inView } = useInView({
-		rootMargin: "100px",
-		triggerOnce: false,
-	});
+	// const { ref: topRef, inView } = useInView({
+	// 	rootMargin: "100px",
+	// 	triggerOnce: false,
+	// });
+
+	// // useEffect(() => {
+	// // 	if (message && selectedRoom) {
+	// // 		const filteredMessages = message.filter((msg) => msg.room_id === selectedRoom.id);
+	// // 		setMessages(filteredMessages);
+	// // 	}
+	// // }, [message, selectedRoom]);
 
 	// useEffect(() => {
-	// 	if (message && selectedRoom) {
-	// 		const filteredMessages = message.filter((msg) => msg.room_id === selectedRoom.id);
-	// 		setMessages(filteredMessages);
+	// 	if (inView) {
+	// 		setPagination((prev) => prev + 1);
 	// 	}
-	// }, [message, selectedRoom]);
+	// }, [inView]);
 
-	useEffect(() => {
-		if (inView) {
-			setPagination((prev) => prev + 1);
+	// const renderMessage = () => {
+	// 	const filteredMessages = message?.slice
+	// 	return (
+	// 		<>
+	// 			{message?.map((msg) => (
+	// 				<Message
+	// 					isSender={userId === msg.accountId}
+	// 					key={msg._id}
+	// 					message={msg}
+
+	// 				/>
+	// 			))}
+	// 		</>
+	// 	);
+	// };
+
+	// return (
+	// 	<div
+	// 		ref={divRef}
+	// 		className="flex h-full w-full flex-col-reverse gap-3 overflow-y-auto bg-background px-3 pb-3"
+	// 	>
+	// 		{renderMessage()}
+	// 		<div ref={topRef} />
+	// 	</div>
+	// );
+
+	const loadMore = () => {
+		if (!message?.length) return;
+
+		const total = message.length;
+		const lengthShowed = paginatedMessages.length;
+
+		if (lengthShowed >= total) return;
+
+		const loadCount = Math.min(10, total - lengthShowed);
+		const start = total - lengthShowed - loadCount;
+		const end = total - lengthShowed;
+
+		const moreMessages = message.slice(start, end);
+
+		if (moreMessages.length > 0) {
+			setPaginatedMessages((prev) => [...moreMessages, ...prev]);
 		}
-	}, [inView]);
-
-	const renderMessage = () => {
-		return (
-			<>
-				{message?.map((msg) => (
-					<Message
-						isSender={userId === msg.accountId}
-						key={msg._id}
-						message={msg}
-						
-					/>
-				))}
-			</>
-		);
 	};
 
+	useEffect(() => {
+		if (!message?.length) return;
+		const initial = message.slice(Math.max(0, message.length - 10));
+		setPaginatedMessages(initial);
+		return;
+	}, [message]);
+
 	return (
-		<div
-			ref={divRef}
-			className="flex h-full w-full flex-col-reverse gap-3 overflow-y-auto bg-background px-3 pb-3"
-		>
-			{renderMessage()}
-			<div ref={topRef} />
-		</div>
+		<Virtuoso
+			data={paginatedMessages}
+			overscan={200}
+			firstItemIndex={(message?.length ?? 0) - paginatedMessages.length}
+			initialTopMostItemIndex={(message?.length ?? 0) - 1}
+			startReached={loadMore}
+			itemContent={(index, msg) => (
+				<div className="flex h-full w-full gap-3 overflow-x-auto overflow-y-auto bg-background px-3">
+					<Message
+						key={msg._id}
+						isSender={userId === msg.accountId}
+						message={msg}
+					/>
+				</div>
+			)}
+		/>
 	);
 };

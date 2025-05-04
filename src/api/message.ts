@@ -48,7 +48,6 @@ export const sendMessage = async (data: ISend) => {
 			},
 		});
 
-
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
@@ -81,6 +80,7 @@ export const revokeMessage = async ({ messageId }: { messageId: string }) => {
 		throw error as ErrorResponse;
 	}
 };
+
 export const deleteMessageById = async ({ messageId }: { messageId: string }) => {
 	try {
 		const response = await api.delete<BaseResponse<IMessage>>(`/message/remove-room-by-my-side/${messageId}`);

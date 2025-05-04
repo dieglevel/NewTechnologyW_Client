@@ -10,13 +10,13 @@ import { Input } from "@heroui/input";
 import { Strikethrough } from "lucide-react";
 import { use, useState } from "react";
 import { useSelector } from "react-redux";
-import renderSticker from "./render-sticker";
-import renderFiles from "./render-files";
 import { forwardMessage } from "@/api";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Divider } from "@heroui/divider";
 import { Checkbox } from "@heroui/checkbox";
 import { Avatar } from "@heroui/avatar";
+import { renderSticker } from "./render-sticker";
+import { renderFiles } from "./render-files";
 
 interface ShareItem {
 	id: string;

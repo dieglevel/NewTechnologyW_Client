@@ -9,12 +9,12 @@ import { IDetailInformation } from "@/types/implement";
 import { IMessage } from "@/types/implement/message.interface";
 import { Spinner } from "@heroui/spinner";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import renderFiles from "./render-files";
-import renderSticker from "./render-sticker";
 import { ShareModal } from "./rooms-forward";
 import { IDetailAccountRoom } from "@/types/implement/room.interface";
+import { renderSticker } from "./render-sticker";
+import { renderFiles } from "./render-files";
 
 interface Props {
 	message: IMessage;
@@ -24,19 +24,17 @@ interface Props {
 export const Message = ({ message, isSender }: Props) => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
-	const [revoked, setRevoked] = useState<boolean>(message.isRevoked || false);
+	const revoked = message.isRevoked ?? false;
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const [showForward, setShowForward] = useState<boolean>(false);
 	const [isLoadingImage, setIsLoadingImage] = useState<boolean>();
 	const [showOnTop, setShowOnTop] = useState(false);
 	const [isLoadingImageAvatar, setIsLoadingImageAvatar] = useState<boolean>(true);
 	const accountId = localStorage.getItem(LocalStorage.userId);
-	const [detailUser, setDetailUser] = useState<IDetailAccountRoom | null>(() => {
-		const user = selectedRoom?.detailRoom?.find((user) => user.id === message.accountId);
-		return user || null;
-	});
+	const detailUser = useMemo(() => {
+		return selectedRoom?.detailRoom?.find((user) => user.id === message.accountId) || null;
+	}, [selectedRoom, message.accountId]);
 
-	
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -68,16 +66,6 @@ export const Message = ({ message, isSender }: Props) => {
 	const handleForward = () => {
 		setShowForward(true);
 	};
-
-	useEffect(() => {
-
-		if(message.isRevoked)
-			setRevoked(true)
-
-		// return () => {
-		// 	socketService.off(SocketOn.getRevokeMessage);
-		// };
-	}, [message]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -125,7 +113,7 @@ export const Message = ({ message, isSender }: Props) => {
 
 					<div className="group relative">
 						<div
-							className={`flex max-w-[100%] flex-col gap-2 rounded-lg p-3 ${
+							className={`flex max-w-full flex-col gap-2 rounded-lg p-3 ${
 								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"
 							} `}
 						>

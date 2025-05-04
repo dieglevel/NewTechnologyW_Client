@@ -144,7 +144,7 @@ export class IDBManager<T extends { [key: string]: any }> {
 				const request = index.getAll(keyRange);
 
 				request.onsuccess = () => {
-					const result = request.result.reverse();
+					const result = request.result;
 					resolve(result);
 				};
 

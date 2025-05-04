@@ -6,7 +6,7 @@ interface Props {
 	url: string;
 }
 
-const renderSticker = ({ url }: Props) => {
+export const renderSticker = ({ url }: Props) => {
 	return (
 		<ImageViewer src={url}>
 			<Image
@@ -22,5 +22,3 @@ const renderSticker = ({ url }: Props) => {
 		</ImageViewer>
 	);
 };
-
-export default renderSticker;
