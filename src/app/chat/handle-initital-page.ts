@@ -36,7 +36,7 @@ const initialListSended = async () => {
     }
 }
 
-const initialListReponseFriend = async () => {
+const initialListResponseFriend = async () => {
     try {
         const response = await getListResponseFriend();
         if (response?.statusCode === 200) {
@@ -65,5 +65,5 @@ export const initialDataPage = async () => {
     initialListRoom()
     initialListFriend()
     initialListSended()
-    initialListReponseFriend()
+    initialListResponseFriend()
 }

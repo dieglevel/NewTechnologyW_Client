@@ -4,7 +4,7 @@ import { store } from "@/redux/store";
 import { deleteMyListFriend, deleteRequestFriend, setMyListFriend, setRequestFriend } from "@/redux/store/models";
 import { deleteSendedFriend, setSendedFriend } from "@/redux/store/models/sended-friend-slice";
 import { IDetailInformation, IFriend, ISendedFriend } from "@/types/implement";
-import { IRequestFriend } from "@/types/implement/response/request-friend";
+import { IRequestFriend } from "@/types/implement/response/request-friend.interface";
 import { Socket } from "socket.io-client";
 
 export const FriendSocket = (socket: Socket | null) => {

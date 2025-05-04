@@ -39,6 +39,7 @@ class SocketService {
 	}
 
 	public connect() {
+		// ! IMPORTANT INITITAL DATA FROM IDB
 		try {
 			if (this.socket || !navigator.onLine) {
 				console.warn("Already connected or offline.");
