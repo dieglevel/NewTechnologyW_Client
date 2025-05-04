@@ -18,6 +18,7 @@ import { SocketOn } from "@/constants/socket";
 import { IRoom } from "@/types/implement/room.interface";
 import { normalizeRoom } from "@/utils";
 import { setRoom, updateRoom } from "@/redux/store/models";
+import { MyListRoomSocket } from "@/lib/socket/implement/my-list-room.socket";
 
 export const SecondBar = () => {
 	const divRef = useRef<HTMLDivElement>(null);
@@ -56,47 +57,6 @@ export const SecondBar = () => {
 		};
 	}, [search]);
 
-	useEffect(() => {
-		socketService.on(SocketOn.myListRoom, async (data) => {
-			const { accountOwner, room, behavior } = data;
-			const newRoom = room as IRoom;
-
-			if (accountOwner[0]?.avatar || accountOwner[0]?.avatarUrl) {
-				newRoom.detailRoom = accountOwner;
-			}
-
-			switch (behavior) {
-				case "add":
-
-					store.dispatch(setRoom([normalizeRoom(newRoom)]));
-					break;
-				case "update":
-					// addToast({
-					// 	classNames: { title: "font-bold", description: "text-sm" },
-					// 	variant: "solid",
-					// 	title: `${room.name} vừa thêm thành viên`,
-					// 	// description: "Nhóm đã được tạo thành công",
-					// 	color: "success",
-					// });
-					if( newRoom?.id || data.room?.room_id || data.room?.roomId) {
-						store.dispatch(updateRoom([normalizeRoom(newRoom)]));
-					}
-					break;
-				case "delete":
-					store.dispatch(setRoom([normalizeRoom(newRoom)]));
-					break;
-				case "disband":
-					store.dispatch(updateRoom([normalizeRoom(newRoom)]));
-					break;
-				default:
-					break;
-			}
-		});
-		return () => {
-			socketService.off(SocketOn.myListRoom);
-		};
-	}, []);
-
 	const renderContent = () => {
 		if (searchResult.length > 0) {
 			return (
@@ -113,7 +73,7 @@ export const SecondBar = () => {
 			switch (selected) {
 				case SideBarSelected.Chat:
 					return (
-						<div className="flex flex-col gap-1 ">
+						<div className="flex flex-col gap-1">
 							{status ? (
 								room?.map((item, index) => (
 									<ChatRoom

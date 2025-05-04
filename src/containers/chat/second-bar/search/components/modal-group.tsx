@@ -17,13 +17,16 @@ import { addToast } from "@heroui/toast";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { filterFriend } from "./handle";
 import { Spinner } from "@heroui/spinner";
+import { IRoom } from "@/types/implement/room.interface";
 
 interface ShareModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	selectedRoom?: IRoom;
+	isRoom?: boolean;
 }
 
-export function GroupModal({ open, onOpenChange }: ShareModalProps) {
+export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [nameGroup, setNameGroup] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
@@ -127,11 +130,20 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
 								onClick={() => toggleItem(item.accountId ?? "")}
 							>
-								<Checkbox
-									id={item.accountId}
-									checked={false}
-									isSelected={selectedItems.includes(item.accountId ?? "")}
-								/>
+								{selectedRoom?.detailRoom?.find((member) => member.id === item.accountId) &&
+								isRoom ? (
+									<Checkbox
+										id={item.accountId}
+										defaultSelected
+										isDisabled
+									/>
+								) : (
+									<Checkbox
+										id={item.accountId}
+										onChange={() => toggleItem(item.accountId || "")}
+										isSelected={selectedItems.includes(item.accountId ?? "")}
+									/>
+								)}
 								<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
 								<p className="text-md font-bold">{item?.detail?.fullName || "-"}</p>
 							</div>
@@ -157,11 +169,14 @@ export function GroupModal({ open, onOpenChange }: ShareModalProps) {
 						isLoading={isLoading}
 						spinnerPlacement="end"
 					>
-						{
-							isLoading ? (
-								<Spinner color="white" size="sm"/>
-							) : "Thêm thành viên"
-						}
+						{isLoading ? (
+							<Spinner
+								color="white"
+								size="sm"
+							/>
+						) : (
+							"Thêm thành viên"
+						)}
 					</Button>
 				</ModalFooter>
 			</ModalContent>

@@ -1,34 +1,34 @@
-import { EmojiIcon, FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
+import { FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 import { StickerForm } from "./components";
 import { useRef, useState } from "react";
 import FilePreviewer from "./components/preview-file";
-import { socketService } from "@/lib/socket/socket";
-import { SocketEmit, SocketOn } from "@/constants/socket";
 import { LocalStorage } from "@/lib/local-storage";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
-import { setRoom } from "@/redux/store/models";
-import { fetchMessageByRoomId, setMessage, setOneMessage } from "@/redux/store/models/message-slice";
-import { api } from "@/lib/axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import { sendMessage } from "@/api";
-import { normalizeMessage, normalizeRoom } from "@/utils";
-import { IRoom } from "@/types/implement/room.interface";
-import { X } from "lucide-react";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { EmojiClickData } from "emoji-picker-react";
+import { EmojiForm } from "./components/emoji-form";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
+	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
-	const [showPicker, setShowPicker] = useState(false);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	// const dispatch = useDispatch<AppDispatch>();
 
-	const handleClick = () => {
+	const handleClickFile = () => {
 		if (inputRef.current) {
 			inputRef.current.click();
+		}
+	};
+
+	
+	const handleClickImage = () => {
+		if (inputImageRef.current) {
+			inputImageRef.current.click();
 		}
 	};
 
@@ -61,7 +61,7 @@ export const FooterChat = () => {
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
-			e.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter
+			e.preventDefault();
 			addMessage(message);
 		}
 	};
@@ -88,18 +88,20 @@ export const FooterChat = () => {
 		} catch (error) {
 			// console.error("Lỗi gửi tin nhắn:", error);
 		}
-
 	};
 
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
 			<div className="flex gap-4 px-2 py-2">
 				<StickerForm onSelectSticker={sendSticker} />
-				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background">
+				<div
+					onClick={handleClickImage}
+					className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background"
+				>
 					<ImageIcon className="size-6 stroke-icon-second" />
 				</div>
 				<div
-					onClick={handleClick}
+					onClick={handleClickFile}
 					className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background"
 				>
 					<FileIcon className="size-6 stroke-icon-second" />
@@ -119,12 +121,7 @@ export const FooterChat = () => {
 					onKeyDown={handleKeyDown}
 					classNames={{ input: ["bg-body"], inputWrapper: ["border-none", "shadow-none"] }}
 				/>
-				<div
-					className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background"
-					onClick={() => setShowPicker((val) => !val)}
-				>
-					<EmojiIcon className="size-6 stroke-icon-second stroke-2" />
-				</div>
+				<EmojiForm onSelectEmoji={onEmojiClick} />
 				<div
 					onClick={() => addMessage(message)}
 					className="flex h-8 w-[32px] flex-none cursor-pointer items-center justify-center rounded-sm hover:bg-background"
@@ -141,6 +138,15 @@ export const FooterChat = () => {
 				onChange={handleChange}
 			/>
 
+			<Input
+				ref={inputImageRef}
+				type="file"
+				multiple
+				className="hidden"
+				onChange={handleChange}
+				accept="image/*"
+			/>
+
 			{file.length > 0 && (
 				<div className="flex w-full items-center gap-3 border-t-1 px-5">
 					<FilePreviewer
@@ -148,12 +154,6 @@ export const FooterChat = () => {
 						onClear={() => setFile([])}
 						onRemoveFile={handleRemoveFile}
 					/>
-				</div>
-			)}
-
-			{showPicker && (
-				<div className="absolute bottom-12 right-24 z-10">
-					<EmojiPicker onEmojiClick={onEmojiClick} />
 				</div>
 			)}
 		</div>

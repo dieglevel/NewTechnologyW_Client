@@ -3,17 +3,16 @@ import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { AddMemberModal } from "../../components/header/components/modal-add";
 import { ModalConfirm } from "./modal-confirm";
 import { deleteMember } from "@/api";
 import { addToast } from "@heroui/toast";
-import { ModalAddMember } from "./modal-add";
+import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
 
 export const MembersOption = () => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
 
-	const [isShowAdd, setShowAdd] = useState<boolean>(false);
+	const [isOpen, setOpen] = useState<boolean>(false);
 	const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 	const [openModal, setOpenModal] = useState(false);
 	const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
@@ -21,7 +20,7 @@ export const MembersOption = () => {
 	const members = selectedRoom?.detailRoom || [];
 
 	const handleModalAdd = () => {
-		setShowAdd(!isShowAdd);
+		setOpen(!isOpen);
 	};
 
 	const handleDeleteClick = (memberId: string) => {
@@ -130,10 +129,11 @@ export const MembersOption = () => {
 				))}
 			</div>
 			{selectedRoom && (
-				<ModalAddMember
-					open={isShowAdd}
-					onOpenChange={setShowAdd}
+				<GroupModal
+					open={isOpen}
+					onOpenChange={setOpen}
 					selectedRoom={selectedRoom}
+					isRoom={true}
 				/>
 			)}
 			{account_id === selectedMemberId ? (
