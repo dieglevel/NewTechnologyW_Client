@@ -2,11 +2,9 @@ import Image from "next/image";
 import React, { useState } from "react";
 import logo from "@/assets/images/logo.png";
 import ImageViewer from "@/components/image-preview";
-import { Bin } from "@/assets/svgs";
+import { Bin, PDFIcon, WordIcon } from "@/assets/svgs";
 import { doc, pdf } from "@/assets/images";
 import FilePreview from "@/assets/svgs/filePreview";
-import Word from "@/assets/svgs/word";
-import PDF from "@/assets/svgs/pdf";
 
 interface FilePreviewerProps {
 	files: File[];
@@ -72,9 +70,9 @@ const FilePreviewer = ({ files, onClear, onRemoveFile }: FilePreviewerProps) => 
 										className="h-[50px] w-[50px] rounded-md object-cover"
 									/>
 								) : isPDF ? (
-									<PDF className="h-[50px] w-[50px] rounded-md object-cover" />
+									<PDFIcon className="h-[50px] w-[50px] rounded-md object-cover" />
 								) : isDoc ? (
-									<Word className="h-[50px] w-[50px] rounded-md object-cover" />
+									<WordIcon className="h-[50px] w-[50px] rounded-md object-cover" />
 								) : (
 									<FilePreview className="h-[50px] w-[50px] rounded-md object-cover" />
 								)}

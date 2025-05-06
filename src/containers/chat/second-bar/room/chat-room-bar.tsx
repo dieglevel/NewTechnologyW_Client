@@ -83,7 +83,7 @@ export const ChatRoom = ({ room }: Props) => {
 						{room.isDisbanded ? (
 							"Đã giải tán"
 						) : (
-							<>
+							<div className="w-[230px] flex ">
 								{room.latestMessage?.accountId === account_id ? "Bạn: " : ""}
 								{room.latestMessage?.isRevoked ? (
 									<span>Đã thu hồi</span>
@@ -105,7 +105,7 @@ export const ChatRoom = ({ room }: Props) => {
 								) : (
 									<span className="line-clamp-1">Chưa có tin nhắn</span>
 								)}
-							</>
+							</div>
 						)}
 					</div>
 

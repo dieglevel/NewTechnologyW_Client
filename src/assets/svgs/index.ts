@@ -38,6 +38,7 @@ export * from "./bin"
 export * from "./filePreview"
 export * from "./pdf"
 export * from "./word"
+export * from "./excel"
 
 export * from "./sticker-message"
 export * from "./more"

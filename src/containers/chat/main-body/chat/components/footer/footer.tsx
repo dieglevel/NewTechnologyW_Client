@@ -1,4 +1,4 @@
-import { FileIcon, ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
+import { ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 import { StickerForm } from "./components";
 import { useRef, useState } from "react";
@@ -9,6 +9,7 @@ import { RootState } from "@/redux/store";
 import { sendMessage } from "@/api";
 import { EmojiClickData } from "emoji-picker-react";
 import { EmojiForm } from "./components/emoji-form";
+import { FileIcon } from "lucide-react";
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);

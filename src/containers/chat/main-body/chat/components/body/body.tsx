@@ -7,14 +7,10 @@ import { IMessage } from "@/types/implement/message.interface";
 import { socketService } from "@/lib/socket/socket";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { LocalStorage } from "@/lib/local-storage";
-import { Virtuoso } from "react-virtuoso";
+import { Virtuoso, VirtuosoProps } from "react-virtuoso";
 
 export const BodyChat = () => {
-	const divRef = useRef<HTMLDivElement>(null);
-	const [pagination, setPagination] = useState<number>(1);
 	const { message, status } = useSelector((state: RootState) => state.message);
-	const [loading, setLoading] = useState<boolean>(false);
-	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const userId = localStorage.getItem(LocalStorage.userId);
 	const [paginatedMessages, setPaginatedMessages] = useState<IMessage[]>([]);
 
@@ -62,6 +58,7 @@ export const BodyChat = () => {
 	// 	</div>
 	// );
 
+
 	const loadMore = () => {
 		if (!message?.length) return;
 
@@ -89,21 +86,25 @@ export const BodyChat = () => {
 	}, [message]);
 
 	return (
-		<Virtuoso
-			data={paginatedMessages}
-			overscan={200}
-			firstItemIndex={(message?.length ?? 0) - paginatedMessages.length}
-			initialTopMostItemIndex={(message?.length ?? 0) - 1}
-			startReached={loadMore}
-			itemContent={(index, msg) => (
-				<div className="flex h-full w-full gap-3 overflow-x-auto overflow-y-auto bg-background px-3">
-					<Message
-						key={msg._id}
-						isSender={userId === msg.accountId}
-						message={msg}
-					/>
-				</div>
-			)}
-		/>
+		<div className="h-full w-full pt-3">
+			<Virtuoso
+				className="pt-3"
+				data={paginatedMessages}
+				overscan={200}
+				followOutput="auto"
+				firstItemIndex={Math.max(0, (message?.length ?? 0) - paginatedMessages.length)}
+				initialTopMostItemIndex={(message?.length ?? 0) - 1}
+				startReached={loadMore}
+				itemContent={(index, msg) => (
+					<div className="flex h-full w-full gap-3 bg-background px-3">
+						<Message
+							key={msg._id}
+							isSender={userId === msg.accountId}
+							message={msg}
+						/>
+					</div>
+				)}
+			/>
+		</div>
 	);
 };

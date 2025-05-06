@@ -113,7 +113,7 @@ export const Message = ({ message, isSender }: Props) => {
 
 					<div className="group relative">
 						<div
-							className={`flex max-w-full flex-col gap-2 rounded-lg p-3 ${
+							className={`flex max-w-[400px] flex-col gap-2 rounded-lg p-3 ${
 								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"
 							} `}
 						>
@@ -130,7 +130,7 @@ export const Message = ({ message, isSender }: Props) => {
 											{renderSticker({ url: message.sticker || "" })}
 										</div>
 									) : (
-										<p className={`text-sm ${isSender ? "text-text-seen" : "text-text"}`}>
+										<p className={`text-sm ${isSender ? "text-text-seen" : "text-text"} break-words`}>
 											{message.content}
 										</p>
 									)}
