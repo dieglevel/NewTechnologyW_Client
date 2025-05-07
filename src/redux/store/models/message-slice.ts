@@ -27,19 +27,15 @@ export const fetchMessageByRoomId = createAsyncThunk(
 	`${thunkDB}${thunkAction.fetchByRoomId}${thunkName}`,
 	async (roomId: string): Promise<IMessage[]> => {
 		const messages = await idb.getMessagesByRoomId(roomId);
-		return messages || [];
+		return messages;
 	},
 );
 
 export const setMessage = createAsyncThunk(
 	`${thunkDB}${thunkAction.set}${thunkName}`,
-	async ({ messages }: { messages: IMessage[]}): Promise<IMessage[]> => {
-		try {
-			await idb.updateMany(messages);
-			return messages;
-		} catch (error) {
-			return [];
-		}
+	async ({ messages }: { messages: IMessage[] }): Promise<IMessage[]> => {
+		await idb.updateMany(messages);
+		return messages;
 	},
 );
 
@@ -49,8 +45,7 @@ export const setOneMessage = createAsyncThunk(
 		try {
 			await idb.update(message);
 			return message;
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 );
 
@@ -102,14 +97,19 @@ const messageSlice = createSlice({
 
 				if (action.payload) {
 					if (state.message) {
-						action.payload.forEach((newMessage) => {
-							const index = state.message!.findIndex((m) => m._id === newMessage._id);
-							if (index >= 0) {
-								state.message![index] = newMessage;
-							} else {
-								state.message!.push(newMessage);
-							}
-						});
+						if (action.payload.length > 0) {
+							console.log("first")
+							action.payload.forEach((newMessage) => {
+								const index = state.message!.findIndex((m) => m._id === newMessage._id);
+								if (index >= 0) {
+									state.message![index] = newMessage;
+								} else {
+									state.message!.push(newMessage);
+								}
+							});
+						} else {
+							state.message = action.payload;
+						}
 					} else {
 						state.message = action.payload;
 					}
@@ -132,7 +132,7 @@ const messageSlice = createSlice({
 						if (index >= 0) {
 							state.message![index] = newMessage;
 						} else {
-							state.message = [...state.message, newMessage]; 
+							state.message = [...state.message, newMessage];
 						}
 					} else {
 						state.message = [newMessage];

@@ -1,59 +1,52 @@
 import ImageViewer from "@/components/image-preview";
 import { IMessage } from "@/types/implement/message.interface";
-import { DocumentViewer } from "react-documents";
 import { CodePreview } from "./code-preview";
 import { ExcelIcon, FileIcon, PDFIcon, WordIcon } from "@/assets/svgs";
 import { Button } from "@heroui/button";
-import { Download, DownloadIcon } from "lucide-react";
+import { DownloadIcon } from "lucide-react";
 import { formatFileSize } from "@/utils/format-file-size";
+import { getDataFile } from "@/api";
+import { useEffect, useState } from "react";
+import { downloadFile, previewFile } from "@/utils/handle-file";
 
 interface Props {
 	message: IMessage;
 	isSender: boolean;
 }
 
-export const renderFiles = ({ message, isSender }: Props) => {
-	if (!message.files || message.files.length === 0) return null;
+export const renderFiles = ({ message }: Props) => {
+	const [textData, setTextData] = useState<string>();
 
-	const renderPreviewableFile = (fileUrl: string, type: string, sizeInBytes?: number) => {
-		if (!fileUrl || !type || !sizeInBytes) return null;
+	const textLikeTypes = ["application/json", "application/javascript", "application/xml", "application/x-sh"];
 
-		const textLikeTypes = [
-			"application/json",
-			"application/javascript",
-			"application/xml",
-			"application/x-sh",
-			"text/x-python",
-			"text/x-c",
-			"text/x-java-source",
-			"text/x-markdown",
-		];
+	useEffect(() => {
+		const fetchData = async () => {
+			for (const file of message.files ?? []) {
+				const type = file.data?.type || "";
+				if (type.startsWith("text/") || textLikeTypes.includes(type)) {
+					try {
+						const dataFile = await getDataFile(file.url);
+						setTextData(dataFile);
+					} catch (err) {
+						console.error("Failed to fetch file content", err);
+					}
+				}
+			}
+		};
 
-		const isText = type.startsWith("text/") || textLikeTypes.includes(type);
+		fetchData();
+	}, [message]);
 
-		if (isText) {
-			return <CodePreview url={fileUrl} />;
-		}
-
-		return null;
-	};
-
-	const getFileIcon = (fileType: string) => {
-		if (fileType.includes("pdf")) return <PDFIcon className="size-11" />;
-		if (fileType.includes("word")) return <WordIcon className="size-11" />;
-		if (fileType.includes("sheet")) return <ExcelIcon className="size-11" />;
+	const getFileIcon = (type: string) => {
+		if (type.includes("pdf")) return <PDFIcon className="size-11" />;
+		if (type.includes("word")) return <WordIcon className="size-11" />;
+		if (type.includes("sheet")) return <ExcelIcon className="size-11" />;
 		return <FileIcon className="size-11" />;
-	};
-
-	const handlePreview = (fileUrl: string) => {
-		if (!fileUrl) return;
-		const viewerUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(fileUrl)}`;
-		window.open(viewerUrl);
 	};
 
 	return (
 		<div className="flex flex-wrap gap-2">
-			{message.files.map((file, index) => {
+			{message.files?.map((file, index) => {
 				const fileType = file.data?.type || "";
 				const isImage = fileType.startsWith("image/");
 				const isVideo = fileType.startsWith("video/");
@@ -84,9 +77,7 @@ export const renderFiles = ({ message, isSender }: Props) => {
 							width={300}
 							height={200}
 							className="rounded-lg object-cover"
-						>
-							Your browser does not support the video tag.
-						</video>
+						/>
 					);
 				}
 
@@ -95,26 +86,38 @@ export const renderFiles = ({ message, isSender }: Props) => {
 						key={index}
 						className="flex flex-col gap-2"
 					>
-						{renderPreviewableFile(file.url, fileType, Number(file.data?.size) || 0)}
+						{(file.data?.type?.startsWith("text/") ||
+							textLikeTypes.includes(file.data?.type || "")) &&
+						textData ? (
+							<CodePreview data={textData} />
+						) : null}
 						<Button
 							type="button"
-							onClick={() => handlePreview(file.url)}
-							className="flex h-fit w-full items-center justify-between gap-3 rounded-lg bg-blue-200 p-0"
+							onClick={() => previewFile(file.url)}
+							className="flex h-fit w-full justify-between gap-3 rounded-lg bg-blue-200 p-0"
 						>
 							<div>{getFileIcon(fileType)}</div>
 							<div className="flex w-full flex-col">
-								<div className="self-start text-sm">
-									<span className="line-clamp-1 max-w-[280px] truncate font-bold text-gray-800">
-										{file.data?.name}
-									</span>
-								</div>
+								<span className="line-clamp-1 max-w-[280px] self-start truncate font-bold text-gray-800">
+									{file.data?.name}
+								</span>
 								<div className="flex justify-between">
-									<span className="self-end text-xs text-gray-500">
+									<span className="text-xs text-gray-500">
 										{formatFileSize(Number(file.data?.size) || 0)}
 									</span>
-									<div className="rounded-sm bg-white p-1">
+									<a
+										className="rounded-sm bg-white p-1"
+										onClick={(e) => {
+											e.stopPropagation();
+											downloadFile(
+												textData || file.url,
+												file.data?.name || "file.txt",
+												fileType,
+											);
+										}}
+									>
 										<DownloadIcon className="size-4 self-center text-gray-500" />
-									</div>
+									</a>
 								</div>
 							</div>
 						</Button>

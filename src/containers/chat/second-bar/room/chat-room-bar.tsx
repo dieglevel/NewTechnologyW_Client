@@ -23,8 +23,6 @@ interface Props {
 
 export const ChatRoom = ({ room }: Props) => {
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
-	const [newAccountOwner, setNewAccountOwner] = useState<IDetailAccountRoom[]>();
-
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleClick = () => {

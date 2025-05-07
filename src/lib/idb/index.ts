@@ -219,6 +219,8 @@ export class IDBManager<T extends { [key: string]: any }> {
 		const store = await this.getStore("readwrite");
 		return new Promise((resolve, reject) => {
 			let count = 0;
+			if (!data || data.length === 0)
+				resolve();
 			data.forEach((item) => {
 				const request = store.put(item);
 				request.onsuccess = () => {

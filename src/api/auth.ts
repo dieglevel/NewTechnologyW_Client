@@ -197,18 +197,17 @@ export const changeEmailApi = async (email: string, phone: string, typeSend: str
 
 export const findAccount = async (identifier: string) => {
 	try {
-
 		// check if phone number === true
 		const isPhoneNumber = identifier.match(/^\d{10}$/);
 		if (isPhoneNumber) {
-			const response = await api.get<BaseResponse<ISearchAccount[]>>(`auth/search?keywork=${identifier}`,);
+			const response = await api.get<BaseResponse<ISearchAccount[]>>(`auth/search?keywork=${identifier}`);
 			return response.data;
 		}
 
-		const response = await api.get<BaseResponse<ISearchAccount[]>>(`auth/search?keywork=${identifier}`,);
+		const response = await api.get<BaseResponse<ISearchAccount[]>>(`auth/search?keywork=${identifier}`);
 
 		return response.data;
 	} catch (e) {
 		throw e as ErrorResponse;
 	}
-}
+};

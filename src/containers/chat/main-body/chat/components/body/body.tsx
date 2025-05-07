@@ -13,6 +13,7 @@ export const BodyChat = () => {
 	const { message, status } = useSelector((state: RootState) => state.message);
 	const userId = localStorage.getItem(LocalStorage.userId);
 	const [paginatedMessages, setPaginatedMessages] = useState<IMessage[]>([]);
+	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	// const { ref: topRef, inView } = useInView({
 	// 	rootMargin: "100px",
@@ -79,10 +80,12 @@ export const BodyChat = () => {
 	};
 
 	useEffect(() => {
-		if (!message?.length) return;
+		if (!message?.length) {
+			setPaginatedMessages([]);
+			return;
+		}
 		const initial = message.slice(Math.max(0, message.length - 10));
 		setPaginatedMessages(initial);
-		return;
 	}, [message]);
 
 	return (

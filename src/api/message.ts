@@ -2,6 +2,7 @@ import { api, ErrorResponse } from "@/lib/axios";
 import { BaseResponse } from "@/types";
 import { IMessage } from "@/types/implement/message.interface";
 import { IRoom } from "@/types/implement/room.interface";
+import axios from "axios";
 
 interface ISend {
 	accountId?: string;
@@ -85,6 +86,15 @@ export const deleteMessageById = async ({ messageId }: { messageId: string }) =>
 	try {
 		const response = await api.delete<BaseResponse<IMessage>>(`/message/remove-room-by-my-side/${messageId}`);
 		return response;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const getDataFile = async (fileUrl: string) => {
+	try {
+		const response = await axios.get(fileUrl);
+		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
 	}

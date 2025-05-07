@@ -9,7 +9,7 @@ export const OptionView = () => {
 
 	return (
 		<div className="relative flex h-lvh w-4/12 flex-col overflow-hidden border-l-1">
-			<HeaderOption />
+			<HeaderOption showMember={showMember} handleOptions={() => setShowMember(false)}  />
 			<BodyOption onClick={() => setShowMember(!showMember)} />
 
 			<div

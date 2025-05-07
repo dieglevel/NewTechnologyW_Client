@@ -12,7 +12,6 @@ import { SocketEmit, SocketOn } from "@/constants/socket";
 import { Spinner } from "@heroui/spinner";
 import { DisbandedGroup } from "./main-option/components/disband-group";
 
-
 export const BodyView = () => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const dispatch = useDispatch<AppDispatch>();
@@ -51,7 +50,6 @@ export const BodyView = () => {
 		return () => {
 			socketService.off(SocketOn.joinRoom);
 			socketService.off(SocketOn.sendMessage);
-			socketService.off(SocketOn.getRevokeMessage);
 		};
 	}, [selectedRoom]);
 
@@ -62,10 +60,7 @@ export const BodyView = () => {
 		if (!selectedRoom.isDisbanded) {
 			const fetchMessages = async () => {
 				const data = await getMessageByRoomId(selectedRoom.id || "");
-				if (data && data.data) {
-					dispatch(setMessage({ messages: data.data }));
-				}
-
+				await dispatch(setMessage({ messages: data.data }));
 				await dispatch(fetchMessageByRoomId(selectedRoom.id || ""));
 			};
 
