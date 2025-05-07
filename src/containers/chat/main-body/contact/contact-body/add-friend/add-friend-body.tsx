@@ -29,7 +29,7 @@ const AddFriendBody = () => {
 				</div>
 			</div>
 			<div className="flex flex-1 flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
-				<div className="mb-6 flex items-center justify-between">
+				<div className=" flex items-center justify-between">
 					<h2 className="text-lg font-semibold text-gray-800">
 						Lời mời đã nhận
 						<span className="ml-2 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
