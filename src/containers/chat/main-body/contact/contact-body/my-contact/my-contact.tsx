@@ -30,7 +30,7 @@ const MyContact = () => {
 					<h1 className="ml-3 text-lg font-semibold text-gray-800">Danh sách bạn bè</h1>
 				</div>
 			</div>
-			<div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
+			<div className="flex flex-1 flex-col gap-4 overflow-y-auto bg-gray-200 p-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-lg font-semibold text-gray-800">
 						Bạn bè
@@ -38,8 +38,7 @@ const MyContact = () => {
 							{myListFriend?.length || 0}
 						</span>
 					</h2>
-				</div>
-				<Input
+					<Input
 					placeholder="Tìm bạn"
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
@@ -53,6 +52,8 @@ const MyContact = () => {
 						inputWrapper: ["border", "shadow-none", "bg-body"],
 					}}
 				/>
+				</div>
+				
 				<div className="mb-6 flex h-fit flex-col gap-5">
 					{filteredFriends?.map((friend) => (
 						<Friend

@@ -1,5 +1,4 @@
 import { avatar } from '@/assets/images';
-import { BaseEntity } from "../base-entity";
 import { IMessage } from "./message.interface";
 
 
@@ -24,4 +23,5 @@ export interface IDetailAccountRoom  {
 	id?: string;
 	fullName?: string;
 	avatar?: string;
+	avatarUrl?: string;
 }

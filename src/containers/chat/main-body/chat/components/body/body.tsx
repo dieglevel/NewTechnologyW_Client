@@ -91,15 +91,16 @@ export const BodyChat = () => {
 	return (
 		<div className="h-full w-full pt-3">
 			<Virtuoso
-				className="pt-3"
+				
 				data={paginatedMessages}
 				overscan={200}
 				followOutput="auto"
-				firstItemIndex={Math.max(0, (message?.length ?? 0) - paginatedMessages.length)}
-				initialTopMostItemIndex={(message?.length ?? 0) - 1}
+				// Key configurations for bottom-up insertion:
+				firstItemIndex={Math.max(0, (message ? message.length : 0) - paginatedMessages.length)}
+				initialTopMostItemIndex={(message ? message.length : 0) - 1 || 0}
 				startReached={loadMore}
 				itemContent={(index, msg) => (
-					<div className="flex h-full w-full gap-3 bg-background px-3">
+					<div className="px-4 py-1">
 						<Message
 							key={msg._id}
 							isSender={userId === msg.accountId}
