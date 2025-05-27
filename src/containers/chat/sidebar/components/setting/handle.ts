@@ -1,11 +1,10 @@
+import { logoutApi } from "@/api";
 import { dbName } from "@/lib/idb";
-import { LocalStorage } from "@/lib/local-storage";
 import { deleteDB } from "idb";
 
-export const handleLogOut = () => {
-   localStorage.removeItem(LocalStorage.ipDevice);
-   localStorage.removeItem(LocalStorage.token);
-   localStorage.removeItem(LocalStorage.userId);
+export const handleLogOut = async() => {
+   console.log("handleLogOut called");
+   await logoutApi()
    window.location.href = "/login";
    deleteDB(dbName)
 }

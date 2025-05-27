@@ -1,8 +1,9 @@
 import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { BaseResponse } from "@/types";
-import { IAuth, IDetailInformation } from "@/types/implement";
+import { CreateNotificationTokenDto, IAuth, IDetailInformation } from "@/types/implement";
 import { ISearchAccount } from "@/types/implement/response";
+import { getFcmTokenWithSw, registerServiceWorker } from "../lib/firebase/firebase.service";
 
 export const loginApi = async (identifier: string, password: string) => {
 	try {
@@ -13,12 +14,22 @@ export const loginApi = async (identifier: string, password: string) => {
 				identifier: phone84,
 				password,
 			});
+			
 
 			localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 			localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 			return response.data;
 		}
 		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
+		const fcmToken = await getFcmTokenWithSw();
+			console.log("FCM Token:", fcmToken);
+			
+			 await api.post<BaseResponse<void>>("/notification", {
+				fcm_token:fcmToken ,
+				accountId: response.data.data.userId,
+				platform: "web",
+				jwt_token: response.data.data.accessToken,
+			} as CreateNotificationTokenDto);
 		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 		localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 		return response.data;
@@ -211,3 +222,14 @@ export const findAccount = async (identifier: string) => {
 		throw e as ErrorResponse;
 	}
 };
+export const logoutApi = async () => {
+	try {
+		const response = await api.post<BaseResponse<void>>("/auth/logout");
+		localStorage.removeItem(LocalStorage.ipDevice);
+		localStorage.removeItem(LocalStorage.token);
+		localStorage.removeItem(LocalStorage.userId);
+		return response.data;
+	} catch (e) {
+		throw e as ErrorResponse;
+	}
+}

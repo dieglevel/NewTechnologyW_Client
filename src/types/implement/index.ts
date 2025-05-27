@@ -6,3 +6,4 @@ export * from "./friend.interface";
 export * from "./message.interface"
 export * from "./room.interface"
 export * from "./sended-friend.interface";
+export * from "./notification.interface";
