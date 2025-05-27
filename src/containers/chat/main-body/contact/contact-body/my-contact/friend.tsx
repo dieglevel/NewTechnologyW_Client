@@ -76,16 +76,19 @@ const FriendCard = ({ data, selectedId, setSelectedId }: Props) => {
 	};
 
 	return (
-		<div
-			className="group relative w-full rounded-xl bg-body p-5 shadow-sm hover:shadow-md"
-		>
-			<div className="absolute inset-0 bg-gradient-to-r from-primary-50 rounded-xl opacity-0 group-hover:opacity-100" />
+		<div className="group relative w-full rounded-xl bg-body p-5 shadow-sm hover:shadow-md">
+			<div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-50 opacity-0 group-hover:opacity-100" />
 
 			<div className="relative flex items-center justify-between gap-4">
 				<div className="flex items-center gap-4">
 					<div className="relative">
 						<div className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary-300 to-primary-500 opacity-75 blur-sm group-hover:opacity-100" />
-						<div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white bg-white shadow-inner">
+						<div
+							className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white bg-white shadow-inner cursor-pointer"
+							onClick={() => {
+								onOpen();
+							}}
+						>
 							<Image
 								src={data?.detail?.avatarUrl ?? avatarDefault}
 								alt={data?.detail?.fullName ?? "Friend"}
@@ -107,7 +110,7 @@ const FriendCard = ({ data, selectedId, setSelectedId }: Props) => {
 					onPress={() => setSelectedId(isActive ? null : (data.friendId ?? null))}
 					isIconOnly
 					isDisabled={isLoading}
-					className={`flex items-center gap-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-700 hover:bg-gray-200`}
+					className={`flex items-center gap-2 rounded-full bg-gray-100 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-200`}
 				>
 					{isLoading ? <Spinner /> : <More className="h-5 w-5" />}
 				</Button>
@@ -125,7 +128,7 @@ const FriendCard = ({ data, selectedId, setSelectedId }: Props) => {
 					>
 						Xem thông tin
 					</button>
-					<Divider/>
+					<Divider />
 					<button
 						className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
 						onClick={() => {

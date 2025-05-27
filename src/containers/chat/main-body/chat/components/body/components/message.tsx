@@ -130,7 +130,9 @@ export const Message = ({ message, isSender }: Props) => {
 											{renderSticker({ url: message.sticker || "" })}
 										</div>
 									) : (
-										<p className={`text-sm ${isSender ? "text-text-seen" : "text-text"} break-words`}>
+										<p
+											className={`text-sm ${isSender ? "text-text-seen" : "text-text"} break-words`}
+										>
 											{message.content}
 										</p>
 									)}
@@ -151,7 +153,7 @@ export const Message = ({ message, isSender }: Props) => {
 						{isSender && !revoked && (
 							<div className="absolute -left-6 bottom-0 opacity-0 transition-opacity group-hover:opacity-100">
 								<button
-									className="rounded-full p-1 hover:bg-gray-200"
+									className="size-5 rounded-full p-1 hover:bg-gray-200"
 									onClick={toggleOptions}
 								>
 									<More />
@@ -160,9 +162,9 @@ export const Message = ({ message, isSender }: Props) => {
 						)}
 
 						{!isSender && !revoked && (
-							<div className="absolute -right-6 bottom-0 group-hover:opacity-100">
+							<div className="absolute -right-6 bottom-0 opacity-0 group-hover:opacity-100">
 								<button
-									className="rounded-full p-1 hover:bg-gray-200"
+									className="rounded-full size-5 p-1 hover:bg-gray-200"
 									onClick={toggleOptions}
 								>
 									<More />

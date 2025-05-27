@@ -50,39 +50,69 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 
 	const handleCreateGroup = async () => {
 		setIsLoading(true);
-		if (!nameGroup) {
-			addToast({
-				variant: "solid",
-				color: "danger",
-				title: "Tạo nhóm thất bại",
-				description: "Vui lòng nhập tên nhóm",
-			});
-			setIsLoading(false);
-			return;
-		}
-		const dataGroup = {
-			avatarUrl: avatar,
-			name: nameGroup,
-		};
+		if (!selectedRoom) {
+			if (!nameGroup) {
+				addToast({
+					variant: "solid",
+					color: "danger",
+					title: "Tạo nhóm thất bại",
+					description: "Vui lòng nhập tên nhóm",
+				});
+				setIsLoading(false);
+				return;
+			}
+			const dataGroup = {
+				avatarUrl: avatar,
+				name: nameGroup,
+			};
 
-		const data = await createRoom({ name: nameGroup, avatarUrl: avatar || undefined });
+			const data = await createRoom({ name: nameGroup, avatarUrl: avatar || undefined });
 
-		if (data.statusCode === 200) {
-			const room = data.data;
-			await addMember({
-				roomId: room.id || "",
+			if (data.statusCode === 200) {
+				const room = data.data;
+				await addMember({
+					roomId: room.id || "",
+					listAccount: selectedItems,
+				});
+
+				addToast({
+					variant: "solid",
+					color: "success",
+					title: "Tạo nhóm thành công",
+					description: "Nhóm đã được tạo thành công",
+				});
+
+				onOpenChange(false);
+			}
+		} else {
+			if (selectedItems.length === 0) {
+				addToast({
+					variant: "solid",
+					color: "danger",
+					title: "Thêm thành viên thất bại",
+					description: "Vui lòng chọn thành viên để thêm vào nhóm",
+				});
+				setIsLoading(false);
+				return;
+			}
+
+			const data = await addMember({
+				roomId: selectedRoom.id || "",
 				listAccount: selectedItems,
 			});
 
-			addToast({
-				variant: "solid",
-				color: "success",
-				title: "Tạo nhóm thành công",
-				description: "Nhóm đã được tạo thành công",
-			});
+			if (data.statusCode === 200) {
+				addToast({
+					variant: "solid",
+					color: "success",
+					title: "Thêm thành viên thành công",
+					description: "Thành viên đã được thêm vào nhóm thành công",
+				});
 
-			onOpenChange(false);
+				onOpenChange(false);
+			}
 		}
+
 		setIsLoading(false);
 	};
 
@@ -95,7 +125,9 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 				<ModalHeader>Tạo nhóm</ModalHeader>
 				<div className="flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden">
 					<div className="flex w-full flex-col items-center justify-center gap-2 px-4">
-						<div className="flex w-full flex-row items-center justify-between gap-2">
+						<div
+							className={`flex w-full flex-row items-center justify-between gap-2 ${selectedRoom ? "hidden" : ""}`}
+						>
 							<ImagePickerButton onFileSelected={handleFileSelected} />
 							<Input
 								placeholder="Nhập tên nhóm"
@@ -165,15 +197,12 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 						type="button"
 						onPress={handleCreateGroup}
 						className="bg-primary text-white hover:bg-primary/80"
-						disabled={selectedItems.length === 0 || isLoading}
+						isDisabled={selectedItems.length <= 1 || isLoading}
 						isLoading={isLoading}
 						spinnerPlacement="end"
 					>
 						{isLoading ? (
-							<Spinner
-								color="white"
-								size="sm"
-							/>
+							<></>
 						) : (
 							"Thêm thành viên"
 						)}
