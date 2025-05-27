@@ -16,7 +16,7 @@ export const getAvatarSrc = ({ selectedRoom, accountId }: Props) => {
 	const [user1, user2] = selectedRoom?.detailRoom || [];
 	if (!user1 || !user2) return default_group.src;
 
-	return user1.id === accountId ? user2.avatar : user1.avatar;
+	return user1.id === accountId ? user2.avatar || user2.avatarUrl : user1.avatar || user1.avatarUrl;
 };
 
 export const getRoomName = ({ selectedRoom, accountId }: Props) => {

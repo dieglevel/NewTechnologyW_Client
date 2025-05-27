@@ -197,7 +197,7 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 						type="button"
 						onPress={handleCreateGroup}
 						className="bg-primary text-white hover:bg-primary/80"
-						isDisabled={selectedItems.length <= 1 || isLoading}
+						isDisabled={((selectedRoom?.detailRoom?.length ?? 0) + selectedItems.length <= 1) || selectedItems.length === 0}
 						isLoading={isLoading}
 						spinnerPlacement="end"
 					>

@@ -42,3 +42,4 @@ export * from "./excel"
 
 export * from "./sticker-message"
 export * from "./more"
+export * from "./open-door"

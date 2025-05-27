@@ -23,7 +23,6 @@ export const renderFiles = ({ message }: Props) => {
 		const fetchData = async () => {
 			for (const file of message.files ?? []) {
 				const type = file.data?.type || "";
-				console.log(file)
 
 				if (type.startsWith("text/") || textLikeTypes.includes(type)) {
 					try {

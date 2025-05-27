@@ -16,6 +16,11 @@ interface IDeleteMember {
 	removeUserID: string;
 }
 
+interface ILeaveGroup {
+	chatRoomID: string;
+	newLeaderUserID?: string;
+}
+
 interface IAssignSubAdmin {
 	role: string;
 	accountId: string;
@@ -75,6 +80,18 @@ export const deleteMember = async (data: IDeleteMember) => {
 export const disbandGroup = async (data: string) => {
 	try {
 		const response = await api.post<BaseResponse<IRoom>>(`/chat-room/disband?chatRoomID=${data}`);
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const leaveGroup = async (data: ILeaveGroup) => {
+	try {
+		const response = await api.post<BaseResponse<IRoom>>(`/chat-room/leave-room`, {
+			chatRoomID: data.chatRoomID,
+			newLeaderUserID: data.newLeaderUserID,
+		});
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;

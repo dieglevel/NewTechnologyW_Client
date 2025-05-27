@@ -1,4 +1,4 @@
-import { disbandGroup } from "@/api";
+import { disbandGroup, leaveGroup } from "@/api";
 import { default_group } from "@/assets/images";
 import { AddGroupIcon, Bin, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
 import { Divider } from "@heroui/divider";
+import OpenDoorComponent from "@/assets/svgs/open-door";
 
 interface Props {
 	onClick?: () => void;
@@ -27,6 +28,18 @@ export const BodyOption = ({ onClick }: Props) => {
 			await disbandGroup(selectedRoom?.id);
 			addToast({
 				title: "Nhóm đã bị giải tán",
+				color: "success",
+			});
+		}
+	};
+
+	const handleLeaveGroup = async () => {
+		if (selectedRoom?.id) {
+			await leaveGroup({
+				chatRoomID: selectedRoom.id
+			});
+			addToast({
+				title: "Bạn đã rời khỏi nhóm",
 				color: "success",
 			});
 		}
@@ -84,7 +97,7 @@ export const BodyOption = ({ onClick }: Props) => {
 				</div>
 
 				<div
-					className={`flex max-w-20 flex-col items-center justify-center gap-1 ${selectedRoom?.leader_account_id !== account_id ? "hidden" : "block"}`}
+					className={`flex max-w-20 flex-col items-center justify-center gap-1 ${selectedRoom?.type === "group" ? "block" : "hidden"}`}
 				>
 					<div
 						className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active"
@@ -114,7 +127,7 @@ export const BodyOption = ({ onClick }: Props) => {
 					/>
 				</div>
 			</div>
-			<div className={`${selectedRoom?.type !== 'group' ? "hidden" : "block"}`}>
+			<div className={`${selectedRoom?.type !== "group" ? "hidden" : "block"}`}>
 				<div className="flex flex-col justify-center gap-1">
 					<p className="text-base font-semibold">Thành viên nhóm</p>
 					<button
@@ -135,6 +148,22 @@ export const BodyOption = ({ onClick }: Props) => {
 						<Bin className="h-5 w-5 fill-red-500" />
 						<p className="text-xs text-red-500">Giải tán nhóm</p>
 					</button>
+				</div>
+				<div className={`flex flex-col justify-center gap-1`}>
+					<button
+						className="mt-3 flex items-center gap-1"
+						onClick={() => setOpenModal(true)}
+					>
+						<OpenDoorComponent className="h-5 w-5 fill-red-500" />
+						<p className="text-xs text-red-500">Rời khỏi phòng</p>
+					</button>
+
+					<ModalConfirm
+						isOpen={openModal}
+						header="Bạn có chắc chắn muốn rời khỏi nhóm này không?"
+						onOpenChange={() => setOpenModal(false)}
+						onConfirm={handleLeaveGroup}
+					/>
 				</div>
 			</div>
 		</div>
