@@ -4,7 +4,7 @@ import { avatarDefault } from "@/assets/images";
 import { SearchIcon } from "@/assets/svgs";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
-import { createRoom, addMember } from "@/api";
+import { createRoom, addMember, leaveGroup } from "@/api";
 import { useSelector } from "react-redux";
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@heroui/button";
@@ -22,22 +22,29 @@ import { IRoom } from "@/types/implement/room.interface";
 interface ShareModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	title: string;
 	selectedRoom?: IRoom;
 	isRoom?: boolean;
+	type?: "add" | "edit";
 }
 
-export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareModalProps) {
+export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, title }: ShareModalProps) {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [nameGroup, setNameGroup] = useState<string>("");
 	const [search, setSearch] = useState<string>("");
 	const [avatar, setAvatar] = useState<File | null>(null);
-
 	const [isLoading, setIsLoading] = useState(false);
 
 	const { myListFriend } = useSelector((state: RootState) => state.myListFriend);
 
+	const user = localStorage.getItem(LocalStorage.userId) || "";
+
 	const toggleItem = (id: string) => {
-		setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+		if (type === "edit") {
+			setSelectedItems([id]);
+		} else {
+			setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+		}
 	};
 
 	const handleFileSelected = (file: File) => {
@@ -116,13 +123,26 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 		setIsLoading(false);
 	};
 
+	const handleLeaveGroup = async () => {
+		if (selectedRoom?.id) {
+			await leaveGroup({
+				chatRoomID: selectedRoom.id,
+				newLeaderUserID: selectedItems[0],
+			});
+			addToast({
+				title: "Bạn đã rời khỏi nhóm",
+				color: "success",
+			});
+		}
+	};
+
 	return (
 		<Modal
 			isOpen={open}
 			onOpenChange={onOpenChange}
 		>
 			<ModalContent>
-				<ModalHeader>Tạo nhóm</ModalHeader>
+				<ModalHeader>{title}</ModalHeader>
 				<div className="flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden">
 					<div className="flex w-full flex-col items-center justify-center gap-2 px-4">
 						<div
@@ -156,30 +176,56 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 					</div>
 
 					<div className="mt-2 flex w-full flex-col gap-2 overflow-y-auto">
-						{filteredFriends?.map((item) => (
-							<div
-								key={item.accountId}
-								className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
-								onClick={() => toggleItem(item.accountId ?? "")}
-							>
-								{selectedRoom?.detailRoom?.find((member) => member.id === item.accountId) &&
-								isRoom ? (
-									<Checkbox
-										id={item.accountId}
-										defaultSelected
-										isDisabled
-									/>
-								) : (
-									<Checkbox
-										id={item.accountId}
-										onChange={() => toggleItem(item.accountId || "")}
-										isSelected={selectedItems.includes(item.accountId ?? "")}
-									/>
-								)}
-								<Avatar src={item?.detail?.avatarUrl || avatarDefault.src}></Avatar>
-								<p className="text-md font-bold">{item?.detail?.fullName || "-"}</p>
-							</div>
-						))}
+						{type !== "edit"
+							? filteredFriends?.map((item) => {
+									const isFriendInRoom = selectedRoom?.detailRoom?.find(
+										(member) => member.id === item.accountId,
+									);
+									return (
+										<div
+											key={item.accountId}
+											className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
+											onClick={() => toggleItem(item.accountId ?? "")}
+										>
+											{isFriendInRoom && isRoom ? (
+												<Checkbox
+													id={item.accountId}
+													defaultSelected
+													isDisabled
+												/>
+											) : (
+												<Checkbox
+													id={item.accountId}
+													onChange={() => toggleItem(item.accountId || "")}
+													isSelected={selectedItems.includes(
+														item.accountId ?? "",
+													)}
+												/>
+											)}
+											<Avatar
+												src={item?.detail?.avatarUrl || avatarDefault.src}
+											></Avatar>
+											<p className="text-md font-bold">
+												{item?.detail?.fullName || "-"}
+											</p>
+										</div>
+									);
+								})
+							: selectedRoom?.detailRoom?.map((member) => (
+									<div
+										key={member.id}
+										className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background ${member.id === user ? "hidden" : ""}`}
+										onClick={() => toggleItem(member.id ?? "")}
+									>
+										<Checkbox
+											id={member.id}
+											isSelected={selectedItems.includes(member.id ?? "")}
+											onChange={() => toggleItem(member.id || "")}
+										/>
+										<Avatar src={member.avatar || avatarDefault.src}></Avatar>
+										<p className="text-md font-bold">{member.fullName || "-"}</p>
+									</div>
+								))}
 					</div>
 				</div>
 
@@ -195,16 +241,17 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom }: ShareMo
 					</Button>
 					<Button
 						type="button"
-						onPress={handleCreateGroup}
+						onPress={type === "edit" ? handleLeaveGroup : handleCreateGroup}
 						className="bg-primary text-white hover:bg-primary/80"
-						isDisabled={((selectedRoom?.detailRoom?.length ?? 0) + selectedItems.length <= 1) || selectedItems.length === 0}
+						isDisabled={
+							(selectedRoom?.detailRoom?.length ?? 0) + selectedItems.length <= 1 ||
+							selectedItems.length === 0
+						}
 						isLoading={isLoading}
 						spinnerPlacement="end"
 					>
-						{isLoading ? (
-							<></>
-						) : (
-							"Thêm thành viên"
+						{isLoading ? <></> : (
+							type === "edit" ? "Rời nhóm" : isRoom ? "Thêm thành viên" : "Tạo nhóm"
 						)}
 					</Button>
 				</ModalFooter>

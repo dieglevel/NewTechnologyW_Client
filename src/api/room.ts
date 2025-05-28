@@ -30,11 +30,17 @@ interface IAssignSubAdmin {
 export const getRoom = async () => {
 	try {
 		const response = await api.get<BaseResponse<{ listRoomResponse: IRoom[] }>>(`/chatroom-merge/my-list-room`);
+		console.log("getRoom response", response);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
 	}
 };
+
+interface ICreatePinnedMessage {
+	chatRoomID: string;
+	messageId: string;
+}
 
 export const createRoom = async (data: ICreateGroup) => {
 	try {
@@ -101,6 +107,20 @@ export const leaveGroup = async (data: ILeaveGroup) => {
 export const assignSubAdmin = async (data: IAssignSubAdmin) => {
 	try {
 		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, { data });
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const createPinnedMessage = async (data: ICreatePinnedMessage) => {
+	try {
+		console.log("createPinnedMessage data", data);
+		const response = await api.post<BaseResponse<IRoom>>(`/pinned-message/create-pinned-message`, {
+			chatRoomID: data.chatRoomID,
+			messageId: data.messageId,
+		});
+		console.log("createPinnedMessage response", response);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;

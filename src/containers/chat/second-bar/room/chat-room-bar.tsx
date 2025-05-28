@@ -10,7 +10,7 @@ import { IDetailInformation, IMessage } from "@/types/implement";
 import { IDetailAccountRoom, IRoom } from "@/types/implement/room.interface";
 import { caculateDuration } from "@/utils/caculate-duration";
 import Image from "next/image";
-import { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { default_group } from "@/assets/images";
 import { setRoom, updateRoom } from "@/redux/store/models";
@@ -22,7 +22,8 @@ interface Props {
 	room: IRoom;
 }
 
-export const ChatRoom = ({ room }: Props) => {
+export const ChatRoom = React.memo(({ room }: Props) => {
+
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
 	const [lastVisibleMessage, setLastVisibleMessage] = useState<IMessage>();
 
@@ -172,4 +173,4 @@ export const ChatRoom = ({ room }: Props) => {
 			</div>
 		</div>
 	);
-};
+});

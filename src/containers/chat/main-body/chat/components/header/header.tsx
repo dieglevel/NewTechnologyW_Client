@@ -115,6 +115,7 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 					onOpenChange={changeGroup}
 					selectedRoom={selectedRoom}
 					isRoom
+					title="Chỉnh sửa nhóm"
 				/>
 			)}
 			{selectedRoom?.type === "single" && (

@@ -25,7 +25,7 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 		switch (behavior) {
 			case "add":
 				store.dispatch(setRoom([normalizeRoom(newRoom)]));
-				setSelectedRoom(normalizeRoom(newRoom));
+				store.dispatch(setSelectedRoom(normalizeRoom(newRoom)));
 				break;
 			case "update":
 				if (newRoom?.id || data.room?.room_id || data.room?.roomId) {
@@ -41,6 +41,11 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 			case "leave":
 				store.dispatch(deleteRoom(newRoom.id ?? ""));
 				store.dispatch(clearSelectedRoom());
+				break;	
+			case "pin":
+				newRoom.messagePinID = [room.messagePinID];
+				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+				store.dispatch(setSelectedRoom(normalizeRoom(newRoom)));
 				break;
 			default:
 				break;

@@ -98,7 +98,6 @@ const messageSlice = createSlice({
 				if (action.payload) {
 					if (state.message) {
 						if (action.payload.length > 0) {
-							console.log("first")
 							action.payload.forEach((newMessage) => {
 								const index = state.message!.findIndex((m) => m._id === newMessage._id);
 								if (index >= 0) {

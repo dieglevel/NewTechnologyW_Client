@@ -1,6 +1,7 @@
-import { avatar } from '@/assets/images';
+import { avatar } from "@/assets/images";
 import { IMessage } from "./message.interface";
-
+import { BaseEntity } from "../base-entity";
+import { S } from "framer-motion/dist/types.d-DDSxwf0n";
 
 export interface IRoom {
 	id?: string;
@@ -8,7 +9,7 @@ export interface IRoom {
 	isSeen?: string[];
 	leader_account_id?: string;
 	latestMessage?: IMessage;
-	type?: "group" | "single" | "channel" | "cloud"; 
+	type?: "group" | "single" | "channel" | "cloud";
 	isDelete?: boolean;
 	isLoad?: boolean;
 	detailRoom?: IDetailAccountRoom[];
@@ -16,12 +17,26 @@ export interface IRoom {
 	isDisbanded?: boolean;
 	avatarUrl?: string;
 	updatedAt?: Date;
-	
+	messagePinID?: string[];
+	configChatRoom?: ChatRoomConfig;
 }
 
-export interface IDetailAccountRoom  {
+export interface IDetailAccountRoom {
 	id?: string;
 	fullName?: string;
 	avatar?: string;
 	avatarUrl?: string;
+}
+
+export interface ChatRoomConfig extends BaseEntity {
+	changeNameAndImage: boolean;
+	pinMessage: boolean;
+	createNote: boolean;
+	createVote: boolean;
+	sendMessage: boolean;
+	approveMember: boolean;
+	tickAdminSubAdmin: boolean;
+	acceptReader: boolean;
+	isAcceptLinkJoin: boolean;
+	linkJoin: string;
 }

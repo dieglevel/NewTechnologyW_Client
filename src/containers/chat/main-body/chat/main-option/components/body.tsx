@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
 import { Divider } from "@heroui/divider";
 import OpenDoorComponent from "@/assets/svgs/open-door";
+import { ShareModal } from "../../components/body/components";
+import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
 
 interface Props {
 	onClick?: () => void;
@@ -19,6 +21,7 @@ interface Props {
 export const BodyOption = ({ onClick }: Props) => {
 	const [openMenu, setOpenMenu] = useState<boolean>(false);
 	const [openModal, setOpenModal] = useState(false);
+	const [openModalLeave, setOpenModalLeave] = useState(false);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
@@ -152,7 +155,7 @@ export const BodyOption = ({ onClick }: Props) => {
 				<div className={`flex flex-col justify-center gap-1`}>
 					<button
 						className="mt-3 flex items-center gap-1"
-						onClick={() => setOpenModal(true)}
+						onClick={() => setOpenModalLeave(true)}
 					>
 						<OpenDoorComponent className="h-5 w-5 fill-red-500" />
 						<p className="text-xs text-red-500">Rời khỏi phòng</p>
@@ -163,6 +166,15 @@ export const BodyOption = ({ onClick }: Props) => {
 						header="Bạn có chắc chắn muốn rời khỏi nhóm này không?"
 						onOpenChange={() => setOpenModal(false)}
 						onConfirm={handleLeaveGroup}
+					/>
+
+					<GroupModal
+						open={openModalLeave}
+						onOpenChange={setOpenModalLeave}
+						selectedRoom={selectedRoom || undefined}
+						isRoom={true}
+						type="edit"
+						title="Chuyển quyền nhóm trưởng cho thành viên khác"
 					/>
 				</div>
 			</div>

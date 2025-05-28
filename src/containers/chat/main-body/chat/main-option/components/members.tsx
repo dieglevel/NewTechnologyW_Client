@@ -134,6 +134,7 @@ export const MembersOption = () => {
 					onOpenChange={setOpen}
 					selectedRoom={selectedRoom}
 					isRoom={true}
+					title="Thêm thành viên vào nhóm"
 				/>
 			)}
 			{account_id === selectedMemberId ? (

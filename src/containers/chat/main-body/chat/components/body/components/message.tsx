@@ -1,4 +1,4 @@
-import { deleteMessageById, revokeMessage } from "@/api";
+import { createPinnedMessage, deleteMessageById, revokeMessage } from "@/api";
 import { avatarDefault } from "@/assets/images";
 import { More } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
@@ -67,6 +67,15 @@ export const Message = ({ message, isSender }: Props) => {
 		setShowForward(true);
 	};
 
+	const handlePinnedMessage = async () => {
+		if (message._id && message.roomId) {
+			const response = await createPinnedMessage({ chatRoomID: message.roomId, messageId: message._id });
+			if (response) {
+				console.log("Pinned message created successfully");
+			}
+		}
+	};
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
@@ -89,7 +98,7 @@ export const Message = ({ message, isSender }: Props) => {
 	return (
 		<>
 			{message ? (
-				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
+				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full `}>
 					<ImageViewer
 						src={
 							detailUser?.avatar ||
@@ -114,8 +123,9 @@ export const Message = ({ message, isSender }: Props) => {
 					<div className="group relative">
 						<div
 							className={`flex max-w-[400px] flex-col gap-2 rounded-lg p-3 ${
-								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"
-							} `}
+								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"}
+								
+								`}
 						>
 							<h1 className={`text-xs font-light text-text-seen ${isSender ? "hidden" : "block"}`}>
 								{detailUser?.fullName || "Tài khoản không tồn tại"}
@@ -164,7 +174,7 @@ export const Message = ({ message, isSender }: Props) => {
 						{!isSender && !revoked && (
 							<div className="absolute -right-6 bottom-0 opacity-0 group-hover:opacity-100">
 								<button
-									className="rounded-full size-5 p-1 hover:bg-gray-200"
+									className="size-5 rounded-full p-1 hover:bg-gray-200"
 									onClick={toggleOptions}
 								>
 									<More />
@@ -201,6 +211,15 @@ export const Message = ({ message, isSender }: Props) => {
 									}}
 								>
 									Chuyển tiếp tin nhắn
+								</button>
+
+								<button
+									className="flex w-full items-center px-4 py-2 text-left text-sm text-red-500 hover:bg-zinc-700"
+									onClick={() => {
+										handlePinnedMessage();
+									}}
+								>
+									Ghim tin nhắn
 								</button>
 							</div>
 						)}

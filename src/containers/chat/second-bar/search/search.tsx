@@ -37,7 +37,7 @@ export const SearchComponent = ({ search, setSearchAction }: Props) => {
 				<AddGroupIcon className="size-5 stroke-1" />
 			</div>
 			{ isOpen && (
-				<GroupModal open={isOpen} onOpenChange={onOpenChange} />
+				<GroupModal open={isOpen} onOpenChange={onOpenChange} title="Tạo nhóm" />
 			)
 			}
 			

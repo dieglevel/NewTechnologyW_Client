@@ -24,7 +24,6 @@ export const BodyChat = () => {
 
 	useEffect(() => {
 		if (inView && pagination * 10 < (message?.length ?? 0)) {
-			console.log("Loading more messages...");
 			setPagination((prev) => prev + 1);
 		}
 	}, [inView]);
@@ -63,8 +62,9 @@ export const BodyChat = () => {
 	return (
 		<div
 			ref={divRef}
-			className="flex h-full w-full flex-col gap-3 overflow-y-auto bg-background px-3 pb-3"
+			className="flex flex-1 w-full flex-col gap-3 overflow-y-auto bg-background px-3 pb-3"
 		>
+			
 			<div className="flex-shrink-0 flex-grow" />
 			<div ref={topRef} />
 			<div className="h-fit">{renderMessage()}</div>
