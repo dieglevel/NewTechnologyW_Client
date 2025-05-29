@@ -14,7 +14,7 @@ export const loginApi = async (identifier: string, password: string) => {
 				identifier: phone84,
 				password,
 			});
-			
+
 
 			localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 			localStorage.setItem(LocalStorage.userId, response.data.data.userId);
@@ -22,14 +22,19 @@ export const loginApi = async (identifier: string, password: string) => {
 		}
 		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
 		const fcmToken = await getFcmTokenWithSw();
+		if (fcmToken === null) {
+			console.warn("Không lấy được FCM token");
+		} else {
 			console.log("FCM Token:", fcmToken);
-			
-			 await api.post<BaseResponse<void>>("/notification", {
-				fcm_token:fcmToken ,
+
+			await api.post<BaseResponse<void>>("/notification", {
+				fcm_token: fcmToken,
 				accountId: response.data.data.userId,
 				platform: "web",
 				jwt_token: response.data.data.accessToken,
 			} as CreateNotificationTokenDto);
+		}
+
 		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 		localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 		return response.data;

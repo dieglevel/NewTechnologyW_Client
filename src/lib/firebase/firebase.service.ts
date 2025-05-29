@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import type { Messaging } from "firebase/messaging";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-// Cấu hình Firebase
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBuRydKaP0revM7Hy29EXiM3vnpxPWScW8",
   authDomain: "webzalo-d3df7.firebaseapp.com",
@@ -12,13 +12,13 @@ const firebaseConfig = {
   appId: "1:1016001936576:web:fdb1c7f85c016a17000125",
 };
 
-// Khởi tạo Firebase App (luôn an toàn)
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 
-// VAPID key từ Firebase Console
+// VAPID key
 const vapidKey = "BAnaaHFh7zuwbpX-8w2MzT_7AehejlObbAuz-_vM0smyO4nCAhMI_NcDTGoj_9pQIcb0d4tLcA-sZuQBdzq6yJI";
 
-// ✅ messaging chỉ được khởi tạo ở client
+// Init messaging (chỉ ở client)
 let messaging: Messaging | null = null;
 if (typeof window !== "undefined" && typeof navigator !== "undefined") {
   try {
@@ -28,27 +28,24 @@ if (typeof window !== "undefined" && typeof navigator !== "undefined") {
   }
 }
 
-export function requestPermissionAndGetToken() {
-  if (!messaging) return Promise.reject("FCM chỉ hoạt động trong trình duyệt");
+export function getMessagingInstance() {
+  if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
+  return messaging;
+}
 
-  console.log("Yêu cầu quyền nhận thông báo...");
-  return Notification.requestPermission()
-    .then((permission) => {
-      if (permission === "granted") {
-        console.log("Quyền được cấp, lấy token...");
-        return getToken(messaging!, { vapidKey });
-      } else {
-        throw new Error("User từ chối quyền thông báo.");
-      }
-    })
-    .then((token) => {
-      if (token) {
-        console.log("Token FCM của bạn:", token);
-        return token;
-      } else {
-        throw new Error("Chưa lấy được token.");
-      }
-    });
+// ✅ Hàm xin quyền và lấy token — chỉ gọi khi cần
+export async function requestPermissionAndGetToken() {
+  if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
+
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    throw new Error("Người dùng từ chối nhận thông báo");
+  }
+
+  const token = await getToken(messaging, { vapidKey });
+  if (!token) throw new Error("Không lấy được token FCM");
+  console.log("Token FCM:", token);
+  return token;
 }
 
 export function onMessageListener() {
@@ -56,7 +53,7 @@ export function onMessageListener() {
 
   return new Promise((resolve) => {
     onMessage(messaging!, (payload) => {
-      console.log("Thông báo foreground nhận được: ", payload);
+      console.log("Thông báo foreground nhận được:", payload);
       resolve(payload);
     });
   });
@@ -67,34 +64,35 @@ export function registerServiceWorker() {
     return navigator.serviceWorker
       .register('/firebase-messaging-sw.js')
       .then((registration) => {
-        console.log('Service Worker đã được đăng ký:', registration);
+        console.log('Service Worker đã đăng ký:', registration);
         return registration;
       })
       .catch((error) => {
         console.error('Đăng ký Service Worker thất bại:', error);
       });
   }
-  return Promise.reject('Service Worker không được hỗ trợ hoặc đang chạy ở SSR');
+  return Promise.reject('Service Worker không được hỗ trợ hoặc đang ở SSR');
 }
 
-export async function getFcmTokenWithSw() {
-  if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
+// ✅ Chỉ gọi khi cần lấy token có đăng ký SW
+export async function getFcmTokenWithSw(): Promise<string | null> {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return null;
 
   try {
-    const registration = await registerServiceWorker();
+    const messaging = getMessagingInstance();
     const permission = await Notification.requestPermission();
-    if (permission !== 'granted') throw new Error('Thông báo bị từ chối');
+    if (permission !== "granted") return null;
+
+    const registration = await registerServiceWorker();
+    if (!registration) return null;
 
     const token = await getToken(messaging, {
       vapidKey,
-      serviceWorkerRegistration: registration as ServiceWorkerRegistration,
+      serviceWorkerRegistration: registration,
     });
 
-    if (!token) throw new Error('Không lấy được token');
-    console.log('Token FCM:', token);
-    return token;
-  } catch (err) {
-    console.error('Lỗi lấy token:', err);
-    throw err;
+    return token || null;
+  } catch {
+    return null;
   }
 }
