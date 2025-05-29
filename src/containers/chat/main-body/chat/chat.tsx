@@ -91,18 +91,18 @@ export const BodyView = () => {
 					<Spinner size="lg" />
 				</div>
 			) : !selectedRoom?.isDisbanded ? (
-				// <>
-				// 	<PinnedMessageBar />
-				// 	<BodyChat />
-				// 	<FooterChat />
-				// </>
-				<div>
-					<p>Microphone: {listening ? "on" : "off"}</p>
-					<button onClick={SpeechRecognition.startListening}>Start</button>
-					<button onClick={SpeechRecognition.stopListening}>Stop</button>
-					<button onClick={resetTranscript}>Reset</button>
-					<p>{transcript}</p>
-				</div>
+				<>
+					<PinnedMessageBar />
+					<BodyChat />
+					<FooterChat />
+				</>
+				// <div>
+				// 	<p>Microphone: {listening ? "on" : "off"}</p>
+				// 	<button onClick={SpeechRecognition.startListening({ continuous: true, language: "vi-VN" })}>Start</button>
+				// 	<button onClick={SpeechRecognition.stopListening}>Stop</button>
+				// 	<button onClick={resetTranscript}>Reset</button>
+				// 	<p>{transcript}</p>
+				// </div>
 			) : (
 				<DisbandedGroup />
 			)}

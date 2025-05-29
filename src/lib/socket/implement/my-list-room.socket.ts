@@ -15,7 +15,6 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 
 		const { accountOwner, room, behavior } = data;
 		const newRoom = room as IRoom;
-		console.log("data room", data);
 
 		if (accountOwner[0]?.avatar || accountOwner[0]?.avatarUrl) {
 			newRoom.detailRoom = accountOwner;

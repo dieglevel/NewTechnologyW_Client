@@ -1,5 +1,6 @@
 "use client";
 
+import "regenerator-runtime/runtime";
 import { LocalStorage } from "@/lib/local-storage";
 import { useEffect } from "react";
 

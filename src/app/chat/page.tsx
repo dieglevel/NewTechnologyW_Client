@@ -1,5 +1,6 @@
 "use client";
 
+import "regenerator-runtime/runtime";
 import { getAccountApi } from "@/api/auth";
 import { BodyView, OptionView, SecondBar, Sidebar } from "@/containers/chat";
 import { IntroduceView } from "@/containers/chat/main-body/chat/introduce";

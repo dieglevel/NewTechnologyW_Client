@@ -5,7 +5,7 @@ import type React from "react";
 import { ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 import { StickerForm } from "./components";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FilePreviewer from "./components/preview-file";
 import { LocalStorage } from "@/lib/local-storage";
 import { useSelector } from "react-redux";
@@ -18,6 +18,7 @@ import { Spinner } from "@heroui/spinner";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { client } from "@/lib/assemblyai";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import { setMessage } from "@/redux/store/models/message-slice";
 
 
 const EmojiForm = dynamic(() => import("./components/emoji-form"), {
@@ -29,6 +30,8 @@ export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+
+
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -53,7 +56,6 @@ export const FooterChat = () => {
 			}
 		},
 	});
-
 	const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
 	if (!browserSupportsSpeechRecognition) {
@@ -71,6 +73,10 @@ export const FooterChat = () => {
 			inputImageRef.current.click();
 		}
 	};
+
+	useEffect(() => {
+		setIMessage(transcript);
+	}, [transcript]);
 
 	const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
 		setIMessage((prev) => prev + emojiData.emoji);
@@ -131,12 +137,22 @@ export const FooterChat = () => {
 	};
 
 	// Voice recording functions
-	const handleStartRecording = () => {
-		startRecording();
+	// const handleStartRecording = () => {
+	// 	startRecording();
+	// };
+
+	const handleStartListening = () => {
+		resetTranscript();
+		SpeechRecognition.startListening({ continuous: true, language: "vi-VN" });
 	};
 
-	const handleStopRecording = () => {
-		stopRecording();
+	// const handleStopRecording = () => {
+	// 	stopRecording();
+	// };
+
+	const handleStopListening = () => {
+		SpeechRecognition.stopListening();
+		resetTranscript();
 	};
 
 	const handlePlayVoice = () => {
@@ -158,7 +174,7 @@ export const FooterChat = () => {
 	};
 
 	const handleSendVoice = async () => {
-		console.log("mediaBlobUrl", mediaBlobUrl);
+		console.log("mediaBlobUrl", );
 
 		// try {
 		// 	const params = {
@@ -204,14 +220,13 @@ export const FooterChat = () => {
 		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 	};
 
-	const isRecording = status === "recording";
 
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
-			{(isRecording || mediaBlobUrl) && (
+			{(listening || mediaBlobUrl) && (
 				<div className="flex items-center justify-between border-b-1 px-4 py-3">
 					<div className="flex items-center gap-3">
-						{isRecording ? (
+						{listening ? (
 							<>
 								<div className="flex items-center gap-2">
 									<div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
@@ -241,11 +256,11 @@ export const FooterChat = () => {
 					</div>
 
 					<div className="flex items-center gap-2">
-						{isRecording ? (
+						{listening ? (
 							<></>
 						) : mediaBlobUrl ? (
 							<>
-								<button
+								{/* <button
 									onClick={handlePlayVoice}
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600"
 								>
@@ -254,7 +269,7 @@ export const FooterChat = () => {
 									) : (
 										<Play className="h-4 w-4 text-white" />
 									)}
-								</button>
+								</button> */}
 								<button
 									onClick={handleDeleteVoice}
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600"
@@ -300,12 +315,13 @@ export const FooterChat = () => {
 					<UserChatIcon className="size-6 stroke-icon-second" />
 				</div>
 				<div
-					onClick={isRecording ? handleStopRecording : handleStartRecording}
+					// onClick={listening ? handleStopRecording : handleStartRecording}
+					onClick={listening ? handleStopListening : handleStartListening}
 					className={`flex h-8 w-[32px] flex-none items-center justify-center rounded-sm hover:cursor-pointer hover:bg-background ${
-						isRecording ? "bg-red-100" : "bg-body"
+						listening ? "bg-red-100" : "bg-body"
 					}`}
 				>
-					{isRecording ? (
+					{listening ? (
 						<Square className="size-6 stroke-red-500" />
 					) : (
 						<Mic className="size-6 stroke-icon-second" />
