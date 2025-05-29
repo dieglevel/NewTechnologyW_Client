@@ -1,3 +1,7 @@
+"use client";
+
+import type React from "react";
+
 import { ImageIcon, SendIcon, UserChatIcon } from "@/assets/svgs";
 import { Input } from "@heroui/input";
 import { StickerForm } from "./components";
@@ -5,20 +9,56 @@ import { useRef, useState } from "react";
 import FilePreviewer from "./components/preview-file";
 import { LocalStorage } from "@/lib/local-storage";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { sendMessage } from "@/api";
-import { EmojiClickData } from "emoji-picker-react";
-import { EmojiForm } from "./components/emoji-form";
-import { FileIcon } from "lucide-react";
+import type { EmojiClickData } from "emoji-picker-react";
+import { FileIcon, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Spinner } from "@heroui/spinner";
+import { useReactMediaRecorder } from "react-media-recorder";
+import { client } from "@/lib/assemblyai";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+
+
+const EmojiForm = dynamic(() => import("./components/emoji-form"), {
+	ssr: false,
+	loading: () => <Spinner />,
+});
 
 export const FooterChat = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
+	const [isPlaying, setIsPlaying] = useState(false);
+	const [recordingTime, setRecordingTime] = useState(0);
+	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+	const [audioFile, setAudioFile] = useState<File | null>(null);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
-	// const dispatch = useDispatch<AppDispatch>();
+	const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
+		audio: true,
+		onStart: () => {
+			setRecordingTime(0);
+			const id = setInterval(() => {
+				setRecordingTime((prev) => prev + 1);
+			}, 1000);
+			setIntervalId(id);
+		},
+		onStop: () => {
+			if (intervalId) {
+				clearInterval(intervalId);
+				setIntervalId(null);
+			}
+		},
+	});
+
+	const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+	if (!browserSupportsSpeechRecognition) {
+		return <span>Browser doesn't support speech recognition.</span>;
+	}
 
 	const handleClickFile = () => {
 		if (inputRef.current) {
@@ -26,7 +66,6 @@ export const FooterChat = () => {
 		}
 	};
 
-	
 	const handleClickImage = () => {
 		if (inputImageRef.current) {
 			inputImageRef.current.click();
@@ -91,8 +130,158 @@ export const FooterChat = () => {
 		}
 	};
 
+	// Voice recording functions
+	const handleStartRecording = () => {
+		startRecording();
+	};
+
+	const handleStopRecording = () => {
+		stopRecording();
+	};
+
+	const handlePlayVoice = () => {
+		if (audioRef.current && mediaBlobUrl) {
+			if (isPlaying) {
+				audioRef.current.pause();
+				setIsPlaying(false);
+			} else {
+				audioRef.current.play();
+				setIsPlaying(true);
+			}
+		}
+	};
+
+	const handleDeleteVoice = () => {
+		clearBlobUrl();
+		setIsPlaying(false);
+		setRecordingTime(0);
+	};
+
+	const handleSendVoice = async () => {
+		console.log("mediaBlobUrl", mediaBlobUrl);
+
+		// try {
+		// 	const params = {
+		// 		audio: mediaBlobUrl || "",
+		// 		speech_model: "universal" as any,
+		// 	};
+	
+		// 	const run = async () => {
+		// 		const transcript = await client.transcripts.transcribe(params);
+		// 		console.log("Transcript:", transcript);
+		// 	};
+	
+		// 	run()
+		// } catch (error) {
+		// 	console.error("Error sending voice message:", error);
+		// }
+
+		
+
+		// if (mediaBlobUrl) {
+		// 	const response = await fetch(mediaBlobUrl);
+		// 	const blob = await response.blob();
+		// 	const voiceFile = new File([blob], `voice-${Date.now()}.webm`, { type: "audio/webm" });
+
+		// 	try {
+		// 		await sendMessage({
+		// 			accountId: localStorage.getItem(LocalStorage.userId) || "",
+		// 			roomId: selectedRoom?.id || "",
+		// 			type: "mixed",
+		// 			content: "",
+		// 			files: [voiceFile],
+		// 		});
+		// 		handleDeleteVoice();
+		// 	} catch (error) {
+		// 		console.error("Error sending voice message:", error);
+		// 	}
+		// }
+	};
+
+	const formatTime = (seconds: number) => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	};
+
+	const isRecording = status === "recording";
+
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
+			{(isRecording || mediaBlobUrl) && (
+				<div className="flex items-center justify-between border-b-1 px-4 py-3">
+					<div className="flex items-center gap-3">
+						{isRecording ? (
+							<>
+								<div className="flex items-center gap-2">
+									<div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+									<span className="font-mono text-sm text-red-500">
+										{formatTime(recordingTime)}
+									</span>
+								</div>
+								<div className="flex items-center gap-1">
+									{[...Array(20)].map((_, i) => (
+										<div
+											key={i}
+											className="w-1 animate-bounce rounded-full bg-blue-500"
+											style={{
+												animationDelay: `${i * 0.3}s`,
+												height: `${Math.random() * 20 + 10}px`,
+											}}
+										/>
+									))}
+								</div>
+							</>
+						) : (
+							<div className="flex items-center gap-2">
+								<Mic className="h-4 w-4 text-green-500" />
+								<span className="text-sm">Voice message ready</span>
+							</div>
+						)}
+					</div>
+
+					<div className="flex items-center gap-2">
+						{isRecording ? (
+							<></>
+						) : mediaBlobUrl ? (
+							<>
+								<button
+									onClick={handlePlayVoice}
+									className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600"
+								>
+									{isPlaying ? (
+										<Pause className="h-4 w-4 text-white" />
+									) : (
+										<Play className="h-4 w-4 text-white" />
+									)}
+								</button>
+								<button
+									onClick={handleDeleteVoice}
+									className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600"
+								>
+									<Trash2 className="h-4 w-4 text-white" />
+								</button>
+								<button
+									onClick={handleSendVoice}
+									className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600"
+								>
+									<SendIcon className="size-4 stroke-icon-active" />
+								</button>
+							</>
+						) : null}
+					</div>
+				</div>
+			)}
+
+			{mediaBlobUrl && (
+				<audio
+					ref={audioRef}
+					src={mediaBlobUrl}
+					onEnded={() => setIsPlaying(false)}
+					className="hidden"
+				/>
+			)}
+
 			<div className="flex gap-4 px-2 py-2">
 				<StickerForm onSelectSticker={sendSticker} />
 				<div
@@ -109,6 +298,18 @@ export const FooterChat = () => {
 				</div>
 				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background">
 					<UserChatIcon className="size-6 stroke-icon-second" />
+				</div>
+				<div
+					onClick={isRecording ? handleStopRecording : handleStartRecording}
+					className={`flex h-8 w-[32px] flex-none items-center justify-center rounded-sm hover:cursor-pointer hover:bg-background ${
+						isRecording ? "bg-red-100" : "bg-body"
+					}`}
+				>
+					{isRecording ? (
+						<Square className="size-6 stroke-red-500" />
+					) : (
+						<Mic className="size-6 stroke-icon-second" />
+					)}
 				</div>
 			</div>
 

@@ -5,7 +5,7 @@ import { api, ErrorResponse } from "@/lib/axios";
 import { LocalStorage } from "@/lib/local-storage";
 import { socketService } from "@/lib/socket/socket";
 import { AppDispatch, RootState } from "@/redux/store";
-import { setSelectedRoom } from "@/redux/store/ui/selected-room-slice";
+import { setLoadingRoom, setSelectedRoom } from "@/redux/store/ui/selected-room-slice";
 import { IDetailInformation, IMessage } from "@/types/implement";
 import { IDetailAccountRoom, IRoom } from "@/types/implement/room.interface";
 import { caculateDuration } from "@/utils/caculate-duration";
@@ -29,10 +29,24 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 
 	const dispatch = useDispatch<AppDispatch>();
 	const { message } = useSelector((state: RootState) => state.message);
+	const { isLoadingRoom } = useSelector((state: RootState) => state.selectedRoom);
+	const fullState = useSelector((state) => state);
 
-	const handleClick = () => {
-		dispatch(setSelectedRoom(room));
+	const handleClick = async () => {
+		dispatch(setLoadingRoom(true));
+		try {
+			dispatch(setSelectedRoom(room));
+		} catch (err) {
+			console.error("Error selecting room", err);
+		}
+		setTimeout(async () => {
+			dispatch(setLoadingRoom(false));
+		}, 300);
 	};
+
+	useEffect(() => {
+		console.log("isLoadingRoom changed: ", isLoadingRoom);
+	}, [isLoadingRoom]);
 
 	const renderMessage = (message: any) => {
 		const latest = room.latestMessage;

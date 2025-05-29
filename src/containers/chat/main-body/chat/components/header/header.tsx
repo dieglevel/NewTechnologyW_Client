@@ -25,6 +25,7 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 	const { isOpen: isOptionsOpen, setSelect } = useOptionView();
 
 	const accountId = localStorage.getItem(LocalStorage.userId) || "";
+
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const [friend, setFriend] = useState<ISearchAccount>({} as ISearchAccount);
 
@@ -49,6 +50,7 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 				const e = error as ErrorResponse;
 			}
 		};
+		setSelect(false);
 
 		fetchFriendInfo();
 	}, [selectedRoom]);

@@ -3,10 +3,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SelectedRoomState {
 	selectedRoom: IRoom | null;
+	isLoadingRoom: boolean;
 }
 
 const initialState: SelectedRoomState = {
 	selectedRoom: null,
+	isLoadingRoom: false,
 };
 
 const selectedRoomSlice = createSlice({
@@ -19,8 +21,11 @@ const selectedRoomSlice = createSlice({
 		clearSelectedRoom: (state) => {
 			state.selectedRoom = null;
 		},
+		setLoadingRoom: (state, action: PayloadAction<boolean>) => {
+			state.isLoadingRoom = action.payload;
+		},
 	},
 });
 
-export const { setSelectedRoom, clearSelectedRoom } = selectedRoomSlice.actions;
+export const { setSelectedRoom, clearSelectedRoom, setLoadingRoom } = selectedRoomSlice.actions;
 export const SelectedRoomReducer = selectedRoomSlice.reducer;

@@ -50,3 +50,5 @@ export const EmojiForm = ({ onSelectEmoji }: EmojiFormProps) => {
 		</div>
 	);
 };
+
+export default EmojiForm;
