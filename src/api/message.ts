@@ -51,7 +51,6 @@ export const sendMessage = async (data: ISend) => {
 
 		return response.data;
 	} catch (error) {
-		console.log("eerrrr", error)
 		throw error as ErrorResponse;
 	}
 };

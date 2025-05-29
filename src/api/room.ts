@@ -21,8 +21,8 @@ interface ILeaveGroup {
 	newLeaderUserID?: string;
 }
 
-interface IAssignSubAdmin {
-	role: string;
+export interface IAssignSubAdmin {
+	role: string | "subadmin";
 	accountId: string;
 	chatRoomId: string;
 }
@@ -30,7 +30,6 @@ interface IAssignSubAdmin {
 export const getRoom = async () => {
 	try {
 		const response = await api.get<BaseResponse<{ listRoomResponse: IRoom[] }>>(`/chatroom-merge/my-list-room`);
-		console.log("getRoom response", response);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;
@@ -106,9 +105,11 @@ export const leaveGroup = async (data: ILeaveGroup) => {
 
 export const assignSubAdmin = async (data: IAssignSubAdmin) => {
 	try {
+		console.log(data)
 		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, { data });
-		return response.data;
+		return response;
 	} catch (error) {
+		console.log(error)
 		throw error as ErrorResponse;
 	}
 };

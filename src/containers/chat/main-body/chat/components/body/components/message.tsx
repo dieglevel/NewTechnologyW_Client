@@ -98,10 +98,11 @@ export const Message = ({ message, isSender }: Props) => {
 	return (
 		<>
 			{message ? (
-				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full `}>
+				<div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} w-full`}>
 					<ImageViewer
 						src={
 							detailUser?.avatar ||
+							detailUser?.avatarUrl ||
 							"https://i.pinimg.com/236x/7e/42/81/7e42814080bab700d0b34984952d0989.jpg"
 						}
 					>
@@ -115,17 +116,19 @@ export const Message = ({ message, isSender }: Props) => {
 							width={40}
 							height={40}
 							className={`mr-2 h-[40px] w-[40px] rounded-full object-cover ${isSender ? "hidden" : "block"} `}
-							src={detailUser?.avatar || avatarDefault}
+							src={detailUser?.avatar || detailUser?.avatarUrl || avatarDefault}
 							alt="avatar"
 						/>
 					</ImageViewer>
 
-					<div className="group relative">
+					<div
+						className="group relative"
+						id={`message-${message._id}`}
+					>
 						<div
 							className={`flex max-w-[400px] flex-col gap-2 rounded-lg p-3 ${
-								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"}
-								
-								`}
+								message.sticker ? "bg-none" : isSender ? "bg-blue-200" : "bg-body"
+							} `}
 						>
 							<h1 className={`text-xs font-light text-text-seen ${isSender ? "hidden" : "block"}`}>
 								{detailUser?.fullName || "Tài khoản không tồn tại"}

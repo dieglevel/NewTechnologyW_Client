@@ -12,6 +12,7 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 
 
 	socket?.on(SocketOn.myListRoom, async (data) => {
+		console.log("MyListRoomSocket data", data);
 
 		const { accountOwner, room, behavior } = data;
 		const newRoom = room as IRoom;
@@ -38,6 +39,7 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 				break;
 			case "leave":
+				console.log("Leave room", newRoom);
 				store.dispatch(deleteRoom(newRoom.id ?? ""));
 				store.dispatch(clearSelectedRoom());
 				break;	
@@ -45,6 +47,10 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 				newRoom.messagePinID = [room.messagePinID];
 				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 				store.dispatch(setSelectedRoom(normalizeRoom(newRoom)));
+				break;
+			case "remove":
+				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+				store.dispatch(setSelectedRoom(newRoom));
 				break;
 			default:
 				break;

@@ -25,6 +25,7 @@ export interface IDetailAccountRoom {
 	fullName?: string;
 	avatar?: string;
 	avatarUrl?: string;
+	role?: "admin" | "subadmin" | "noob" ;
 }
 
 export interface ChatRoomConfig extends BaseEntity {

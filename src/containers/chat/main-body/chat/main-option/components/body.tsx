@@ -39,7 +39,7 @@ export const BodyOption = ({ onClick }: Props) => {
 	const handleLeaveGroup = async () => {
 		if (selectedRoom?.id) {
 			await leaveGroup({
-				chatRoomID: selectedRoom.id
+				chatRoomID: selectedRoom.id,
 			});
 			addToast({
 				title: "Bạn đã rời khỏi nhóm",
@@ -155,7 +155,12 @@ export const BodyOption = ({ onClick }: Props) => {
 				<div className={`flex flex-col justify-center gap-1`}>
 					<button
 						className="mt-3 flex items-center gap-1"
-						onClick={() => setOpenModalLeave(true)}
+						onClick={() => {
+							selectedRoom?.detailRoom?.find((member) => member.id === account_id)?.role ===
+							"admin"
+								? setOpenModalLeave(true)
+								: setOpenModal(true);
+						}}
 					>
 						<OpenDoorComponent className="h-5 w-5 fill-red-500" />
 						<p className="text-xs text-red-500">Rời khỏi phòng</p>

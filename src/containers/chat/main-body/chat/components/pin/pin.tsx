@@ -27,25 +27,72 @@ export const PinnedMessageBar = () => {
 			setPinnedMessages(pinned);
 
 			const fetchDetails = async () => {
-				const promises = selectedRoom?.detailRoom
-					?.filter((user) => user.id !== userId)
-					.map((user) => getProfileFromAnotherUser(user.id || ""));
+				const users = selectedRoom?.detailRoom?.filter((user) => user.id !== userId) || [];
 
-				const results = await Promise.all(promises || []);
-				const validUsers = results.filter((r) => r.statusCode === 200).map((r) => r.data);
+				const promises = users.map(async (user) => {
+					const result = await getProfileFromAnotherUser(user.id || "");
+					return {
+						userId: user.id,
+						...result
+					};
+				});
+
+				const results = await Promise.all(promises);
+
+				const validUsers = results
+					.filter((r) => r.statusCode === 200)
+					.map((r) => ({
+						...r.data,
+						userId: r.userId,
+					}));
+
 				setDetailUser(validUsers);
 			};
-
+			  
+			
             fetchDetails();
 		};
 
 		fetchPinnedMessages();
 	}, [selectedRoom]);
+	
+	const handleScrollToPinned = () => {
+		const lastPinned = pinnedMessages[pinnedMessages.length - 1];
+		if (!lastPinned?._id) return;
+
+		const el = document.getElementById(`message-${lastPinned._id}`);
+		if (el) {
+			el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+			el.classList.add(
+				"bg-blue-100",
+				"border",
+				"border-blue-400",
+				"scale-[1.02]",
+				"rounded-lg",
+				"shadow-lg",
+				"transition-all",
+				"duration-500",
+				"ease-in-out",
+			);
+
+			setTimeout(() => {
+				el.classList.remove(
+					"bg-yellow-100",
+					"border",
+					"border-blue-400",
+					"scale-[1.02]",
+					"rounded-lg",
+					"shadow-lg",
+				);
+			}, 1000);
+		}
+	};
 
 	return (
 		<div className={`relative flex justify-center ${pinnedMessages.length === 0 ? "hidden" : "block"}`}>
 			<div className="absolute z-10 mt-3 flex w-[98%] items-center justify-between rounded-md border-b border-gray-200 bg-white p-4">
-				<button className="flex items-center gap-3">
+				<button className="flex items-center gap-3" onClick={handleScrollToPinned}>
 					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500">
 						<MessageCircle className="h-4 w-4 text-white" />
 					</div>
@@ -53,9 +100,9 @@ export const PinnedMessageBar = () => {
 						<h2 className="self-start text-sm font-medium text-gray-900">Tin nhắn</h2>
 						<p className="text-xs text-gray-600">
 							{detailUser.find(
-								(user) => user.id === pinnedMessages[pinnedMessages.length - 1]?.accountId,
+								(user) => user.userId === pinnedMessages[pinnedMessages.length - 1]?.accountId,
 							)?.fullName || "Bạn"}
-							: {pinnedMessages[length - 1]?.content}
+							: {pinnedMessages[pinnedMessages.length - 1]?.content}
 						</p>
 					</div>
 				</button>
@@ -75,9 +122,10 @@ export const PinnedMessageBar = () => {
 
 					{open && (
 						<PinnedMessagesDropdown
-							pinnedMessages={[]}
+							pinnedMessages={pinnedMessages}
 							isOpen={open}
 							onOpenChange={() => setOpen(false)}
+							detailUser={detailUser}
 						/>
 					)}
 				</div>

@@ -9,7 +9,7 @@ interface Props {
 export const getAvatarSrc = ({ selectedRoom, accountId }: Props) => {
     if (!selectedRoom) return default_group.src;
 
-	if (selectedRoom?.avatar) return selectedRoom.avatar;
+	if (selectedRoom?.avatar || selectedRoom?.avatarUrl) return selectedRoom.avatar || selectedRoom.avatarUrl ;
 
 	if (selectedRoom?.type === "group") return default_group.src;
 

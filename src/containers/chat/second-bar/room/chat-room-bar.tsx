@@ -30,7 +30,6 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const { message } = useSelector((state: RootState) => state.message);
 	const { isLoadingRoom } = useSelector((state: RootState) => state.selectedRoom);
-	const fullState = useSelector((state) => state);
 
 	const handleClick = async () => {
 		dispatch(setLoadingRoom(true));
@@ -44,13 +43,9 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 		}, 300);
 	};
 
-	useEffect(() => {
-		console.log("isLoadingRoom changed: ", isLoadingRoom);
-	}, [isLoadingRoom]);
-
 	const renderMessage = (message: any) => {
 		const latest = room.latestMessage;
-	
+
 		if (!latest) {
 			return <span className="line-clamp-1">Chưa có tin nhắn</span>;
 		}

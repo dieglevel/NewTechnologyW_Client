@@ -6,7 +6,6 @@ import { initDetailInformation, initMyListFriend, initRequestFriend, initRoom, i
 const initialListRoom = async () => {
     try {
         const response = await getRoom();
-        console.log("response", response);
         if (response?.statusCode === 200) {
             store.dispatch(initRoom(response.data.listRoomResponse));
         }

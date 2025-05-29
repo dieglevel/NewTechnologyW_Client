@@ -1,16 +1,18 @@
 import { AddGroupIcon, More } from "@/assets/svgs";
 import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
-import { deleteMember } from "@/api";
+import { assignSubAdmin, deleteMember, IAssignSubAdmin } from "@/api";
 import { addToast } from "@heroui/toast";
 import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
+import KingIcon from "@/assets/svgs/king";
 
 export const MembersOption = () => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
+	const refOption = useRef<HTMLDivElement>(null);
 
 	const [isOpen, setOpen] = useState<boolean>(false);
 	const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -23,10 +25,52 @@ export const MembersOption = () => {
 		setOpen(!isOpen);
 	};
 
+	const handleAssignMember = async (accountId: string) => {
+		const data: IAssignSubAdmin = {
+			accountId,
+			chatRoomId: selectedRoom?.id || "",
+			role: "subadmin",
+		};
+
+		try {
+			await assignSubAdmin(data);
+
+			addToast({
+				classNames: { title: "font-bold", description: "text-sm" },
+				variant: "solid",
+				title: "Thành viên đã được bổ nhiệm làm phó nhóm",
+				color: "success",
+			});
+			setOpenMenuId(null);
+		} catch (error) {
+			console.error("Error assigning subadmin:", error);
+			addToast({
+				classNames: { title: "font-bold", description: "text-sm" },
+				variant: "solid",
+				title: "Lỗi khi bổ nhiệm phó nhóm",
+				color: "danger",
+			});
+		}
+	};
+
 	const handleDeleteClick = (memberId: string) => {
 		setSelectedMemberId(memberId);
 		setOpenModal(true);
 	};
+
+	useEffect(() => {
+		if (refOption) {
+			const handleClickOutside = (event: MouseEvent) => {
+				if (refOption.current && !refOption.current.contains(event.target as Node)) {
+					setOpenMenuId(null);
+				}
+			};
+			document.addEventListener("mousedown", handleClickOutside);
+			return () => {
+				document.removeEventListener("mousedown", handleClickOutside);
+			};
+		}
+	}, []);
 
 	const handleConfirmDelete = async () => {
 		const roomId = selectedRoom?.id || "";
@@ -62,7 +106,6 @@ export const MembersOption = () => {
 			{/* Tiêu đề danh sách */}
 			<div className="flex items-center justify-between px-1">
 				<p className="text-sm font-semibold text-gray-700">Danh sách thành viên ({members.length})</p>
-				<button className="text-gray-500 hover:text-gray-700">•••</button>
 			</div>
 
 			{/* Danh sách thành viên */}
@@ -74,13 +117,25 @@ export const MembersOption = () => {
 					>
 						{/* Thông tin member */}
 						<div className="flex items-center gap-2">
-							<img
-								src={member.avatar}
-								alt={member.fullName}
-								className="h-9 w-9 rounded-full object-cover"
-							/>
+							<div className="relative h-12 w-12">
+								<div
+									className={`rounded-full border-2 ${member.role === "admin" ? "border-yellow-400" : "border-gray-300"}`}
+								>
+									<img
+										src={member.avatar || member.avatarUrl}
+										alt={member.fullName}
+										className="h-11 w-11 rounded-full object-cover"
+									/>
+								</div>
+
+								<KingIcon
+									className={`absolute -top-2 left-4 size-4 text-yellow-400 ${member.role === "admin" || member.role === "subadmin" ? "block" : "hidden"}`}
+								/>
+							</div>
+
 							<div className="flex flex-col">
 								<span className="text-sm font-medium text-gray-800">{member.fullName}</span>
+								<span className="text-sm font-medium text-gray-800">{member.role}</span>
 								{member.id === account_id && <span className="text-xs text-gray-500">Bạn</span>}
 							</div>
 						</div>
@@ -89,18 +144,20 @@ export const MembersOption = () => {
 							onClick={() => setOpenMenuId(openMenuId === member.id ? null : (member.id ?? null))}
 							className="hidden text-gray-600 hover:text-gray-800 group-hover:block"
 						>
-							<More />
+							<More className="size-4" />
 						</button>
 
 						{openMenuId === member.id && (
-							<div className="absolute right-8 top-1/2 z-10 w-32 -translate-y-1/2 rounded-md border bg-white shadow-lg">
+							<div
+								className="absolute right-8 top-1/2 z-10 w-32 -translate-y-1/2 rounded-md border bg-white shadow-lg"
+								ref={refOption}
+							>
 								{selectedRoom?.leader_account_id !== member.id &&
 									selectedRoom?.leader_account_id === account_id && (
 										<>
 											<button
 												onClick={() => {
-													// Xử lý cấp quyền
-													setOpenMenuId(null);
+													handleAssignMember(member.id || "");
 												}}
 												className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100`}
 											>
