@@ -1,7 +1,6 @@
 import { avatar } from "@/assets/images";
 import { IMessage } from "./message.interface";
 import { BaseEntity } from "../base-entity";
-import { S } from "framer-motion/dist/types.d-DDSxwf0n";
 
 export interface IRoom {
 	id?: string;
