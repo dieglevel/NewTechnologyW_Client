@@ -32,7 +32,8 @@ export const handleLogin = async (
 
 	try {
 		setIsLoading(true);
-		await loginApi(identifier, password);
+		const response = await loginApi(identifier, password);
+		
 		router.push("/chat");
 	} catch (e) {
 		const error = e as ErrorResponse;

@@ -1,9 +1,26 @@
 import { api, ErrorResponse } from "@/lib/axios";
+import { messaging } from "@/lib/firebase/firebase.service";
 import { LocalStorage } from "@/lib/local-storage";
 import { BaseResponse } from "@/types";
 import { CreateNotificationTokenDto, IAuth, IDetailInformation } from "@/types/implement";
 import { ISearchAccount } from "@/types/implement/response";
-import { getFcmTokenWithSw, registerServiceWorker } from "../lib/firebase/firebase.service";
+import { getToken } from "firebase/messaging";
+
+export const fcmTokenApi = async (fcmToken: string) => {
+	try {
+		const response = await api.post<BaseResponse<void>>("/notification", {
+			fcm_token: fcmToken,
+			accountId: localStorage.getItem(LocalStorage.userId),
+			platform: "web",
+			jwt_token: localStorage.getItem(LocalStorage.token),
+		} as CreateNotificationTokenDto);
+
+		return response.data;
+	}
+	catch (e) {
+		throw e as ErrorResponse;
+	}
+}
 
 export const loginApi = async (identifier: string, password: string) => {
 	try {
@@ -15,25 +32,11 @@ export const loginApi = async (identifier: string, password: string) => {
 				password,
 			});
 
-
 			localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 			localStorage.setItem(LocalStorage.userId, response.data.data.userId);
 			return response.data;
 		}
 		const response = await api.post<BaseResponse<IAuth>>("/auth/login", { identifier, password });
-		const fcmToken = await getFcmTokenWithSw();
-		if (fcmToken === null) {
-			console.warn("Không lấy được FCM token");
-		} else {
-			console.log("FCM Token:", fcmToken);
-
-			await api.post<BaseResponse<void>>("/notification", {
-				fcm_token: fcmToken,
-				accountId: response.data.data.userId,
-				platform: "web",
-				jwt_token: response.data.data.accessToken,
-			} as CreateNotificationTokenDto);
-		}
 
 		localStorage.setItem(LocalStorage.token, response.data.data.accessToken);
 		localStorage.setItem(LocalStorage.userId, response.data.data.userId);

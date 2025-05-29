@@ -1,8 +1,7 @@
-import { initializeApp } from "firebase/app";
-import type { Messaging } from "firebase/messaging";
+import { initializeApp, getApps } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-// Firebase config
+
 const firebaseConfig = {
   apiKey: "AIzaSyBuRydKaP0revM7Hy29EXiM3vnpxPWScW8",
   authDomain: "webzalo-d3df7.firebaseapp.com",
@@ -12,87 +11,117 @@ const firebaseConfig = {
   appId: "1:1016001936576:web:fdb1c7f85c016a17000125",
 };
 
-// Init Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const messaging = getMessaging(app);
 
-// VAPID key
-const vapidKey = "BAnaaHFh7zuwbpX-8w2MzT_7AehejlObbAuz-_vM0smyO4nCAhMI_NcDTGoj_9pQIcb0d4tLcA-sZuQBdzq6yJI";
+export { messaging, getToken, onMessage };
 
-// Init messaging (chỉ ở client)
-let messaging: Messaging | null = null;
-if (typeof window !== "undefined" && typeof navigator !== "undefined") {
-  try {
-    messaging = getMessaging(app);
-  } catch (err) {
-    console.warn("Không thể khởi tạo messaging trong môi trường hiện tại:", err);
-  }
-}
 
-export function getMessagingInstance() {
-  if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
-  return messaging;
-}
+// import { getApp, getApps, initializeApp } from "firebase/app";
+// import type { Messaging } from "firebase/messaging";
+// import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-// ✅ Hàm xin quyền và lấy token — chỉ gọi khi cần
-export async function requestPermissionAndGetToken() {
-  if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
+// // Firebase config
 
-  const permission = await Notification.requestPermission();
-  if (permission !== "granted") {
-    throw new Error("Người dùng từ chối nhận thông báo");
-  }
 
-  const token = await getToken(messaging, { vapidKey });
-  if (!token) throw new Error("Không lấy được token FCM");
-  console.log("Token FCM:", token);
-  return token;
-}
+// // VAPID key
+// const vapidKey = "BAnaaHFh7zuwbpX-8w2MzT_7AehejlObbAuz-_vM0smyO4nCAhMI_NcDTGoj_9pQIcb0d4tLcA-sZuQBdzq6yJI";
 
-export function onMessageListener() {
-  if (!messaging) return Promise.reject("FCM chỉ hoạt động trong trình duyệt");
 
-  return new Promise((resolve) => {
-    onMessage(messaging!, (payload) => {
-      console.log("Thông báo foreground nhận được:", payload);
-      resolve(payload);
-    });
-  });
-}
+// const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 
-export function registerServiceWorker() {
-  if (typeof window !== "undefined" && 'serviceWorker' in navigator) {
-    return navigator.serviceWorker
-      .register('/firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker đã đăng ký:', registration);
-        return registration;
-      })
-      .catch((error) => {
-        console.error('Đăng ký Service Worker thất bại:', error);
-      });
-  }
-  return Promise.reject('Service Worker không được hỗ trợ hoặc đang ở SSR');
-}
+// // Chỉ khởi tạo messaging nếu đang ở trình duyệt
+// const messaging = typeof window !== 'undefined' ? getMessaging(app) : null
 
-// ✅ Chỉ gọi khi cần lấy token có đăng ký SW
-export async function getFcmTokenWithSw(): Promise<string | null> {
-  if (typeof window === "undefined" || typeof navigator === "undefined") return null;
+// export { app, messaging }
 
-  try {
-    const messaging = getMessagingInstance();
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return null;
+// export function getMessagingInstance() {
+//   if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
+//   return messaging;
+// }
+// // ✅ Chỉ export hàm, không gọi luôn
+// export function getMessagingInstance2() {
+//   return getMessaging(app);
+// }
 
-    const registration = await registerServiceWorker();
-    if (!registration) return null;
+// // ✅ Hàm xin quyền và lấy token — chỉ gọi khi cần
+// export async function requestPermissionAndGetToken() {
+//   if (!messaging) throw new Error("FCM chỉ hoạt động trong trình duyệt");
 
-    const token = await getToken(messaging, {
-      vapidKey,
-      serviceWorkerRegistration: registration,
-    });
+//   const permission = await Notification.requestPermission();
+//   if (permission !== "granted") {
+//     throw new Error("Người dùng từ chối nhận thông báo");
+//   }
 
-    return token || null;
-  } catch {
-    return null;
-  }
-}
+//   const token = await getToken(messaging, { vapidKey });
+//   if (!token) throw new Error("Không lấy được token FCM");
+//   console.log("Token FCM:", token);
+//   return token;
+// }
+
+// export function onMessageListener() {
+//   if (!messaging) return Promise.reject("FCM chỉ hoạt động trong trình duyệt");
+
+//   return new Promise((resolve) => {
+//     onMessage(messaging!, (payload) => {
+//       console.log("Thông báo foreground nhận được:", payload);
+//       resolve(payload);
+//     });
+//   });
+// }
+
+// export function registerServiceWorker() {
+//   if (typeof window !== "undefined" && 'serviceWorker' in navigator) {
+//     return navigator.serviceWorker
+//       .register('/firebase-messaging-sw.js')
+//       .then((registration) => {
+//         console.log('Service Worker đã đăng ký:', registration);
+//         return registration;
+//       })
+//       .catch((error) => {
+//         console.error('Đăng ký Service Worker thất bại:', error);
+//       });
+//   }
+//   return Promise.reject('Service Worker không được hỗ trợ hoặc đang ở SSR');
+// }
+
+// // ✅ Chỉ gọi khi cần lấy token có đăng ký SW
+// export async function getFCMToken(): Promise<string | null> {
+//   if (typeof window === "undefined" || typeof navigator === "undefined") return null;
+
+//   try {
+//     const messaging = getMessagingInstance();
+//     const permission = await Notification.requestPermission();
+//     if (permission !== "granted") return null;
+
+//     const registration = await registerServiceWorker();
+//     if (!registration) return null;
+
+//     const token = await getToken(messaging, {
+//       vapidKey,
+//       serviceWorkerRegistration: registration,
+//     });
+
+//     return token || null;
+//   } catch {
+//     return null;
+//   }
+// }
+// // getFcmTokenWithSw
+// // getFCMToken
+// export async function getFcmTokenWithSw() {
+//   try {
+//     const permission = await Notification.requestPermission();
+//     if (permission === 'granted' && messaging) {
+//       const token = await getToken(messaging, {
+//         vapidKey,
+//       });
+//       console.log('✅ FCM Token:', token);
+//       return token;
+//     } else {
+//       console.warn('Permission not granted or messaging unavailable');
+//     }
+//   } catch (err) {
+//     console.error('❌ Không lấy được FCM token', err);
+//   }
+// }

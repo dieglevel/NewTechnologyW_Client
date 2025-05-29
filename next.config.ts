@@ -5,7 +5,7 @@ const withPWA = withPWAInit({
 	dest: "public",
 	// disable: process.env.NODE_ENV === "development",
 	fallbacks: {
-		document: "/~offline",
+		document: "/chat",
 		// Đây là fallback cho các request JSON: /_next/data/xxx.json (nếu cần)
 	},
 });
