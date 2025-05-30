@@ -8,4 +8,7 @@ export class SocketOn {
 	public static readonly sendMessage = "S_sendMessage";
 	public static readonly getRevokeMessage = "S_revokeMessage";
 	public static readonly forwardMessage = "S_forwardMessage";
+	private static readonly offerCall = "offer";
+	public static readonly answerCall = "answer";
+	public static readonly iceCandidate = "ice-candidate";
 }
