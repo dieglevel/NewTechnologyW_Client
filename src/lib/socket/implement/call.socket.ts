@@ -29,7 +29,7 @@ const CallSocket = (socket: Socket | null) => {
         }
         console.log("Call data saved successfully:",data.roomId);
         
-        window.location.href = `http://localhost:3000/call/${data.roomId}`;
+         window.location.href = `https://zalo-clone-vip-pro.me/call/${data.roomId}`;
 
     });
 
