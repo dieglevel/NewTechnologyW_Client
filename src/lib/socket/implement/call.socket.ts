@@ -19,17 +19,17 @@ const CallSocket = (socket: Socket | null) => {
         }
 
         try {
+            console.log("Saving call data to localStorage:", data.roomId);
             localStorage.setItem("callData", JSON.stringify({
                 type: "accept",
                 offer: data.offer,
             }));
+            console.log("Call data saved successfully:",data.roomId);
+            window.location.href = `https://zalo-clone-vip-pro.me/call/${data.roomId}`;
         } catch (err) {
             console.error("Error saving callData:", err);
-            return;
         }
-        console.log("Call data saved successfully:",data.roomId);
         
-         window.location.href = `https://zalo-clone-vip-pro.me/call/${data.roomId}`;
 
     });
 
