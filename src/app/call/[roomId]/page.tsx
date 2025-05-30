@@ -1,94 +1,157 @@
 "use client";
+import { LocalStorage } from "@/lib/local-storage";
 import { socketService } from "@/lib/socket/socket";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-interface PeerConnection {
-	pc: RTCPeerConnection;
-	userId: string;
-}
+const PLACEHOLDER_IMAGE =
+	"http://res.cloudinary.com/dxzstf273/image/upload/v1748321318/e-commerce/hgp4v7rwpoodi4wzkvs0.jpg";
 
-const ROOM_ID = "81908e30-2e06-45cf-8df2-9a62e8ffef6b";
-
-export default function Room() {
-	const router = useRouter();
+export default function Call() {
 	const localVideoRef = useRef<HTMLVideoElement>(null);
-	const remoteVideosRef = useRef<HTMLDivElement>(null);
-	const peerConnectionsRef = useRef<Map<string, PeerConnection>>(new Map());
+	const remoteVideoRef = useRef<HTMLVideoElement>(null);
+	const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
-	const [users, setUsers] = useState<string[]>([]);
+	const [isConnected, setIsConnected] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const createOffer = useCallback(async (pc: RTCPeerConnection, userId: string) => {
-		try {
-			const offer = await pc.createOffer();
-			await pc.setLocalDescription(offer);
-			socketService.emit("offer", {
-				event: "offer",
-				data: {
-					roomId: ROOM_ID,
-          to: userId,
-					offer
-				},
-			});
-		} catch (err) {
-			console.error("Error creating offer:", err);
-		}
-	}, []);
+	const params = useParams();
+	const ROOM_ID = params.roomId as string;
 
 	useEffect(() => {
-		console.log("Connecting to socket server...");
+		const callDataRaw = localStorage.getItem("callData");
 		const configuration = {
 			iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 		};
-		const createPeerConnection = async (userId: string) => {
+
+		const setupPeerConnection = async (isAnswerer: boolean, callData?: any) => {
+			// Đóng kết nối cũ nếu có
+			if (peerConnectionRef.current) {
+				peerConnectionRef.current.close();
+				peerConnectionRef.current = null;
+			}
+
 			const pc = new RTCPeerConnection(configuration);
-			let localStream: MediaStream;
+			peerConnectionRef.current = pc;
+
 			try {
-				localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-				if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
-				localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+				const stream = await navigator.mediaDevices.getUserMedia({
+					video: true,
+					audio: true,
+				});
+				if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+				// ✅ Kiểm tra trạng thái trước khi addTrack
+				if (pc.signalingState !== "closed") {
+					stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+				}
 			} catch (err) {
 				setError("Failed to access camera or microphone");
-				console.error(err);
-				return null;
-			} 
+				console.error("getUserMedia error:", err);
+				return;
+			}
+
+			// ICE candidate
 			pc.onicecandidate = (event) => {
 				if (event.candidate) {
 					socketService.emit("ice-candidate", {
 						roomId: ROOM_ID,
 						candidate: event.candidate,
-						to: userId,
 					});
 				}
 			};
-			createOffer(pc, ROOM_ID);
-			return pc;
-		};
-    
-    createPeerConnection(ROOM_ID)
-    
-	}, [createOffer]);
 
-	
+			// Remote stream
+			pc.ontrack = (event) => {
+				const remoteStream = event.streams[0];
+				if (remoteVideoRef.current) {
+					remoteVideoRef.current.srcObject = remoteStream;
+					setIsConnected(true);
+				}
+			};
+
+			// Answer logic
+			if (isAnswerer && callData?.offer) {
+				console.log("Setting up as answerer with offer:", callData.offer);
+				await pc.setRemoteDescription(new RTCSessionDescription(callData.offer));
+				const answer = await pc.createAnswer();
+				await pc.setLocalDescription(answer);
+				socketService.emit("answer", { roomId: ROOM_ID, answer });
+			}
+			// Offer logic
+			else if (!isAnswerer) {
+				const offer = await pc.createOffer();
+				await pc.setLocalDescription(offer);
+				socketService.emit("offer", { roomId: ROOM_ID, offer });
+			}
+			console.log("Peer connection established");
+			// Receive answer
+			socketService.on("answer", async (data) => {
+				try {
+					await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+				} catch (err) {
+					console.error("Failed to set remote answer", err);
+				}
+			});
+
+			// Receive ICE candidate
+			socketService.on("ice-candidate", async (data) => {
+				try {
+					await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+				} catch (err) {
+					console.error("Failed to add ICE candidate", err);
+				}
+			});
+		};
+
+		// Decide role: offer or answer
+		if (callDataRaw) {
+			try {
+				const callData = JSON.parse(callDataRaw);
+				if (callData.type === "accept") {
+					setupPeerConnection(true, callData); // Answerer
+				}
+			} catch (err) {
+				setError("Invalid call data");
+			}
+		} else {
+			setupPeerConnection(false); // Offerer
+		}
+
+		return () => {
+			socketService.off("answer");
+			socketService.off("ice-candidate");
+			peerConnectionRef.current?.close();
+		};
+	}, []);
 
 	return (
 		<div className="min-h-screen bg-gray-100 p-4">
-			<h1 className="mb-4 text-2xl font-bold">Room: {ROOM_ID}</h1>
-
+			<h1 className="mb-4 text-2xl font-bold">Call: {ROOM_ID}</h1>
 			{error && <p className="mb-4 rounded bg-red-100 p-2 text-red-600">{error}</p>}
-
 			<div className="mb-4 flex flex-col gap-4 md:flex-row">
 				<video
+					id="local-video"
 					ref={localVideoRef}
 					autoPlay
 					muted
 					className="w-full rounded shadow md:w-1/2"
 				/>
-				<div
-					ref={remoteVideosRef}
-					className="flex w-full flex-wrap gap-4 md:w-1/2"
-				/>
+				<div className="flex w-full justify-center md:w-1/2">
+					{isConnected ? (
+						<video
+							ref={remoteVideoRef}
+							autoPlay
+							className="w-full rounded shadow"
+						/>
+					) : (
+						<img
+							src={PLACEHOLDER_IMAGE}
+							alt="No connection"
+							className="w-full rounded shadow"
+						/>
+					)}
+				</div>
 			</div>
 		</div>
 	);
