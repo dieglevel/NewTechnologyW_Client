@@ -35,7 +35,6 @@ export const FooterChat = () => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-	const [audioFile, setAudioFile] = useState<File | null>(null);
 	const [activate, setActivate] = useState<boolean>(true);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);

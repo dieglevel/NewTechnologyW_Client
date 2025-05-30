@@ -88,6 +88,7 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				onOpenChange(false);
 			}
 		} else {
+			console.log("heheeheh")
 			if (selectedItems.length === 0) {
 				addToast({
 					variant: "solid",
@@ -99,12 +100,13 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				return;
 			}
 
-			if(selectedRoom.detailRoom?.find(member => member.id === user)?.role === "noob") {
+			// if(selectedRoom.detailRoom?.find(member => member.id === user)?.role === "noob") {
 
-				setIsLoading(false);
-				return;
+			// 	setIsLoading(false);
+			// 	return;
 			
-			}
+			// }
+			const role = selectedRoom.detailRoom?.find((member) => member.id === user)?.role === "noob";
 
 			const data = await addMember({
 				roomId: selectedRoom.id || "",
@@ -115,8 +117,8 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				addToast({
 					variant: "solid",
 					color: "success",
-					title: "Thêm thành viên thành công",
-					description: "Thành viên đã được thêm vào nhóm thành công",
+					title: role ? "Thành viên đang đợi phê duyệt" : "Thêm thành viên thành công",
+					description: role ? "" : "Thành viên đã được thêm vào nhóm thành công",
 				});
 
 				onOpenChange(false);

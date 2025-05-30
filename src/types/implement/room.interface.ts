@@ -1,3 +1,4 @@
+import { stat } from 'fs';
 import { avatar } from "@/assets/images";
 import { IMessage } from "./message.interface";
 import { BaseEntity } from "../base-entity";
@@ -18,6 +19,7 @@ export interface IRoom {
 	updatedAt?: Date;
 	messagePinID?: string[];
 	configChatRoom?: ChatRoomConfig;
+	joinRequests?: IJoinRequest[];
 }
 
 export interface IDetailAccountRoom {
@@ -25,8 +27,15 @@ export interface IDetailAccountRoom {
 	fullName?: string;
 	avatar?: string;
 	avatarUrl?: string;
-	role?: "admin" | "subadmin" | "noob" ;
+	role?: "admin" | "subadmin" | "noob";
 }
+
+export interface IJoinRequest {
+	id?: string;
+	requestByAccount?: string;
+	status?: "PENDING" | "APPROVED" | "REJECTED";
+}
+
 
 export interface ChatRoomConfig extends BaseEntity {
 	changeNameAndImage: boolean;

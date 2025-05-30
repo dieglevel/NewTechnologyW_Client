@@ -46,7 +46,6 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 				store.dispatch(clearSelectedRoom());
 				break;
 			case "pin":
-				newRoom.messagePinID = [room.messagePinID];
 				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 				store.dispatch(setSelectedRoom(newRoom));
 				break;
@@ -55,6 +54,10 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 				store.dispatch(setSelectedRoom(newRoom));
 				break;
 			case "assign":
+				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+				store.dispatch(setSelectedRoom(newRoom));
+				break;
+			case "get":
 				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 				store.dispatch(setSelectedRoom(newRoom));
 				break;

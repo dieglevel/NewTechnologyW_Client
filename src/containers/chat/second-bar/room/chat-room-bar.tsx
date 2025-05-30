@@ -1,4 +1,4 @@
-import { getMessageByRoomId, getProfileFromAnotherUser } from "@/api";
+import { getJoinRequest, getMessageByRoomId, getProfileFromAnotherUser } from "@/api";
 import StickerMessage from "@/assets/svgs/sticker-message";
 import { SocketEmit, SocketOn } from "@/constants/socket";
 import { api, ErrorResponse } from "@/lib/axios";
@@ -23,7 +23,6 @@ interface Props {
 }
 
 export const ChatRoom = React.memo(({ room }: Props) => {
-
 	const [account_id] = useState<string>(localStorage.getItem(LocalStorage.userId) || "");
 	const [lastVisibleMessage, setLastVisibleMessage] = useState<IMessage>();
 
@@ -36,6 +35,14 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 		try {
 			console.log("Selecting room:", room);
 			dispatch(setSelectedRoom(room));
+
+			if (room?.type === "group" && room?.id) {
+				const fetchPendingMembers = async () => {
+					await getJoinRequest(room.id || "");
+				};
+
+				fetchPendingMembers();
+			}
 		} catch (err) {
 			console.error("Error selecting room", err);
 		}
@@ -50,11 +57,11 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 		if (!latest) {
 			return <span className="line-clamp-1">Chưa có tin nhắn</span>;
 		}
-	
+
 		if (latest.isRevoked) {
 			return <span>Đã thu hồi</span>;
 		}
-	
+
 		if (message?.sticker) {
 			if (latest.sticker) {
 				return (
@@ -65,50 +72,26 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 				);
 			}
 		}
-	
+
 		if (latest.content || (latest.files?.length ?? 0) > 0) {
 			return (
 				<span className="line-clamp-1">
 					{latest.content || ""}
-					{(latest.files?.length ?? 0) > 0
-						? ` Đã gửi ${latest.files?.length} tệp`
-						: ""}
+					{(latest.files?.length ?? 0) > 0 ? ` Đã gửi ${latest.files?.length} tệp` : ""}
 				</span>
 			);
 		}
-	
+
 		return <span className="line-clamp-1">Chưa có tin nhắn</span>;
 	};
 
 	useEffect(() => {
 		const fetchLastMessage = async () => {
-			if (room.latestMessage?.hiddenWith?.includes(account_id)) {
-				const msg = await findLastMessage(room.id || "");
-				setLastVisibleMessage(msg);
-			} else {
-				setLastVisibleMessage(room.latestMessage);
-			}
+			setLastVisibleMessage(room.latestMessage);
 		};
 
 		fetchLastMessage();
 	}, [room, account_id]);
-	  
-
-	const findLastMessage = async (roomId: string) => {
-		await dispatch(fetchMessageByRoomId(roomId));
-		try {
-			const subMessages = [...(message || [])];
-			console.log(subMessages)
-			const lastMessage = subMessages.find(
-				(msg) => msg.roomId === roomId && msg.hiddenWith?.includes(account_id)
-			  );
-			return lastMessage;
-		} catch (error) {
-			const e = error as ErrorResponse;
-			console.log(e)
-		}
-	}
-
 
 	return (
 		<div
@@ -162,11 +145,9 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 						) : (
 							<div className="flex w-[230px]">
 								{room.latestMessage?.accountId === account_id ? "Bạn: " : ""}
-								{room.latestMessage?.hiddenWith?.includes(account_id) ? (
-									renderMessage(lastVisibleMessage)
-								) : (
-									renderMessage(room.latestMessage)
-								)}
+								{room.latestMessage?.hiddenWith?.includes(account_id)
+									? renderMessage(lastVisibleMessage)
+									: renderMessage(room.latestMessage)}
 							</div>
 						)}
 					</div>

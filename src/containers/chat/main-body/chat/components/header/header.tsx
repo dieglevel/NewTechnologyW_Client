@@ -77,7 +77,7 @@ export const HeaderChat = ({ imageUrl }: Props) => {
 					<div className="flex items-center gap-1">
 						<UserIcon className="size-5 font-bold" />
 						<p className="text-sm font-light text-gray-500">
-							{selectedRoom?.detailRoom?.length || 0} thành viên
+							{selectedRoom?.detailRoom?.filter((member) => !!member.role).length || 0} thành viên
 						</p>
 					</div>
 				</div>

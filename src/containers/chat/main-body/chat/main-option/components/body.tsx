@@ -1,6 +1,6 @@
 "use client";
 
-import { disbandGroup, leaveGroup } from "@/api";
+import { disbandGroup, getJoinRequest, leaveGroup, setApprovedMember } from "@/api";
 import { default_group } from "@/assets/images";
 import { AddGroupIcon, Bin, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
 import ImageViewer from "@/components/image-preview";
@@ -8,19 +8,23 @@ import { LocalStorage } from "@/lib/local-storage";
 import { RootState } from "@/redux/store";
 import { addToast } from "@heroui/toast";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
 import { Divider } from "@heroui/divider";
 import OpenDoorComponent from "@/assets/svgs/open-door";
 import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
 import { Switch } from "@heroui/switch";
+import { Button } from "@heroui/button";
+import { Clock } from "lucide-react";
+import { IJoinRequest, IRoom } from "@/types/implement";
 
 interface Props {
 	onClick?: () => void;
+	onClickJoin?: () => void;
 }
 
-export const BodyOption = ({ onClick }: Props) => {
+export const BodyOption = ({ onClick, onClickJoin }: Props) => {
 	const [openMenu, setOpenMenu] = useState<boolean>(false);
 	const [openModal, setOpenModal] = useState(false);
 	const [openModalDisband, setOpenModalDisband] = useState(false);
@@ -35,6 +39,16 @@ export const BodyOption = ({ onClick }: Props) => {
 			await disbandGroup(selectedRoom?.id);
 			addToast({
 				title: "Nhóm đã bị giải tán",
+				color: "success",
+			});
+		}
+	};
+
+	const setApproveJoinRequest = async () => {
+		if (selectedRoom?.id) {
+			await setApprovedMember(selectedRoom.id);
+			addToast({
+				title: "Đã bật phê duyệt thành viên",
 				color: "success",
 			});
 		}
@@ -90,41 +104,9 @@ export const BodyOption = ({ onClick }: Props) => {
 					</div>
 					<p className="text-center text-xs font-semibold">Bật thông báo</p>
 				</div>
-				<div className="flex max-w-20 flex-col items-center justify-center gap-1">
-					<div className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active">
-						<PinIcon className="size-5" />
-					</div>
-					<p className="text-center text-xs font-semibold">Ghim hội thoại</p>
-				</div>
-				<div className="flex max-w-20 flex-col items-center justify-center gap-1">
-					<div className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active">
-						<AddGroupIcon className="size-5" />
-					</div>
-					<p className="text-center text-xs font-semibold">Tạo nhóm trò chuyện</p>
-				</div>
-
 				<div
 					className={`flex max-w-20 flex-col items-center justify-center gap-1 ${selectedRoom?.type === "group" ? "block" : "hidden"}`}
 				>
-					<div
-						className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active"
-						onClick={() => setOpenMenu(!openMenu)}
-					>
-						<SettingIcon className="size-5" />
-					</div>
-					<p className="text-center text-xs font-semibold">Quản lý nhóm</p>
-					{openMenu && (
-						<div className="absolute right-8 z-10 w-32 translate-y-9 rounded-md border bg-white shadow-lg">
-							<button
-								onClick={() => {
-									setOpenModalDisband(true);
-								}}
-								className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-							>
-								Giải tán nhóm
-							</button>
-						</div>
-					)}
 
 					<ModalConfirm
 						isOpen={openModalDisband}
@@ -137,7 +119,6 @@ export const BodyOption = ({ onClick }: Props) => {
 			<div
 				className={`${selectedRoom?.type !== "group" ? "hidden" : "block"} flex flex-1 flex-col justify-between`}
 			>
-				{/* Quản lý nhóm - chỉ hiển thị với admin */}
 				<div>
 					{selectedRoom?.detailRoom?.find((user) => user.id === account_id)?.role === "admin" && (
 						<div className="mb-3 flex flex-col justify-center gap-1">
@@ -147,12 +128,33 @@ export const BodyOption = ({ onClick }: Props) => {
 								<label className="relative inline-flex cursor-pointer items-center"></label>
 								<Switch
 									isSelected={isSelected}
-									onChange={(e) => {
-										setIsSelected(e.target.checked);
+									onChange={async (e) => {
+										const checked = e.target.checked;
+										setIsSelected(checked);
+
+										if (checked) {
+											try {
+												await setApproveJoinRequest();
+											} catch (error) {
+												console.error("Lỗi khi bật phê duyệt thành viên:", error);
+											}
+										}
 									}}
 									aria-label="Tự động phê duyệt thành viên"
 								/>
 							</div>
+							<Button
+								variant="ghost"
+								onClick={onClickJoin}
+								className="mt-2 w-full justify-start"
+								// disabled={pendingMembers.length === 0}
+							>
+								<Clock className="mr-2 h-4 w-4" />
+								Xem danh sách chờ duyệt
+								<span className="ml-auto rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+									{selectedRoom.joinRequests?.length || 0}
+								</span>
+							</Button>
 						</div>
 					)}
 
@@ -163,7 +165,9 @@ export const BodyOption = ({ onClick }: Props) => {
 							onClick={onClick}
 						>
 							<AddGroupIcon className="h-5 w-5" />
-							<p className="text-xs">{selectedRoom?.detailRoom?.length} thành viên</p>
+							<p className="text-xs">
+								{selectedRoom?.detailRoom?.filter((member) => !!member.role).length || 0} thành viên
+							</p>
 						</button>
 					</div>
 				</div>
@@ -173,7 +177,6 @@ export const BodyOption = ({ onClick }: Props) => {
 					<div
 						className={`flex flex-col justify-center gap-1 ${selectedRoom?.detailRoom?.find((user) => user.id === account_id)?.role !== "admin" ? "hidden" : "block"}`}
 					>
-						{/* <p className="text-base font-semibold">Thành viên nhóm</p> */}
 						<button
 							className="mt-3 flex items-center gap-1"
 							onClick={() => setOpenModalDisband(true)}

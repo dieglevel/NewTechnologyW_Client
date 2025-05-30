@@ -36,6 +36,12 @@ export const getRoom = async () => {
 	}
 };
 
+export interface HandleJoinRequestPayload {
+	roomId: string;
+	accountId: string;
+	action: "APPROVED" | "REJECTED";
+}
+
 interface ICreatePinnedMessage {
 	chatRoomID: string;
 	messageId: string;
@@ -105,10 +111,10 @@ export const leaveGroup = async (data: ILeaveGroup) => {
 
 export const assignSubAdmin = async (data: IAssignSubAdmin) => {
 	try {
-		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, data );
+		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, data);
 		return response;
 	} catch (error) {
-		console.log(error)
+		console.log(error);
 		throw error as ErrorResponse;
 	}
 };
@@ -123,6 +129,7 @@ export const createPinnedMessage = async (data: ICreatePinnedMessage) => {
 		console.log("createPinnedMessage response", response);
 		return response.data;
 	} catch (error) {
+		console.log(error)
 		throw error as ErrorResponse;
 	}
 };
@@ -138,6 +145,45 @@ export const removePinnedMessage = async (chatRoomID: string, messageId: string)
 		console.log("removePinnedMessage response", response);
 		return response.data;
 	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const getJoinRequest = async (chatRoomID: string) => {
+	try {
+		const response = await api.get<BaseResponse<IRoom[]>>("/join-request/get-join-request", {
+			params: {
+				chatRoomID,
+			},
+		});
+		console.log("getJoinRequest response", response);
+		return response.data;
+	} catch (error) {
+		console.log("Error fetching join requests:", error);
+		throw error as ErrorResponse;
+	}
+};
+
+export const setApprovedMember = async (chatRoomID: string) => {
+	try {
+		const response = await api.post<BaseResponse<IRoom>>("/config-chatroom/set-approved-member", {
+			chatRoomID,
+		});
+		console.log("setApprovedMember response", response);
+		return response.data;
+	} catch (error) {
+		console.error("Error setting approved members:", error);
+		throw error as ErrorResponse;
+	}
+};
+
+export const handleJoinRequest = async (payload: HandleJoinRequestPayload) => {
+	try {
+		const response = await api.post<BaseResponse<IRoom>>("/join-request/handle-join-request", payload);
+		console.log("handleJoinRequest response", response);
+		return response.data;
+	} catch (error) {
+		console.log("Error handling join request:", error);
 		throw error as ErrorResponse;
 	}
 };

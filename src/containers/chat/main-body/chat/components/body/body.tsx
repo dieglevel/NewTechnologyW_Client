@@ -60,15 +60,22 @@ export const BodyChat = () => {
 	}, [pinned]);
 
 	useEffect(() => {
-		setPagination(1);
-		const timeout = setTimeout(() => {
-			divRef.current?.scrollTo({
-				top: divRef.current.scrollHeight,
-				behavior: "auto",
-			});
-		}, 0);
-		return () => clearTimeout(timeout);
-	}, []);
+		if (!divRef.current) return;
+
+		const isAtBottom = divRef.current.scrollHeight - divRef.current.scrollTop - divRef.current.clientHeight < 100;
+
+		const isMyMessage = selectedRoom?.latestMessage?.accountId === userId;
+
+		if (isMyMessage || isAtBottom) {
+			const timeout = setTimeout(() => {
+				divRef.current?.scrollTo({
+					top: divRef.current.scrollHeight,
+					behavior: "smooth",
+				});
+			}, 0);
+			return () => clearTimeout(timeout);
+		}
+	}, [message]);
 
 	const scrollToPinnedMessage = (pinnedMessageId: string) => {
 		const messageIndex = message?.findIndex((msg) => msg._id === pinnedMessageId);
@@ -125,6 +132,7 @@ export const BodyChat = () => {
 		const visibleCount = pagination * MESSAGES_PER_PAGE;
 		const start = Math.max(0, total - visibleCount);
 		const filteredMessages = message?.slice(start, total);
+	
 
 		return (
 			<>

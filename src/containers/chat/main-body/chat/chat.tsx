@@ -39,6 +39,7 @@ export const BodyView = () => {
 		socketService.on(SocketOn.sendMessage, async (data) => {
 
 			const { message, behavior } = data;
+			console.log(data)
 
 			switch (behavior) {
 				case "add":
@@ -50,6 +51,7 @@ export const BodyView = () => {
 					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 					break;
 				case "revoke":
+					message.content = "Tin nhắn đã bị thu hồi";
 					await dispatch(setOneMessage(message));
 					await dispatch(fetchMessageByRoomId(selectedRoom?.id || ""));
 					break;

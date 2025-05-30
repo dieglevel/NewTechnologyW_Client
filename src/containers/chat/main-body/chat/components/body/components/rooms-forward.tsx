@@ -16,7 +16,7 @@ import { Divider } from "@heroui/divider";
 import { Checkbox } from "@heroui/checkbox";
 import { Avatar } from "@heroui/avatar";
 import { renderSticker } from "./render-sticker";
-import { renderFiles } from "./render-files";
+import { RenderFiles } from "./render-files";
 
 interface ShareItem {
 	id: string;
@@ -128,7 +128,10 @@ export function ShareModal({ open, onOpenChangeAction, onShare, content }: Share
 							<p className={`text-sm text-text-seen`}>{content.content}</p>
 						)}
 
-						{renderFiles({ message: content, isSender: false })}
+						<RenderFiles
+							message={content}
+							isSender={false}
+						/>
 					</>
 				)}
 

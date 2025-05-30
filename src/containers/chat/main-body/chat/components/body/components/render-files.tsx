@@ -14,7 +14,7 @@ interface Props {
 	isSender: boolean;
 }
 
-export const renderFiles = ({ message, isSender }: Props) => {
+export const RenderFiles = ({ message, isSender }: Props) => {
 	const [textData, setTextData] = useState<string>();
 
 	const textLikeTypes = ["application/json", "application/javascript", "application/xml", "application/x-sh"];
@@ -23,7 +23,6 @@ export const renderFiles = ({ message, isSender }: Props) => {
 		const fetchData = async () => {
 			for (const file of message.files ?? []) {
 				const type = file.data?.type || "";
-
 				if (type.startsWith("text/") || textLikeTypes.includes(type)) {
 					try {
 						const dataFile = await getDataFile(file.url);
@@ -34,7 +33,6 @@ export const renderFiles = ({ message, isSender }: Props) => {
 				}
 			}
 		};
-
 		fetchData();
 	}, [message]);
 
@@ -95,7 +93,9 @@ export const renderFiles = ({ message, isSender }: Props) => {
 						<Button
 							type="button"
 							onClick={() => previewFile(file.url)}
-							className={`flex h-fit w-full justify-between gap-3 rounded-lg ${isSender ? "bg-blue-200" : "bg-body"} p-0`}
+							className={`flex h-fit w-full justify-between gap-3 rounded-lg ${
+								isSender ? "bg-blue-200" : "bg-body"
+							} p-0`}
 						>
 							<div>{getFileIcon(fileType)}</div>
 							<div className="flex w-full flex-col">

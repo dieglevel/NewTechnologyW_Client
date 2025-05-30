@@ -9,4 +9,5 @@ export interface IDetailInformation extends BaseEntity {
    gender?: boolean;
    thumbnailUrl?: string;
    userId?: string;
+   requestBy?: string;
 }
