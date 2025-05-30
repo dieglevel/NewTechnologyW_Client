@@ -20,6 +20,7 @@ interface IResponse {
 
 export const sendMessage = async (data: ISend) => {
 	try {
+		console.log("Sending message data:", data);
 		const formData = new FormData();
 
 		formData.append("roomId", data.roomId);
@@ -51,6 +52,7 @@ export const sendMessage = async (data: ISend) => {
 
 		return response.data;
 	} catch (error) {
+		console.log("Error sending message:", error);
 		throw error as ErrorResponse;
 	}
 };

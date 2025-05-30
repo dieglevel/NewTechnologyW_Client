@@ -18,6 +18,7 @@ import { Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { filterFriend } from "./handle";
 import { Spinner } from "@heroui/spinner";
 import { IRoom } from "@/types/implement/room.interface";
+import { on } from "events";
 
 interface ShareModalProps {
 	open: boolean;
@@ -68,11 +69,6 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				setIsLoading(false);
 				return;
 			}
-			const dataGroup = {
-				avatarUrl: avatar,
-				name: nameGroup,
-			};
-
 			const data = await createRoom({ name: nameGroup, avatarUrl: avatar || undefined });
 
 			if (data.statusCode === 200) {
@@ -101,6 +97,13 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				});
 				setIsLoading(false);
 				return;
+			}
+
+			if(selectedRoom.detailRoom?.find(member => member.id === user)?.role === "noob") {
+
+				setIsLoading(false);
+				return;
+			
 			}
 
 			const data = await addMember({
@@ -133,6 +136,7 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 				title: "Bạn đã rời khỏi nhóm",
 				color: "success",
 			});
+			onOpenChange(false);
 		}
 	};
 
@@ -185,7 +189,8 @@ export function GroupModal({ open, onOpenChange, selectedRoom, isRoom, type, tit
 										<div
 											key={item.accountId}
 											className={`border-b-border-second flex w-full cursor-pointer items-center gap-2 rounded-md border-b-1 px-4 py-2 hover:bg-background`}
-											onClick={() => toggleItem(item.accountId ?? "")}
+											onClick={() => isFriendInRoom ?? toggleItem(item.accountId ?? "")}
+											
 										>
 											{isFriendInRoom && isRoom ? (
 												<Checkbox

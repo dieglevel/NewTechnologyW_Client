@@ -12,14 +12,13 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { sendMessage } from "@/api";
 import type { EmojiClickData } from "emoji-picker-react";
-import { FileIcon, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
+import { FileIcon, Square, Play, Pause, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Spinner } from "@heroui/spinner";
 import { useReactMediaRecorder } from "react-media-recorder";
-import { client } from "@/lib/assemblyai";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import { setMessage } from "@/redux/store/models/message-slice";
-
+import VoiceTextIcon from "@/assets/svgs/voice-text";
+import MicIcon from "@/assets/svgs/mic";
 
 const EmojiForm = dynamic(() => import("./components/emoji-form"), {
 	ssr: false,
@@ -31,13 +30,13 @@ export const FooterChat = () => {
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
-
 	const [file, setFile] = useState<File[]>([]);
 	const [message, setIMessage] = useState<string>("");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 	const [audioFile, setAudioFile] = useState<File | null>(null);
+	const [activate, setActivate] = useState<boolean>(true);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
@@ -59,7 +58,7 @@ export const FooterChat = () => {
 	const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
 	if (!browserSupportsSpeechRecognition) {
-		return <span>Browser doesn't support speech recognition.</span>;
+		setActivate(false);
 	}
 
 	const handleClickFile = () => {
@@ -137,18 +136,18 @@ export const FooterChat = () => {
 	};
 
 	// Voice recording functions
-	// const handleStartRecording = () => {
-	// 	startRecording();
-	// };
+	const handleStartRecording = () => {
+		startRecording();
+	};
 
 	const handleStartListening = () => {
 		resetTranscript();
 		SpeechRecognition.startListening({ continuous: true, language: "vi-VN" });
 	};
 
-	// const handleStopRecording = () => {
-	// 	stopRecording();
-	// };
+	const handleStopRecording = () => {
+		stopRecording();
+	};
 
 	const handleStopListening = () => {
 		SpeechRecognition.stopListening();
@@ -174,44 +173,40 @@ export const FooterChat = () => {
 	};
 
 	const handleSendVoice = async () => {
-		console.log("mediaBlobUrl", );
 
 		// try {
 		// 	const params = {
 		// 		audio: mediaBlobUrl || "",
 		// 		speech_model: "universal" as any,
 		// 	};
-	
+
 		// 	const run = async () => {
 		// 		const transcript = await client.transcripts.transcribe(params);
 		// 		console.log("Transcript:", transcript);
 		// 	};
-	
+
 		// 	run()
 		// } catch (error) {
 		// 	console.error("Error sending voice message:", error);
 		// }
 
-		
+		if (mediaBlobUrl) {
+			const response = await fetch(mediaBlobUrl);
+			const blob = await response.blob();
+			const voiceFile = new File([blob], `voice-${Date.now()}.mp4`, { type: "audio/mp4" });
 
-		// if (mediaBlobUrl) {
-		// 	const response = await fetch(mediaBlobUrl);
-		// 	const blob = await response.blob();
-		// 	const voiceFile = new File([blob], `voice-${Date.now()}.webm`, { type: "audio/webm" });
-
-		// 	try {
-		// 		await sendMessage({
-		// 			accountId: localStorage.getItem(LocalStorage.userId) || "",
-		// 			roomId: selectedRoom?.id || "",
-		// 			type: "mixed",
-		// 			content: "",
-		// 			files: [voiceFile],
-		// 		});
-		// 		handleDeleteVoice();
-		// 	} catch (error) {
-		// 		console.error("Error sending voice message:", error);
-		// 	}
-		// }
+			try {
+				await sendMessage({
+					accountId: localStorage.getItem(LocalStorage.userId) || "",
+					roomId: selectedRoom?.id || "",
+					type: "mixed",
+					files: [voiceFile],
+				});
+				handleDeleteVoice();
+			} catch (error) {
+				console.error("Error sending voice message:", error);
+			}
+		}
 	};
 
 	const formatTime = (seconds: number) => {
@@ -220,10 +215,11 @@ export const FooterChat = () => {
 		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 	};
 
+	const isAudioPlaying = status === "recording";
 
 	return (
 		<div className="flex w-full flex-col border-t-1 bg-body">
-			{(listening || mediaBlobUrl) && (
+			{listening && (
 				<div className="flex items-center justify-between border-b-1 px-4 py-3">
 					<div className="flex items-center gap-3">
 						{listening ? (
@@ -247,20 +243,49 @@ export const FooterChat = () => {
 									))}
 								</div>
 							</>
+						) : null}
+					</div>
+				</div>
+			)}
+
+			{(isAudioPlaying || mediaBlobUrl) && (
+				<div className="flex items-center justify-between border-b-1 px-4 py-3">
+					<div className="flex items-center gap-3">
+						{isAudioPlaying ? (
+							<>
+								<div className="flex items-center gap-2">
+									<div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+									<span className="font-mono text-sm text-red-500">
+										{formatTime(recordingTime)}
+									</span>
+								</div>
+								<div className="flex items-center gap-1">
+									{[...Array(20)].map((_, i) => (
+										<div
+											key={i}
+											className="w-1 animate-bounce rounded-full bg-red-500"
+											style={{
+												animationDelay: `${i * 0.1}s`,
+												height: `${Math.random() * 20 + 10}px`,
+											}}
+										/>
+									))}
+								</div>
+							</>
 						) : (
 							<div className="flex items-center gap-2">
-								<Mic className="h-4 w-4 text-green-500" />
+								<MicIcon className="h-4 w-4 text-green-500" />
 								<span className="text-sm">Voice message ready</span>
 							</div>
 						)}
 					</div>
 
 					<div className="flex items-center gap-2">
-						{listening ? (
+						{isAudioPlaying ? (
 							<></>
 						) : mediaBlobUrl ? (
 							<>
-								{/* <button
+								<button
 									onClick={handlePlayVoice}
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600"
 								>
@@ -269,7 +294,7 @@ export const FooterChat = () => {
 									) : (
 										<Play className="h-4 w-4 text-white" />
 									)}
-								</button> */}
+								</button>
 								<button
 									onClick={handleDeleteVoice}
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600"
@@ -280,7 +305,7 @@ export const FooterChat = () => {
 									onClick={handleSendVoice}
 									className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600"
 								>
-									<SendIcon className="size-4 stroke-icon-active" />
+									<SendIcon className="size-4 stroke-slate-200 text-white" />
 								</button>
 							</>
 						) : null}
@@ -311,20 +336,30 @@ export const FooterChat = () => {
 				>
 					<FileIcon className="size-6 stroke-icon-second" />
 				</div>
-				<div className="flex h-8 w-[32px] flex-none items-center justify-center rounded-sm bg-body hover:cursor-pointer hover:bg-background">
-					<UserChatIcon className="size-6 stroke-icon-second" />
+				<div
+					onClick={isAudioPlaying ? handleStopRecording : handleStartRecording}
+					// onClick={listening ? handleStopListening : handleStartListening}
+					className={`flex h-8 w-[32px] flex-none items-center justify-center rounded-sm hover:cursor-pointer hover:bg-background ${
+						isAudioPlaying ? "bg-red-100" : "bg-body"
+					}`}
+				>
+					{isAudioPlaying ? (
+						<Square className="size-6 stroke-red-500" />
+					) : (
+						<MicIcon className="size-4 fill-[#575757] stroke-icon-active text-[#575757]" />
+					)}
 				</div>
 				<div
 					// onClick={listening ? handleStopRecording : handleStartRecording}
 					onClick={listening ? handleStopListening : handleStartListening}
-					className={`flex h-8 w-[32px] flex-none items-center justify-center rounded-sm hover:cursor-pointer hover:bg-background ${
+					className={`flex ${activate ? "block" : "hidden"} h-8 w-[32px] flex-none items-center justify-center rounded-sm hover:cursor-pointer hover:bg-background ${
 						listening ? "bg-red-100" : "bg-body"
 					}`}
 				>
 					{listening ? (
 						<Square className="size-6 stroke-red-500" />
 					) : (
-						<Mic className="size-6 stroke-icon-second" />
+						<VoiceTextIcon className="size-9 self-start fill-[#575757] stroke-icon-active" />
 					)}
 				</div>
 			</div>

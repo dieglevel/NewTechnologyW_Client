@@ -9,19 +9,20 @@ import { IDetailInformation } from "@/types/implement";
 import { IMessage } from "@/types/implement/message.interface";
 import { Spinner } from "@heroui/spinner";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ShareModal } from "./rooms-forward";
 import { IDetailAccountRoom } from "@/types/implement/room.interface";
 import { renderSticker } from "./render-sticker";
 import { renderFiles } from "./render-files";
+import { addToast } from "@heroui/toast";
 
 interface Props {
 	message: IMessage;
 	isSender: boolean;
 }
 
-export const Message = ({ message, isSender }: Props) => {
+export const Message = ({message, isSender}: Props) => {
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 
 	const revoked = message.isRevoked ?? false;
@@ -68,11 +69,36 @@ export const Message = ({ message, isSender }: Props) => {
 	};
 
 	const handlePinnedMessage = async () => {
-		if (message._id && message.roomId) {
-			const response = await createPinnedMessage({ chatRoomID: message.roomId, messageId: message._id });
-			if (response) {
-				console.log("Pinned message created successfully");
+
+		console.log("selectedRoom?.messagePinID", selectedRoom?.messagePinID);
+
+		if ((selectedRoom?.messagePinID?.length ?? 0) >= 3 ) {
+			addToast({
+				classNames: { title: "font-bold", description: "text-sm" },
+				variant: "solid",
+				title: "Ghim tin nhắn thất bại",
+				description: "Không thể ghim quá 3 tin nhắn",
+				color: "danger",
+			});
+
+			return;
+		}
+
+		if (!selectedRoom?.messagePinID?.includes(message._id || "")) {
+			if (message._id && message.roomId) {
+				const response = await createPinnedMessage({ chatRoomID: message.roomId, messageId: message._id });
+				if (response) {
+					console.log("Pinned message created successfully");
+				}
 			}
+		} else {
+			addToast({
+				classNames: { title: "font-bold", description: "text-sm" },
+				variant: "solid",
+				title: "Ghim tin nhắn thất bại",
+				description: "Tin nhắn này đã được ghim rồi",
+				color: "danger",
+			});
 		}
 	};
 
@@ -123,7 +149,7 @@ export const Message = ({ message, isSender }: Props) => {
 
 					<div
 						className="group relative"
-						id={`message-${message._id}`}
+						data-message-id={message._id}
 					>
 						<div
 							className={`flex max-w-[400px] flex-col gap-2 rounded-lg p-3 ${

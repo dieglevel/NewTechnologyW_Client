@@ -16,6 +16,7 @@ const selectedRoomSlice = createSlice({
 	initialState,
 	reducers: {
 		setSelectedRoom: (state, action: PayloadAction<IRoom>) => {
+			console.log("Setting selected room:", action.payload);
 			state.selectedRoom = action.payload;
 		},
 		clearSelectedRoom: (state) => {

@@ -1,3 +1,5 @@
+"use client";
+
 import { disbandGroup, leaveGroup } from "@/api";
 import { default_group } from "@/assets/images";
 import { AddGroupIcon, Bin, PinIcon, SendIcon, SettingIcon } from "@/assets/svgs";
@@ -11,8 +13,8 @@ import { useSelector } from "react-redux";
 import { ModalConfirm } from "./modal-confirm";
 import { Divider } from "@heroui/divider";
 import OpenDoorComponent from "@/assets/svgs/open-door";
-import { ShareModal } from "../../components/body/components";
 import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
+import { Switch } from "@heroui/switch";
 
 interface Props {
 	onClick?: () => void;
@@ -21,7 +23,9 @@ interface Props {
 export const BodyOption = ({ onClick }: Props) => {
 	const [openMenu, setOpenMenu] = useState<boolean>(false);
 	const [openModal, setOpenModal] = useState(false);
+	const [openModalDisband, setOpenModalDisband] = useState(false);
 	const [openModalLeave, setOpenModalLeave] = useState(false);
+	const [isSelected, setIsSelected] = useState<boolean>(true);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
@@ -113,7 +117,7 @@ export const BodyOption = ({ onClick }: Props) => {
 						<div className="absolute right-8 z-10 w-32 translate-y-9 rounded-md border bg-white shadow-lg">
 							<button
 								onClick={() => {
-									setOpenModal(true);
+									setOpenModalDisband(true);
 								}}
 								className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
 							>
@@ -123,64 +127,91 @@ export const BodyOption = ({ onClick }: Props) => {
 					)}
 
 					<ModalConfirm
-						isOpen={openModal}
+						isOpen={openModalDisband}
 						header="Bạn có chắc chắn muốn giải tán nhóm này không?"
-						onOpenChange={() => setOpenModal(false)}
+						onOpenChange={() => setOpenModalDisband(false)}
 						onConfirm={handleDisbandGroup}
 					/>
 				</div>
 			</div>
-			<div className={`${selectedRoom?.type !== "group" ? "hidden" : "block"}`}>
-				<div className="flex flex-col justify-center gap-1">
-					<p className="text-base font-semibold">Thành viên nhóm</p>
-					<button
-						className="mt-3 flex items-center gap-1"
-						onClick={onClick}
-					>
-						<AddGroupIcon className="h-5 w-5" />
-						<p className="text-xs">{selectedRoom?.detailRoom?.length} thành viên</p>
-					</button>
-				</div>
-				<Divider />
-				<div className={`flex flex-col justify-center gap-1`}>
-					{/* <p className="text-base font-semibold">Thành viên nhóm</p> */}
-					<button
-						className="mt-3 flex items-center gap-1"
-						onClick={() => setOpenModal(true)}
-					>
-						<Bin className="h-5 w-5 fill-red-500" />
-						<p className="text-xs text-red-500">Giải tán nhóm</p>
-					</button>
-				</div>
-				<div className={`flex flex-col justify-center gap-1`}>
-					<button
-						className="mt-3 flex items-center gap-1"
-						onClick={() => {
-							selectedRoom?.detailRoom?.find((member) => member.id === account_id)?.role ===
-							"admin"
-								? setOpenModalLeave(true)
-								: setOpenModal(true);
-						}}
-					>
-						<OpenDoorComponent className="h-5 w-5 fill-red-500" />
-						<p className="text-xs text-red-500">Rời khỏi phòng</p>
-					</button>
+			<div
+				className={`${selectedRoom?.type !== "group" ? "hidden" : "block"} flex flex-1 flex-col justify-between`}
+			>
+				{/* Quản lý nhóm - chỉ hiển thị với admin */}
+				<div>
+					{selectedRoom?.detailRoom?.find((user) => user.id === account_id)?.role === "admin" && (
+						<div className="mb-3 flex flex-col justify-center gap-1">
+							<p className="text-base font-semibold">Quản lý nhóm</p>
+							<div className="mt-2 flex items-center justify-between">
+								<p className="text-sm">Phê duyệt thành viên mới</p>
+								<label className="relative inline-flex cursor-pointer items-center"></label>
+								<Switch
+									isSelected={isSelected}
+									onChange={(e) => {
+										setIsSelected(e.target.checked);
+									}}
+									aria-label="Tự động phê duyệt thành viên"
+								/>
+							</div>
+						</div>
+					)}
 
-					<ModalConfirm
-						isOpen={openModal}
-						header="Bạn có chắc chắn muốn rời khỏi nhóm này không?"
-						onOpenChange={() => setOpenModal(false)}
-						onConfirm={handleLeaveGroup}
-					/>
+					<div className="flex flex-col justify-center gap-1">
+						<p className="text-base font-semibold">Thành viên nhóm</p>
+						<button
+							className="mt-2 flex items-center gap-1"
+							onClick={onClick}
+						>
+							<AddGroupIcon className="h-5 w-5" />
+							<p className="text-xs">{selectedRoom?.detailRoom?.length} thành viên</p>
+						</button>
+					</div>
+				</div>
 
-					<GroupModal
-						open={openModalLeave}
-						onOpenChange={setOpenModalLeave}
-						selectedRoom={selectedRoom || undefined}
-						isRoom={true}
-						type="edit"
-						title="Chuyển quyền nhóm trưởng cho thành viên khác"
-					/>
+				<div>
+					<Divider />
+					<div
+						className={`flex flex-col justify-center gap-1 ${selectedRoom?.detailRoom?.find((user) => user.id === account_id)?.role !== "admin" ? "hidden" : "block"}`}
+					>
+						{/* <p className="text-base font-semibold">Thành viên nhóm</p> */}
+						<button
+							className="mt-3 flex items-center gap-1"
+							onClick={() => setOpenModalDisband(true)}
+						>
+							<Bin className="h-5 w-5 fill-red-500" />
+							<p className="text-xs text-red-500">Giải tán nhóm</p>
+						</button>
+					</div>
+					<div className={`flex flex-col justify-center gap-1`}>
+						<button
+							className="mt-3 flex items-center gap-1"
+							onClick={() => {
+								selectedRoom?.detailRoom?.find((member) => member.id === account_id)?.role ===
+								"admin"
+									? setOpenModalLeave(true)
+									: setOpenModal(true);
+							}}
+						>
+							<OpenDoorComponent className="h-5 w-5 fill-red-500" />
+							<p className="text-xs text-red-500">Rời khỏi phòng</p>
+						</button>
+
+						<ModalConfirm
+							isOpen={openModal}
+							header="Bạn có chắc chắn muốn rời khỏi nhóm này không?"
+							onOpenChange={() => setOpenModal(false)}
+							onConfirm={handleLeaveGroup}
+						/>
+
+						<GroupModal
+							open={openModalLeave}
+							onOpenChange={setOpenModalLeave}
+							selectedRoom={selectedRoom || undefined}
+							isRoom={true}
+							type="edit"
+							title="Chuyển quyền nhóm trưởng cho thành viên khác"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

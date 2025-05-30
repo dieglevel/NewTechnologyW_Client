@@ -3,7 +3,7 @@ import { SideBarReducer } from "./store/ui/sidebar";
 import { DetailInformationReducer } from "./store/models/detail-information-slice";
 import { modalReducer } from "./store/ui/modal";
 import { ContactBarReducer, OptionViewReducer, SecondBarReducer } from "./store/ui";
-import { MyListFriendReducer, RequestFriendReducer } from "./store/models";
+import { MyListFriendReducer, pinnedMessagesReducer, RequestFriendReducer } from "./store/models";
 import { RoomReducer } from "./store/models";
 import { SendedFriendReducer } from "./store/models/sended-friend-slice";
 import { SelectedRoomReducer } from "./store/ui/selected-room-slice";
@@ -23,6 +23,7 @@ export const store = configureStore({
 		selectedRoom: SelectedRoomReducer,
 		message: MessageReducer,
 		secondBar: SecondBarReducer,
+		pinnedMessages: pinnedMessagesReducer,
 	},
 });
 

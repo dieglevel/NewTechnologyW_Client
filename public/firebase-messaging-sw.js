@@ -13,7 +13,6 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function(payload) {
-  console.log("ádfasdf",payload.data);
   const title = payload.data.title || 'Thông báo';
   const options = {
     body: payload.data.body || '',

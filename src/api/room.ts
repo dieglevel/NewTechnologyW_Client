@@ -105,8 +105,7 @@ export const leaveGroup = async (data: ILeaveGroup) => {
 
 export const assignSubAdmin = async (data: IAssignSubAdmin) => {
 	try {
-		console.log(data)
-		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, { data });
+		const response = await api.put<BaseResponse<IRoom>>(`/user-config/assign-role`, data );
 		return response;
 	} catch (error) {
 		console.log(error)
@@ -122,6 +121,21 @@ export const createPinnedMessage = async (data: ICreatePinnedMessage) => {
 			messageId: data.messageId,
 		});
 		console.log("createPinnedMessage response", response);
+		return response.data;
+	} catch (error) {
+		throw error as ErrorResponse;
+	}
+};
+
+export const removePinnedMessage = async (chatRoomID: string, messageId: string) => {
+	try {
+		const response = await api.delete<BaseResponse<IRoom>>(`/pinned-message/remove-pinned-message`, {
+			data: {
+				chatRoomID,
+				messageId,
+			},
+		});
+		console.log("removePinnedMessage response", response);
 		return response.data;
 	} catch (error) {
 		throw error as ErrorResponse;

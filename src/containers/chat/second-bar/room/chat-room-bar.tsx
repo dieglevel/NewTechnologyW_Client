@@ -34,6 +34,7 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 	const handleClick = async () => {
 		dispatch(setLoadingRoom(true));
 		try {
+			console.log("Selecting room:", room);
 			dispatch(setSelectedRoom(room));
 		} catch (err) {
 			console.error("Error selecting room", err);
@@ -54,7 +55,7 @@ export const ChatRoom = React.memo(({ room }: Props) => {
 			return <span>Đã thu hồi</span>;
 		}
 	
-		if (message?.type === "sticker") {
+		if (message?.sticker) {
 			if (latest.sticker) {
 				return (
 					<p className="ml-1 flex items-center">

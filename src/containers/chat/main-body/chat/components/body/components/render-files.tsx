@@ -14,7 +14,7 @@ interface Props {
 	isSender: boolean;
 }
 
-export const renderFiles = ({ message }: Props) => {
+export const renderFiles = ({ message, isSender }: Props) => {
 	const [textData, setTextData] = useState<string>();
 
 	const textLikeTypes = ["application/json", "application/javascript", "application/xml", "application/x-sh"];
@@ -95,7 +95,7 @@ export const renderFiles = ({ message }: Props) => {
 						<Button
 							type="button"
 							onClick={() => previewFile(file.url)}
-							className="flex h-fit w-full justify-between gap-3 rounded-lg bg-blue-200 p-0"
+							className={`flex h-fit w-full justify-between gap-3 rounded-lg ${isSender ? "bg-blue-200" : "bg-body"} p-0`}
 						>
 							<div>{getFileIcon(fileType)}</div>
 							<div className="flex w-full flex-col">
