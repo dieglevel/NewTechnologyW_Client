@@ -5,4 +5,7 @@ export class SocketEmit {
 	public static readonly joinRoom = "joinChatRoom";
 	public static readonly sendMessage = "C_sendMessage";
 	public static readonly revokeMessage = "C_revokeMessage";
+	private static readonly offerCall = "offer";
+	public static readonly answerCall = "answer";
+	public static readonly iceCandidate = "ice-candidate";
 }
