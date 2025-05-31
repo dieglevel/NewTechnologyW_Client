@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.videoContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.video {
+  width: 320px;
+  height: 240px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+.remoteVideos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.error {
+  color: red;
+}
+.testSub {
+  color: green;
+}
+.button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #005bb5;
+}

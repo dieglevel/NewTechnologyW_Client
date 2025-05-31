@@ -21,6 +21,7 @@ import { ConnectServerSocket } from "./implement/connect-server.socket";
 import { DetailInformationSocket } from "./implement/my-detail-information.socket";
 import { MyListRoomSocket } from "./implement/my-list-room.socket";
 import { FriendSocket } from "./implement/friend.socket";
+import CallSocket from "./implement/call.socket";
 
 class SocketService {
 	private static instance: SocketService;
@@ -79,6 +80,9 @@ class SocketService {
 		// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 		FriendSocket(this.socket)
+
+		// ---------------------------------------------------------------------------------------------------------------------------------------------
+		CallSocket(this.socket);
 	}
 
 	public disconnect() {

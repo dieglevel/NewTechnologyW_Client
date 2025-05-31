@@ -14,6 +14,7 @@ import { ModalConfirm } from "./modal-confirm";
 import { Divider } from "@heroui/divider";
 import OpenDoorComponent from "@/assets/svgs/open-door";
 import { GroupModal } from "@/containers/chat/second-bar/search/components/modal-group";
+import { useRouter } from "next/navigation";
 import { Switch } from "@heroui/switch";
 import { Button } from "@heroui/button";
 import { Clock } from "lucide-react";
@@ -29,6 +30,7 @@ export const BodyOption = ({ onClick, onClickJoin }: Props) => {
 	const [openModal, setOpenModal] = useState(false);
 	const [openModalDisband, setOpenModalDisband] = useState(false);
 	const [openModalLeave, setOpenModalLeave] = useState(false);
+	const router = useRouter();
 	const [isSelected, setIsSelected] = useState<boolean>(true);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
@@ -99,7 +101,10 @@ export const BodyOption = ({ onClick, onClickJoin }: Props) => {
 			</div>
 			<div className="flex flex-row items-start justify-center gap-3">
 				<div className="flex max-w-20 flex-col items-center justify-center gap-1">
-					<div className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active">
+					<div
+						className="flex cursor-pointer items-center justify-center rounded-sm bg-background stroke-icon-second p-2 hover:bg-icon-active hover:stroke-icon-active"
+						onClick={() => router.push(`/call/${selectedRoom?.id}`)}
+					>
 						<SendIcon className="size-5" />
 					</div>
 					<p className="text-center text-xs font-semibold">Bật thông báo</p>
