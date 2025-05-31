@@ -49,6 +49,7 @@ export const RenderFiles = ({ message, isSender }: Props) => {
 				const fileType = file.data?.type || "";
 				const isImage = fileType.startsWith("image/");
 				const isVideo = fileType.startsWith("video/");
+				const isAudio = fileType.startsWith("audio/");
 
 				if (isImage) {
 					return (
@@ -75,6 +76,30 @@ export const RenderFiles = ({ message, isSender }: Props) => {
 							controls
 							width={300}
 							height={200}
+							className="rounded-lg object-cover"
+						/>
+					);
+				}
+
+				if (isVideo) {
+					return (
+						<video
+							key={index}
+							src={file.url}
+							controls
+							width={300}
+							height={200}
+							className="rounded-lg object-cover"
+						/>
+					);
+				}
+
+				if (isAudio) {
+					return (
+						<audio
+							key={index}
+							src={file.url}
+							controls
 							className="rounded-lg object-cover"
 						/>
 					);
