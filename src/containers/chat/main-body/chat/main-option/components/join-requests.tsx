@@ -55,9 +55,9 @@ export const JoinRequests = () => {
 	const handleReject = async (accountId: string) => {
 		try {
 			const result = await handleJoinRequest({
-				roomId: selectedRoom?.id || "",
-				accountId,
-				action: "REJECTED",
+				chatRoomID: selectedRoom?.id || "",
+				userApprovedID: accountId,
+				status: "REJECTED",
 			});
 			addToast({ title: "Từ chối thành công", color: "warning" });
 		} catch (err) {
