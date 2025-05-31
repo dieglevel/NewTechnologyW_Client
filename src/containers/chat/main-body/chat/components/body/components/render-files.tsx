@@ -81,19 +81,6 @@ export const RenderFiles = ({ message, isSender }: Props) => {
 					);
 				}
 
-				if (isVideo) {
-					return (
-						<video
-							key={index}
-							src={file.url}
-							controls
-							width={300}
-							height={200}
-							className="rounded-lg object-cover"
-						/>
-					);
-				}
-
 				if (isAudio) {
 					return (
 						<audio
