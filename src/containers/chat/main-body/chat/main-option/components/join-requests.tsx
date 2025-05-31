@@ -18,7 +18,8 @@ export const JoinRequests = () => {
 			// console.log("Fetching details for account ID:", accountId);
 			const response = await getProfileFromAnotherUser(accountId.requestByAccount || "");
 			if (response.statusCode === 200) {
-				return response.data;
+				const userDetails: IDetailInformation = { ...response.data, userId: accountId.requestByAccount };
+				return userDetails;
 			} else {
 				throw new Error("Failed to fetch user details");
 			}
@@ -28,7 +29,7 @@ export const JoinRequests = () => {
 				const pendingMembers = selectedRoom.joinRequests.filter((member) => member.status === "PENDING");
 
 				const details = await Promise.all(pendingMembers.map((member) => fetchDetail(member)));
-
+				
 				setMembers(details);
 			}
 		};
@@ -100,13 +101,13 @@ export const JoinRequests = () => {
 						{/* Nút xử lý */}
 						<div className="flex gap-2">
 							<button
-								onClick={() => handleApprove(member.id || "")}
+								onClick={() => handleApprove(member.userId || "")}
 								className="rounded bg-green-500 px-3 py-1 text-xs text-white hover:bg-green-600"
 							>
 								Phê duyệt
 							</button>
 							<button
-								onClick={() => handleReject(member.id || "")}
+								onClick={() => handleReject(member.userId || "")}
 								className="rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
 							>
 								Từ chối

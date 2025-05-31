@@ -29,6 +29,7 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 			case "update":
 				if (newRoom?.id || data.room?.room_id || data.room?.roomId) {
 					store.dispatch(updateRoom([normalizeRoom(newRoom)]));
+					store.dispatch(setSelectedRoom(normalizeRoom(newRoom)));
 				}
 				break;
 			case "delete":
@@ -58,6 +59,7 @@ export const MyListRoomSocket = (socket: Socket | null) => {
 				store.dispatch(setSelectedRoom(newRoom));
 				break;
 			case "get":
+				console.log("get my list room", newRoom);
 				store.dispatch(updateRoom([normalizeRoom(newRoom)]));
 				store.dispatch(setSelectedRoom(newRoom));
 				break;

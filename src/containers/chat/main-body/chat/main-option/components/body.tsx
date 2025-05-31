@@ -31,7 +31,7 @@ export const BodyOption = ({ onClick, onClickJoin }: Props) => {
 	const [openModalDisband, setOpenModalDisband] = useState(false);
 	const [openModalLeave, setOpenModalLeave] = useState(false);
 	const router = useRouter();
-	const [isSelected, setIsSelected] = useState<boolean>(true);
+	const [isSelected, setIsSelected] = useState<boolean>(false);
 
 	const { selectedRoom } = useSelector((state: RootState) => state.selectedRoom);
 	const account_id = localStorage.getItem(LocalStorage.userId);
