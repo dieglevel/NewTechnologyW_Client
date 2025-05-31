@@ -8,13 +8,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { handleCheckPage, handleLogin } from "./handle";
 
-const tempData = [
-	"ldmhieudev@yopmail.com",
-	"khtgdd@yopmail.com",
-	"dieglevel@yopmail.com",
-	"colnat412@yopmail.com",
-	"ntdinh25@yopmail.com",
-];
 
 export const Login = () => {
 	const [identifier, setIdentifier] = useState<string>("ldmhieudev@yopmail.com");
@@ -42,13 +35,6 @@ export const Login = () => {
 			className="flex h-screen flex-col items-center gap-6 pt-14"
 			onKeyDown={handleKeyPress}
 		>
-			<div className="flex gap-3 flex-col">
-				{tempData.map((item, index) => (
-					<div key={index} className="border-1 rounded-lg justify-center items-center cursor-pointer" onClick={() => {handlePressAccount(item)}}>
-						<p>{item}</p>
-					</div>
-				))}
-			</div>
 			<div className="flex flex-col items-center gap-6">
 				<h1 className="text-6xl font-bold text-primary">Zalo</h1>
 				<div className="flex flex-col items-center">
