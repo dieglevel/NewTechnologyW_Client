@@ -42,9 +42,9 @@ export const JoinRequests = () => {
 	const handleApprove = async (accountId: string) => {
 		try {
 			const result = await handleJoinRequest({
-				roomId: selectedRoom?.id || "",
-				accountId,
-				action: "APPROVED",
+				chatRoomID: selectedRoom?.id || "",
+				userApprovedID: accountId,
+				status: "APPROVED",
 			});
 			addToast({ title: "Phê duyệt thành công", color: "success" });
 		} catch (err) {

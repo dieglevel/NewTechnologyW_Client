@@ -37,9 +37,9 @@ export const getRoom = async () => {
 };
 
 export interface HandleJoinRequestPayload {
-	roomId: string;
-	accountId: string;
-	action: "APPROVED" | "REJECTED";
+	chatRoomID: string;
+	userApprovedID: string;
+	status: "APPROVED" | "REJECTED";
 }
 
 interface ICreatePinnedMessage {
@@ -183,6 +183,7 @@ export const handleJoinRequest = async (payload: HandleJoinRequestPayload) => {
 		console.log("handleJoinRequest response", response);
 		return response.data;
 	} catch (error) {
+		console.log(payload)
 		console.log("Error handling join request:", error);
 		throw error as ErrorResponse;
 	}
