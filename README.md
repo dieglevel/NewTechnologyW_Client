@@ -2,7 +2,7 @@
 
 This project is a modern frontend web application built using **Next.js**, with **Socket.IO** for real-time communication and **PWA** (Progressive Web App) capabilities for offline usage.
 
-> 🔗 Backend is powered by a separate [NestJS](https://nestjs.com/) server (see [Backend Repo](https://github.com/your-org/your-backend-repo)).
+> 🔗 Backend is powered by a separate [NestJS](https://nestjs.com/) server (see [Backend Repo](https://github.com/HarryLaii/ChatSystem)).
 
 ---
 
