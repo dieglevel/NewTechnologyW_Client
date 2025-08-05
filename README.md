@@ -1,42 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with
-[`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡️ Realtime Chat Next.js App with Socket.IO & PWA Support
 
-## Getting Started
+This project is a modern frontend web application built using **Next.js**, with **Socket.IO** for real-time communication and **PWA** (Progressive Web App) capabilities for offline usage.
 
-First, run the development server:
+> 🔗 Backend is powered by a separate [NestJS](https://nestjs.com/) server (see [Backend Repo](https://github.com/your-org/your-backend-repo)).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ✅ Built with [Next.js](https://nextjs.org/)
+- 📡 Realtime communication using Socket.IO (client only)
+- 📲 PWA support (installable, offline access with service worker)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically
-optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📦 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions
-are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for
-more details. "# NewTechnologyW_Client"
+- **Frontend:** Next.js (App Router or Pages Router)
+- **Realtime:** Socket.IO client
+- **Backend:** NestJS (in separate repository)
+- **PWA:** `next-pwa` or custom service worker
+- **Others:** TypeScript, Tailwind CSS, IndexDB, Giphy
